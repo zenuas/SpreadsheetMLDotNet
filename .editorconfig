@@ -1,0 +1,7 @@
+﻿[*.cs]
+
+# xUnitの不適切な警告抑止
+
+dotnet_diagnostic.xUnit1013.severity = none
+dotnet_diagnostic.xUnit2000.severity = none
+dotnet_diagnostic.xUnit2013.severity = none
