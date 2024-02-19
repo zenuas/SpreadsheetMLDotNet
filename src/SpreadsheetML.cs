@@ -23,7 +23,7 @@ public static class SpreadsheetML
             .Using(ReadRelationshipToWorkbookPath);
 
         var dir = Path.GetDirectoryName(workbook_path)!;
-        var (styles_path, shared_strings_path, id_to_sheetpath) = entries[ZipArchives.ConvertZipPath(Path.Combine(dir, "_rels", Path.GetFileName(workbook_path) + ".rels"))]
+        var (_, shared_strings_path, id_to_sheetpath) = entries[ZipArchives.ConvertZipPath(Path.Combine(dir, "_rels", Path.GetFileName(workbook_path) + ".rels"))]
             .Open()
             .Using(x => ReadWorkbookRelationshipToFilePath(dir, x));
 
