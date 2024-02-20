@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\SpreadsheetMLReader.csproj" />
+    <ProjectReference Include="..\src\SpreadsheetMLDotNet.csproj" />
   </ItemGroup>
 
 </Project>
