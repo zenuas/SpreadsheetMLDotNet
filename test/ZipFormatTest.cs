@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace SpreadsheetMLReader.Test;
+namespace SpreadsheetMLDotNet.Test;
 
 public class ZipFormatTest
 {

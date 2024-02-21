@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SpreadsheetMLReader.Data;
+namespace SpreadsheetMLDotNet.Data;
 
 public class WorkbookReader : IDisposable
 {

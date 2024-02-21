@@ -3,7 +3,7 @@ using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Running;
 
-namespace SpreadsheetMLReader.Benchmark;
+namespace SpreadsheetMLDotNet.Benchmark;
 
 public class Program
 {

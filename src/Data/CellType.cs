@@ -1,6 +1,6 @@
 ﻿using Mina.Attributes;
 
-namespace SpreadsheetMLReader.Data;
+namespace SpreadsheetMLDotNet.Data;
 
 public enum CellType
 {

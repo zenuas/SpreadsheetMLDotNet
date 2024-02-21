@@ -4,7 +4,7 @@ using BenchmarkDotNet.Reports;
 using System;
 using System.Collections.Generic;
 
-namespace SpreadsheetMLReader.Benchmark;
+namespace SpreadsheetMLDotNet.Benchmark;
 
 public class MarkdownConsoleExporter : IExporter, ILogger
 {

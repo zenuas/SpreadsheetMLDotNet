@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace SpreadsheetMLReader.Data;
+namespace SpreadsheetMLDotNet.Data;
 
 public class WorksheetReader : IDisposable, IEnumerable<(string Cell, object Value)>, IEnumerable
 {
