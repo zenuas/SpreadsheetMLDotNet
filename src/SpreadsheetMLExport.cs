@@ -13,9 +13,14 @@ public static class SpreadsheetMLExport
     {
         using var zip = new ZipArchive(stream, ZipArchiveMode.Create, leave_open);
 
-        zip.CreateEntry("[Content_Types].xml").Open().Using(WriteContentTypes);
+        zip.CreateEntry("[Content_Types].xml")
+            .Open()
+            .Using(WriteContentTypes);
 
-        zip.CreateEntry("_rels/.rels").Open().Using(x => WriteRelationships(x, (FormatNamespaces.OfficeDocuments[(int)format], "xl/workbook.xml")));
+        zip.CreateEntry("_rels/.rels")
+            .Open()
+            .Using(x => WriteRelationships(x, (FormatNamespaces.OfficeDocuments[(int)format], "xl/workbook.xml")));
+
         WriteWorkbook(zip, workbook, format);
     }
 
@@ -42,8 +47,13 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
 
     public static void WriteWorkbook(ZipArchive zip, Workbook workbook, FormatNamespace format)
     {
-        zip.CreateEntry("xl/workbook.xml").Open().Using(x => WriteWorkbook(x, workbook, format));
-        zip.CreateEntry("xl/_rels/workbook.xml.rels").Open().Using(x => WriteRelationships(x, workbook.Worksheets.Select((w, i) => (FormatNamespaces.Worksheets[(int)format], $"worksheets/sheet{i + 1}.xml"))));
+        zip.CreateEntry("xl/workbook.xml")
+            .Open()
+            .Using(x => WriteWorkbook(x, workbook, format));
+
+        zip.CreateEntry("xl/_rels/workbook.xml.rels")
+            .Open()
+            .Using(x => WriteRelationships(x, workbook.Worksheets.Select((w, i) => (FormatNamespaces.Worksheets[(int)format], $"worksheets/sheet{i + 1}.xml"))));
 
         workbook.Worksheets.Each((worksheet, i) => zip
             .CreateEntry($"xl/worksheets/sheet{i + 1}.xml")
