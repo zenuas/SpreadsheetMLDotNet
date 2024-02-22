@@ -14,4 +14,5 @@ foreach (var name in workbook.WorkSheetNames)
 }
 
 var book = new Workbook();
-SpreadsheetML.Export("New.xlsx", book);
+SpreadsheetML.Export("New.Strict.xlsx", book, FormatNamespace.Strict);
+SpreadsheetML.Export("New.Transitional.xlsx", book, FormatNamespace.Transitional);
