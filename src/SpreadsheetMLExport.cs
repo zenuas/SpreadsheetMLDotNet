@@ -12,7 +12,7 @@ public static class SpreadsheetMLExport
         using var zip = new ZipArchive(stream, ZipArchiveMode.Create, leave_open);
 
         zip.CreateEntry("[Content_Types].xml").Open().Using(WriteContentTypes);
-        zip.CreateEntry("_rels/.rels").Open().Using(x => WriteworkbookRelationships(x, format));
+        zip.CreateEntry("_rels/.rels").Open().Using(x => WriteRelationships(x, format));
     }
 
     public static void WriteContentTypes(Stream stream) => stream.Write(
@@ -24,7 +24,7 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
 </Types>
 ");
 
-    public static void WriteworkbookRelationships(Stream stream, FormatNamespace format) => stream.Write(
+    public static void WriteRelationships(Stream stream, FormatNamespace format) => stream.Write(
 $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
 <Relationships xmlns=""{FormatNamespaces.Relationships[(int)format]}"">
   <Relationship Id=""rId1"" Type=""{FormatNamespaces.OfficeDocuments[(int)format]}"" Target=""xl/workbook.xml""/>
