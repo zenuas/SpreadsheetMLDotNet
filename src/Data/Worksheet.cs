@@ -1,6 +1,6 @@
 ﻿namespace SpreadsheetMLDotNet.Data;
 
-public class Worksheet
+public class Worksheet : IRelationshipable
 {
     public required string Name { get; set; }
 }
