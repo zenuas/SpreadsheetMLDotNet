@@ -2,7 +2,7 @@
 
 namespace SpreadsheetMLDotNet.Data;
 
-public enum CellType
+public enum CellTypes
 {
     [Alias("b")]
     Boolean,

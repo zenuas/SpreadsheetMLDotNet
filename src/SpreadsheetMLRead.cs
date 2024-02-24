@@ -111,7 +111,7 @@ public static class SpreadsheetMLRead
     {
         var cell = "";
         var v = "";
-        var t = CellType.InlineString;
+        var t = CellTypes.InlineString;
         foreach (var (reader, hierarchy) in XmlReader.Create(worksheet)
             .UsingDefer(x => x.GetIteratorWithHierarchy())
             .Where(x =>
@@ -124,7 +124,7 @@ public static class SpreadsheetMLRead
             {
                 cell = reader.GetAttribute("r")!;
                 v = "";
-                t = reader.GetAttribute("t") is { } s ? Enums.ParseWithAlias<CellType>(s)!.Value : CellType.String;
+                t = reader.GetAttribute("t") is { } s ? Enums.ParseWithAlias<CellTypes>(s)!.Value : CellTypes.String;
             }
             else if (reader.NodeType == XmlNodeType.EndElement)
             {
@@ -137,15 +137,15 @@ public static class SpreadsheetMLRead
         }
     }
 
-    public static object GetCellValueFormat(string value, CellType cell_type, Dictionary<int, string> shared_strings) => cell_type switch
+    public static object GetCellValueFormat(string value, CellTypes cell_type, Dictionary<int, string> shared_strings) => cell_type switch
     {
-        CellType.Boolean => value == "1",
-        CellType.Date => DateTime.TryParse(value, out var date) ? date : "",
-        CellType.Error => value,
-        CellType.InlineString => value,
-        CellType.String => value,
-        CellType.Number => double.TryParse(value, out var num) ? num : value,
-        CellType.SharedString => shared_strings[int.Parse(value)],
+        CellTypes.Boolean => value == "1",
+        CellTypes.Date => DateTime.TryParse(value, out var date) ? date : "",
+        CellTypes.Error => value,
+        CellTypes.InlineString => value,
+        CellTypes.String => value,
+        CellTypes.Number => double.TryParse(value, out var num) ? num : value,
+        CellTypes.SharedString => shared_strings[int.Parse(value)],
         _ => throw new ArgumentException(nameof(cell_type)),
     };
 }
