@@ -99,9 +99,5 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
 ");
     }
 
-    public static string AddRelationship(Dictionary<IRelationshipable, string> reletionship_to_id, IRelationshipable reletionship)
-    {
-        reletionship_to_id.TryAdd(reletionship, () => $"rId{reletionship_to_id.Count + 1}");
-        return reletionship_to_id[reletionship];
-    }
+    public static string AddRelationship(Dictionary<IRelationshipable, string> reletionship_to_id, IRelationshipable reletionship) => reletionship_to_id.GetOrNew(reletionship, () => $"rId{reletionship_to_id.Count + 1}");
 }
