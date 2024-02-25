@@ -33,4 +33,12 @@ public class Worksheet : IRelationshipable
             Values[index - StartRowIndex] = row;
         }
     }
+
+    public Cell? GetCell(string address) => SpreadsheetML.ConvertCellAddress(address).To(x => GetCell(x.Row, x.Column));
+
+    public Cell? GetCell(int row, int column) => GetRow(row)?.GetCell(column);
+
+    public void SetCell(string address, Cell cell) => SpreadsheetML.ConvertCellAddress(address).Return(x => SetCell(x.Row, x.Column, cell));
+
+    public void SetCell(int row, int column, Cell cell) => (GetRow(row) ?? new Row().Return(x => SetRow(row, x))).SetCell(column, cell);
 }

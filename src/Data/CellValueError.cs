@@ -1,4 +1,6 @@
-﻿namespace SpreadsheetMLDotNet.Data;
+﻿using System;
+
+namespace SpreadsheetMLDotNet.Data;
 
 public class CellValueError : ICellValue
 {
@@ -13,4 +15,16 @@ public class CellValueError : ICellValue
     public required ErrorValues Value { get; init; }
 
     protected CellValueError() { }
+
+    public static CellValueError GetValue(ErrorValues e) => e switch
+    {
+        ErrorValues.DIV_0 => DIV_0,
+        ErrorValues.GETTING_DATA => GETTING_DATA,
+        ErrorValues.NA => NA,
+        ErrorValues.NAME => NAME,
+        ErrorValues.NULL => NULL,
+        ErrorValues.REF => REF,
+        ErrorValues.VALUE => VALUE,
+        _ => throw new ArgumentException(nameof(e)),
+    };
 }
