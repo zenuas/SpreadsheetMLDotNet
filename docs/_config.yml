@@ -1,0 +1,11 @@
+title: SpreadsheetMLメモ
+description: SpreadsheetMLメモ
+keywords: Office Open XML,SpreadsheetML
+author: zenuas
+theme: jekyll-theme-dinky
+google_analytics:
+markdown: kramdown
+kramdown:
+  hard_wrap: true
+plugins:
+  - jekyll-sitemap
