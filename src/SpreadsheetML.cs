@@ -9,7 +9,7 @@ public static class SpreadsheetML
 {
     public static WorkbookReader CreateWorkbookReader(string xlsx_path) => CreateWorkbookReader(File.OpenRead(xlsx_path));
 
-    public static WorkbookReader CreateWorkbookReader(Stream stream, bool leave_open = false) => SpreadsheetMLRead.OpenReader(stream, leave_open);
+    public static WorkbookReader CreateWorkbookReader(Stream stream, bool leave_open = false) => SpreadsheetMLReader.OpenReader(stream, leave_open);
 
     public static void Export(string export_path, Workbook workbook, FormatNamespace format = FormatNamespace.Strict) => File.Create(export_path).Using(x => Export(x, workbook, false, format));
 

@@ -10,7 +10,7 @@ using System.Xml;
 
 namespace SpreadsheetMLDotNet;
 
-public static class SpreadsheetMLRead
+public static class SpreadsheetMLReader
 {
     public static WorkbookReader OpenReader(Stream stream, bool leave_open)
     {
