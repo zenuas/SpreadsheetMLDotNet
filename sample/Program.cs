@@ -2,17 +2,6 @@
 using SpreadsheetMLDotNet.Data;
 using System;
 
-using var workbook = SpreadsheetML.CreateWorkbookReader("Calc.xlsx");
-foreach (var name in workbook.WorkSheetNames)
-{
-    Console.WriteLine(name);
-    using var worksheet = workbook.OpenWorksheet(name);
-    foreach (var (cell, value) in worksheet)
-    {
-        Console.WriteLine($"{cell} = {value}");
-    }
-}
-
 var book = new Workbook();
 var sheet = book.Worksheets[0];
 sheet.SetRow(2, new Row());
@@ -25,3 +14,14 @@ var row4 = sheet.GetRow(4)!;
 row4.SetCell(1, new Cell { Value = new CellValueString { Value = "xA4" } });
 SpreadsheetML.Export("New.Strict.xlsx", book, FormatNamespace.Strict);
 SpreadsheetML.Export("New.Transitional.xlsx", book, FormatNamespace.Transitional);
+
+using var workbook = SpreadsheetML.CreateWorkbookReader("New.Transitional.xlsx");
+foreach (var name in workbook.WorkSheetNames)
+{
+    Console.WriteLine(name);
+    using var worksheet = workbook.OpenWorksheet(name);
+    foreach (var (cell, value) in worksheet)
+    {
+        Console.WriteLine($"{cell} = {value}");
+    }
+}
