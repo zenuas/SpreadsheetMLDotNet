@@ -11,7 +11,9 @@ public class Worksheet : IRelationshipable
     public int StartRowIndex { get; set; } = 0;
     public List<Row> Rows { get; init; } = [];
 
-    public Row? GetRow(int index) => index < StartRowIndex || index > StartRowIndex + Rows.Count - 1 ? null : Rows[index - StartRowIndex];
+    public Row GetRow(int index) => index < StartRowIndex || index > StartRowIndex + Rows.Count - 1
+        ? new Row().Return(x => SetRow(index, x))
+        : Rows[index - StartRowIndex];
 
     public void SetRow(int index, Row row)
     {
@@ -34,11 +36,11 @@ public class Worksheet : IRelationshipable
         }
     }
 
-    public Cell? GetCell(string address) => SpreadsheetML.ConvertCellAddress(address).To(x => GetCell(x.Row, x.Column));
+    public Cell GetCell(string address) => SpreadsheetML.ConvertCellAddress(address).To(x => GetCell(x.Row, x.Column));
 
-    public Cell? GetCell(int row, int column) => GetRow(row)?.GetCell(column);
+    public Cell GetCell(int row, int column) => GetRow(row).GetCell(column);
 
     public void SetCell(string address, Cell cell) => SpreadsheetML.ConvertCellAddress(address).Return(x => SetCell(x.Row, x.Column, cell));
 
-    public void SetCell(int row, int column, Cell cell) => (GetRow(row) ?? new Row().Return(x => SetRow(row, x))).SetCell(column, cell);
+    public void SetCell(int row, int column, Cell cell) => GetRow(row).SetCell(column, cell);
 }
