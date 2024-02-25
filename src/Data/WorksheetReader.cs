@@ -13,6 +13,7 @@ public class WorksheetReader : IDisposable, IEnumerable<(string Cell, object Val
     IEnumerator<(string Cell, object Value)> IEnumerable<(string Cell, object Value)>.GetEnumerator() => GetEnumerator_();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator_();
+
     void IDisposable.Dispose()
     {
         Dispose();
