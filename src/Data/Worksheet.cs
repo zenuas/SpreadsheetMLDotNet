@@ -11,7 +11,7 @@ public class Worksheet : IRelationshipable
     public int StartRowIndex { get; set; } = 0;
     public List<Row> Values { get; init; } = [];
 
-    public Row? GetRow(int index) => index < StartRowIndex || index > StartRowIndex + Values.Count ? null : Values[index - StartRowIndex];
+    public Row? GetRow(int index) => index < StartRowIndex || index > StartRowIndex + Values.Count - 1 ? null : Values[index - StartRowIndex];
 
     public void SetRow(int index, Row row)
     {

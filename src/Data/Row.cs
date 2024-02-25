@@ -10,7 +10,7 @@ public class Row
     public int StartCellIndex { get; set; } = 0;
     public List<Cell> Values { get; init; } = [];
 
-    public Cell? GetCell(int index) => index < StartCellIndex || index > StartCellIndex + Values.Count ? null : Values[index - StartCellIndex];
+    public Cell? GetCell(int index) => index < StartCellIndex || index > StartCellIndex + Values.Count - 1 ? null : Values[index - StartCellIndex];
 
     public void SetCell(int index, Cell cell)
     {
