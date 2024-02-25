@@ -91,14 +91,14 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
   <sheetFormatPr defaultRowHeight=""13"" />
   <sheetData>
 ");
-        for (var y = 0; y < worksheet.Values.Count; y++)
+        for (var y = 0; y < worksheet.Rows.Count; y++)
         {
-            var row = worksheet.Values[y];
-            if (row.Values.Count == 0) continue;
+            var row = worksheet.Rows[y];
+            if (row.Cells.Count == 0) continue;
             stream.Write($"    <row r=\"{y + worksheet.StartRowIndex}\">\r\n");
-            for (var x = 0; x < row.Values.Count; x++)
+            for (var x = 0; x < row.Cells.Count; x++)
             {
-                var cell = row.Values[x];
+                var cell = row.Cells[x];
                 if (cell.Value is CellValueNull) continue;
                 var (cell_type, escaped_value) = GetCellValueFormat(cell.Value);
                 stream.Write(

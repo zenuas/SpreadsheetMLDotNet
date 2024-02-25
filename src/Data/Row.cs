@@ -8,9 +8,9 @@ namespace SpreadsheetMLDotNet.Data;
 public class Row
 {
     public int StartCellIndex { get; set; } = 0;
-    public List<Cell> Values { get; init; } = [];
+    public List<Cell> Cells { get; init; } = [];
 
-    public Cell? GetCell(int index) => index < StartCellIndex || index > StartCellIndex + Values.Count - 1 ? null : Values[index - StartCellIndex];
+    public Cell? GetCell(int index) => index < StartCellIndex || index > StartCellIndex + Cells.Count - 1 ? null : Cells[index - StartCellIndex];
 
     public void SetCell(int index, Cell cell)
     {
@@ -19,17 +19,17 @@ public class Row
         if (StartCellIndex < 1 || index < StartCellIndex)
         {
             StartCellIndex = index;
-            if (StartCellIndex >= 1 && index + 1 < StartCellIndex) Values.InsertRange(0, Lists.Repeat(0).Take(StartCellIndex - index - 1).Select(_ => new Cell { Value = CellValueNull.Instance }));
-            Values.Insert(0, cell);
+            if (StartCellIndex >= 1 && index + 1 < StartCellIndex) Cells.InsertRange(0, Lists.Repeat(0).Take(StartCellIndex - index - 1).Select(_ => new Cell { Value = CellValueNull.Instance }));
+            Cells.Insert(0, cell);
         }
-        else if (index > StartCellIndex + Values.Count - 1)
+        else if (index > StartCellIndex + Cells.Count - 1)
         {
-            if (index > StartCellIndex + Values.Count - 1) Values.AddRange(Lists.Repeat(0).Take(index - StartCellIndex - Values.Count).Select(_ => new Cell { Value = CellValueNull.Instance }));
-            Values.Add(cell);
+            if (index > StartCellIndex + Cells.Count - 1) Cells.AddRange(Lists.Repeat(0).Take(index - StartCellIndex - Cells.Count).Select(_ => new Cell { Value = CellValueNull.Instance }));
+            Cells.Add(cell);
         }
         else
         {
-            Values[index - StartCellIndex] = cell;
+            Cells[index - StartCellIndex] = cell;
         }
     }
 }

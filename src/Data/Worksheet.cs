@@ -9,9 +9,9 @@ public class Worksheet : IRelationshipable
 {
     public required string Name { get; set; }
     public int StartRowIndex { get; set; } = 0;
-    public List<Row> Values { get; init; } = [];
+    public List<Row> Rows { get; init; } = [];
 
-    public Row? GetRow(int index) => index < StartRowIndex || index > StartRowIndex + Values.Count - 1 ? null : Values[index - StartRowIndex];
+    public Row? GetRow(int index) => index < StartRowIndex || index > StartRowIndex + Rows.Count - 1 ? null : Rows[index - StartRowIndex];
 
     public void SetRow(int index, Row row)
     {
@@ -20,17 +20,17 @@ public class Worksheet : IRelationshipable
         if (StartRowIndex < 1 || index < StartRowIndex)
         {
             StartRowIndex = index;
-            if (StartRowIndex >= 1 && index + 1 < StartRowIndex) Values.InsertRange(0, Lists.Repeat(0).Take(StartRowIndex - index - 1).Select(_ => new Row()));
-            Values.Insert(0, row);
+            if (StartRowIndex >= 1 && index + 1 < StartRowIndex) Rows.InsertRange(0, Lists.Repeat(0).Take(StartRowIndex - index - 1).Select(_ => new Row()));
+            Rows.Insert(0, row);
         }
-        else if (index > StartRowIndex + Values.Count - 1)
+        else if (index > StartRowIndex + Rows.Count - 1)
         {
-            if (index > StartRowIndex + Values.Count - 1) Values.AddRange(Lists.Repeat(0).Take(index - StartRowIndex - Values.Count).Select(_ => new Row()));
-            Values.Add(row);
+            if (index > StartRowIndex + Rows.Count - 1) Rows.AddRange(Lists.Repeat(0).Take(index - StartRowIndex - Rows.Count).Select(_ => new Row()));
+            Rows.Add(row);
         }
         else
         {
-            Values[index - StartRowIndex] = row;
+            Rows[index - StartRowIndex] = row;
         }
     }
 
