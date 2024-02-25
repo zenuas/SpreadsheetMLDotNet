@@ -111,7 +111,7 @@ public static class SpreadsheetMLRead
     {
         var cell = "";
         var v = "";
-        var t = CellTypes.InlineString;
+        var t = CellTypes.Number;
         foreach (var (reader, hierarchy) in XmlReader.Create(worksheet)
             .UsingDefer(x => x.GetIteratorWithHierarchy())
             .Where(x =>
@@ -124,7 +124,7 @@ public static class SpreadsheetMLRead
             {
                 cell = reader.GetAttribute("r")!;
                 v = "";
-                t = reader.GetAttribute("t") is { } s ? Enums.ParseWithAlias<CellTypes>(s)!.Value : CellTypes.String;
+                t = reader.GetAttribute("t") is { } s ? Enums.ParseWithAlias<CellTypes>(s)!.Value : CellTypes.Number;
             }
             else if (reader.NodeType == XmlNodeType.EndElement)
             {
