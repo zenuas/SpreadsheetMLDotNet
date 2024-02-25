@@ -1,5 +1,7 @@
-﻿using Mina.Extension;
+﻿using Mina.Attributes;
+using Mina.Extension;
 using SpreadsheetMLDotNet.Data;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -96,9 +98,11 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
             for (var x = 0; x < row.Values.Count; x++)
             {
                 var cell = row.Values[x];
+                if (cell.Value is CellValueNull) continue;
+                var value = GetCellValueFormat(cell.Value);
                 stream.Write(
-$@"      <c r=""{SpreadsheetML.ConvertCellAddress(y + worksheet.StartIndex, x + row.StartIndex)}"" t=""str"">
-        <v>{"aaa"}</v>
+$@"      <c r=""{SpreadsheetML.ConvertCellAddress(y + worksheet.StartIndex, x + row.StartIndex)}"" t=""{value.CellType.GetAttributeOrDefault<AliasAttribute>()!.Name}"">
+        <v>{value.Value}</v>
       </c>
 ");
             }
@@ -111,6 +115,16 @@ $@"  </sheetData>
 </worksheet>
 ");
     }
+
+    public static (CellTypes CellType, string Value) GetCellValueFormat(ICellValue value) => value switch
+    {
+        CellValueBoolean x => (CellTypes.Boolean, x.Value.ToString()),
+        CellValueDate x => (CellTypes.Date, x.Value.ToString()),
+        CellValueError x => (CellTypes.Error, x.Value.GetAttributeOrDefault<AliasAttribute>()!.Name),
+        CellValueDouble x => (CellTypes.Number, x.Value.ToString()),
+        CellValueString x => (CellTypes.String, x.Value),
+        _ => throw new ArgumentException(nameof(value)),
+    };
 
     public static string AddRelationship(Dictionary<IRelationshipable, string> reletionship_to_id, IRelationshipable reletionship) => reletionship_to_id.GetOrNew(reletionship, () => $"rId{reletionship_to_id.Count + 1}");
 }
