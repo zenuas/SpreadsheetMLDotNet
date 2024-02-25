@@ -99,10 +99,10 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
             {
                 var cell = row.Values[x];
                 if (cell.Value is CellValueNull) continue;
-                var value = GetCellValueFormat(cell.Value);
+                var (cell_type, value) = GetCellValueFormat(cell.Value);
                 stream.Write(
-$@"      <c r=""{SpreadsheetML.ConvertCellAddress(y + worksheet.StartRowIndex, x + row.StartCellIndex)}"" t=""{value.CellType.GetAttributeOrDefault<AliasAttribute>()!.Name}"">
-        <v>{value.Value}</v>
+$@"      <c r=""{SpreadsheetML.ConvertCellAddress(y + worksheet.StartRowIndex, x + row.StartCellIndex)}"" t=""{cell_type.GetAttributeOrDefault<AliasAttribute>()!.Name}"">
+        <v>{value}</v>
       </c>
 ");
             }
