@@ -146,6 +146,6 @@ public static class SpreadsheetMLRead
         CellTypes.String => value,
         CellTypes.Number => double.TryParse(value, out var num) ? num : value,
         CellTypes.SharedString => shared_strings[int.Parse(value)],
-        _ => throw new ArgumentException(nameof(cell_type)),
+        _ => throw new ArgumentException(null, nameof(cell_type)),
     };
 }

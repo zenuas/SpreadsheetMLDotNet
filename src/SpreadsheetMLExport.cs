@@ -123,7 +123,7 @@ $@"  </sheetData>
         CellValueError x => (CellTypes.Error, x.Value.GetAttributeOrDefault<AliasAttribute>()!.Name),
         CellValueDouble x => (CellTypes.Number, x.Value.ToString()),
         CellValueString x => (CellTypes.String, x.Value),
-        _ => throw new ArgumentException(nameof(value)),
+        _ => throw new ArgumentOutOfRangeException(nameof(value)),
     };
 
     public static string AddRelationship(Dictionary<IRelationshipable, string> reletionship_to_id, IRelationshipable reletionship) => reletionship_to_id.GetOrNew(reletionship, () => $"rId{reletionship_to_id.Count + 1}");

@@ -15,7 +15,7 @@ public class Worksheet : IRelationshipable
 
     public void SetRow(int index, Row row)
     {
-        if (index < 1) throw new ArgumentException(nameof(index));
+        ArgumentOutOfRangeException.ThrowIfLessThan(index, 1);
 
         if (StartRowIndex < 1 || index < StartRowIndex)
         {

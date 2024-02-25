@@ -14,7 +14,7 @@ public class Row
 
     public void SetCell(int index, Cell cell)
     {
-        if (index < 1) throw new ArgumentException(nameof(index));
+        ArgumentOutOfRangeException.ThrowIfLessThan(index, 1);
 
         if (StartCellIndex < 1 || index < StartCellIndex)
         {

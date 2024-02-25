@@ -25,6 +25,6 @@ public class CellValueError : ICellValue
         ErrorValues.NULL => NULL,
         ErrorValues.REF => REF,
         ErrorValues.VALUE => VALUE,
-        _ => throw new ArgumentException(nameof(e)),
+        _ => throw new ArgumentOutOfRangeException(nameof(e)),
     };
 }
