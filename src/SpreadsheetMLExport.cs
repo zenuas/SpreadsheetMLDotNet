@@ -84,11 +84,6 @@ $@"  </sheets>
         stream.Write(
 $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
 <worksheet xmlns=""{FormatNamespaces.SpreadsheetMLMains[(int)format]}"">
-  <dimension ref=""A1""/>
-  <sheetViews>
-    <sheetView tabSelected=""1"" workbookViewId=""0""/>
-  </sheetViews>
-  <sheetFormatPr defaultRowHeight=""13"" />
   <sheetData>
 ");
         for (var y = 0; y < worksheet.Rows.Count; y++)
@@ -121,8 +116,6 @@ $@"      <c {cell_attr.Select(kv => $@"{kv.Key}=""{SecurityElement.Escape(kv.Val
         }
         stream.Write(
 $@"  </sheetData>
-  <phoneticPr fontId=""1""/>
-  <pageMargins left=""0.7"" right=""0.7"" top=""0.75"" bottom=""0.75"" header=""0.3"" footer=""0.3""/>
 </worksheet>
 ");
     }
