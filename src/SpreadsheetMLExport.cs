@@ -94,14 +94,14 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
         {
             var row = worksheet.Values[y];
             if (row.Values.Count == 0) continue;
-            stream.Write($"    <row r=\"{y + worksheet.StartIndex}\">\r\n");
+            stream.Write($"    <row r=\"{y + worksheet.StartRowIndex}\">\r\n");
             for (var x = 0; x < row.Values.Count; x++)
             {
                 var cell = row.Values[x];
                 if (cell.Value is CellValueNull) continue;
                 var value = GetCellValueFormat(cell.Value);
                 stream.Write(
-$@"      <c r=""{SpreadsheetML.ConvertCellAddress(y + worksheet.StartIndex, x + row.StartIndex)}"" t=""{value.CellType.GetAttributeOrDefault<AliasAttribute>()!.Name}"">
+$@"      <c r=""{SpreadsheetML.ConvertCellAddress(y + worksheet.StartRowIndex, x + row.StartCellIndex)}"" t=""{value.CellType.GetAttributeOrDefault<AliasAttribute>()!.Name}"">
         <v>{value.Value}</v>
       </c>
 ");
