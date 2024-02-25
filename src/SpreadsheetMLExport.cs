@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Security;
 
 namespace SpreadsheetMLDotNet;
 
@@ -99,10 +100,10 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
             {
                 var cell = row.Values[x];
                 if (cell.Value is CellValueNull) continue;
-                var (cell_type, value) = GetCellValueFormat(cell.Value);
+                var (cell_type, escaped_value) = GetCellValueFormat(cell.Value);
                 stream.Write(
 $@"      <c r=""{SpreadsheetML.ConvertCellAddress(y + worksheet.StartRowIndex, x + row.StartCellIndex)}"" t=""{cell_type.GetAttributeOrDefault<AliasAttribute>()!.Name}"">
-        <v>{value}</v>
+        <v>{escaped_value}</v>
       </c>
 ");
             }
@@ -116,13 +117,13 @@ $@"  </sheetData>
 ");
     }
 
-    public static (CellTypes CellType, string Value) GetCellValueFormat(ICellValue value) => value switch
+    public static (CellTypes CellType, string EscapedValue) GetCellValueFormat(ICellValue value) => value switch
     {
         CellValueBoolean x => (CellTypes.Boolean, x.Value.ToString()),
         CellValueDate x => (CellTypes.Date, x.Value.ToString()),
         CellValueError x => (CellTypes.Error, x.Value.GetAttributeOrDefault<AliasAttribute>()!.Name),
         CellValueDouble x => (CellTypes.Number, x.Value.ToString()),
-        CellValueString x => (CellTypes.String, x.Value),
+        CellValueString x => (CellTypes.String, SecurityElement.Escape(x.Value)),
         _ => throw new ArgumentOutOfRangeException(nameof(value)),
     };
 
