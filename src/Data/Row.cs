@@ -9,6 +9,7 @@ public class Row
 {
     public int StartCellIndex { get; set; } = 0;
     public List<Cell> Cells { get; init; } = [];
+    public double? Height { get; set; } = null;
 
     public Cell GetCell(int index) => index < StartCellIndex || index > StartCellIndex + Cells.Count - 1
         ? new Cell { Value = CellValueNull.Instance }.Return(x => SetCell(index, x))

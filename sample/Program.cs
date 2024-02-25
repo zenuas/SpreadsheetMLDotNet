@@ -8,6 +8,7 @@ sheet.SetCell("C2", "xC2");
 sheet.SetCell("D2", "xD2");
 sheet.SetCell("F2", "xF2");
 sheet.SetCell("A4", "xA4");
+sheet.GetRow(3).Height = 32.1;
 SpreadsheetML.Export("New.Strict.xlsx", book, FormatNamespace.Strict);
 SpreadsheetML.Export("New.Transitional.xlsx", book, FormatNamespace.Transitional);
 

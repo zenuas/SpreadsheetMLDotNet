@@ -94,15 +94,25 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
         for (var y = 0; y < worksheet.Rows.Count; y++)
         {
             var row = worksheet.Rows[y];
-            if (row.Cells.Count == 0) continue;
-            stream.Write($"    <row r=\"{y + worksheet.StartRowIndex}\">\r\n");
+            var row_attr = new Dictionary<string, string>();
+            if (row.Height is { } height) { row_attr["ht"] = height.ToString(); row_attr["customHeight"] = "1"; }
+            if (row.Cells.Count == 0 && row_attr.Count == 0) continue;
+
+            row_attr["r"] = (y + worksheet.StartRowIndex).ToString();
+
+            stream.Write($"    <row {row_attr.Select(kv => $@"{kv.Key}=""{SecurityElement.Escape(kv.Value)}""").Join(" ")}>\r\n");
             for (var x = 0; x < row.Cells.Count; x++)
             {
                 var cell = row.Cells[x];
-                if (cell.Value is CellValueNull) continue;
+                var cell_attr = new Dictionary<string, string>();
+                if (cell.Value is CellValueNull && cell_attr.Count == 0) continue;
+
                 var (cell_type, escaped_value) = GetCellValueFormat(cell.Value);
+                cell_attr["r"] = SpreadsheetML.ConvertCellAddress(y + worksheet.StartRowIndex, x + row.StartCellIndex);
+                cell_attr["t"] = cell_type.GetAttributeOrDefault<AliasAttribute>()!.Name;
+
                 stream.Write(
-$@"      <c r=""{SpreadsheetML.ConvertCellAddress(y + worksheet.StartRowIndex, x + row.StartCellIndex)}"" t=""{cell_type.GetAttributeOrDefault<AliasAttribute>()!.Name}"">
+$@"      <c {cell_attr.Select(kv => $@"{kv.Key}=""{SecurityElement.Escape(kv.Value)}""").Join(" ")}>
         <v>{escaped_value}</v>
       </c>
 ");
