@@ -11,7 +11,7 @@ public static class SpreadsheetML
 
     public static WorkbookReader CreateWorkbookReader(Stream stream, bool leave_open = false) => SpreadsheetMLRead.OpenReader(stream, leave_open);
 
-    public static void Export(string export_path, Workbook workbook, FormatNamespace format = FormatNamespace.Strict) => File.OpenWrite(export_path).Using(x => Export(x, workbook, false, format));
+    public static void Export(string export_path, Workbook workbook, FormatNamespace format = FormatNamespace.Strict) => File.Create(export_path).Using(x => Export(x, workbook, false, format));
 
     public static void Export(Stream stream, Workbook workbook, bool leave_open = false, FormatNamespace format = FormatNamespace.Strict) => SpreadsheetMLExport.DoExport(stream, workbook, leave_open, format);
 
