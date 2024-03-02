@@ -5,6 +5,7 @@ namespace SpreadsheetMLDotNet.Data;
 public class Cell
 {
     public required ICellValue Value { get; set; }
+    public Font? Font { get; set; }
 
     public static implicit operator Cell(byte x) => new() { Value = new CellValueDouble { Value = x } };
 
