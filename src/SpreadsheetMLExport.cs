@@ -16,26 +16,62 @@ public static class SpreadsheetMLExport
     {
         using var zip = new ZipArchive(stream, ZipArchiveMode.Create, leave_open);
         var reletionship_to_id = new Dictionary<IRelationshipable, string>();
+        var styles = GetStyles(workbook);
 
         zip.CreateEntry("[Content_Types].xml")
             .Open()
-            .Using(WriteContentTypes);
+            .Using(x => WriteContentTypes(x, styles));
 
         zip.CreateEntry("_rels/.rels")
             .Open()
             .Using(x => WriteRelationships(x, reletionship_to_id, (workbook, FormatNamespaces.OfficeDocuments[(int)format], "xl/workbook.xml")));
 
-        WriteWorkbook(zip, workbook, format, reletionship_to_id);
+        var cellstyles = WriteWorkbook(zip, workbook, format, reletionship_to_id, styles);
+        if (styles is { })
+        {
+            zip.CreateEntry("xl/styles.xml")
+                .Open()
+                .Using(x => WriteStyles(x, styles, cellstyles, format));
+        }
     }
 
-    public static void WriteContentTypes(Stream stream) => stream.Write(
+    public static CellStyles? GetStyles(Workbook workbook)
+    {
+        var fonts = new HashSet<Font>();
+        var fills = new HashSet<Fill>();
+        var borders = new HashSet<Border>();
+        foreach (var (_, _, cell) in EnumerableCells(workbook))
+        {
+            if (cell.Font is { } font) fonts.Add(font);
+            if (cell.Fill is { } fill) fills.Add(fill);
+            if (cell.Border is { } border) borders.Add(border);
+        }
+        return fonts.Count == 0 && fills.Count == 0 && borders.Count == 0 ? null
+            : new()
+            {
+                Fonts = [new(), .. fonts],        // index 0 cannot be used in Excel
+                Fills = [new(), new(), .. fills], // index 0 and 1 cannot be used in Excel
+                Borders = [new(), .. borders],    // index 0 cannot be used in Excel
+            };
+    }
+
+    public static void WriteContentTypes(Stream stream, CellStyles? styles) => stream.Write(
 $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
 <Types xmlns=""http://schemas.openxmlformats.org/package/2006/content-types"">
   <Default Extension=""rels"" ContentType=""application/vnd.openxmlformats-package.relationships+xml""/>
   <Default Extension=""xml"" ContentType=""application/xml""/>
   <Override PartName=""/xl/workbook.xml"" ContentType=""application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml""/>
-</Types>
+{(styles is null ? "" : "  <Override PartName=\"/xl/styles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml\"/>\r\n")}</Types>
 ");
+
+    public static void WriteStyles(Stream stream, CellStyles styles, CellStyle[] cellstyles, FormatNamespace format)
+    {
+        stream.Write(
+$@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
+<styleSheet xmlns=""{FormatNamespaces.SpreadsheetMLMains[(int)format]}"">
+</styleSheet>
+");
+    }
 
     public static void WriteRelationships(Stream stream, Dictionary<IRelationshipable, string> reletionship_to_id, IEnumerable<(IRelationshipable Reletionship, string Type, string Path)> reletionships) => WriteRelationships(stream, reletionship_to_id, reletionships.ToArray());
 
@@ -49,7 +85,7 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
         stream.Write($"</Relationships>\r\n");
     }
 
-    public static void WriteWorkbook(ZipArchive zip, Workbook workbook, FormatNamespace format, Dictionary<IRelationshipable, string> reletionship_to_id)
+    public static CellStyle[] WriteWorkbook(ZipArchive zip, Workbook workbook, FormatNamespace format, Dictionary<IRelationshipable, string> reletionship_to_id, CellStyles? styles)
     {
         zip.CreateEntry("xl/workbook.xml")
             .Open()
@@ -59,10 +95,12 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
             .Open()
             .Using(x => WriteRelationships(x, reletionship_to_id, workbook.Worksheets.Select((w, i) => (w.Cast<IRelationshipable>(), FormatNamespaces.Worksheets[(int)format], $"worksheets/sheet{i + 1}.xml"))));
 
+        var cellstyles = new List<CellStyle>() { new() };
         workbook.Worksheets.Each((worksheet, i) => zip
             .CreateEntry($"xl/worksheets/sheet{i + 1}.xml")
             .Open()
-            .Using(x => WriteWorksheet(x, worksheet, format)));
+            .Using(x => WriteWorksheet(x, worksheet, format, styles, cellstyles)));
+        return [.. cellstyles];
     }
 
     public static void WriteWorkbook(Stream stream, Workbook workbook, FormatNamespace format, Dictionary<IRelationshipable, string> reletionship_to_id)
@@ -79,7 +117,7 @@ $@"  </sheets>
 ");
     }
 
-    public static void WriteWorksheet(Stream stream, Worksheet worksheet, FormatNamespace format)
+    public static void WriteWorksheet(Stream stream, Worksheet worksheet, FormatNamespace format, CellStyles? styles, List<CellStyle> cellstyles)
     {
         stream.Write(
 $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
@@ -131,6 +169,20 @@ $@"  </sheetData>
         for (var x = 0; x < row.Cells.Count; x++)
         {
             yield return (x + row.StartCellIndex, row.Cells[x]);
+        }
+    }
+
+    public static IEnumerable<(int Row, int Column, Cell Cell)> EnumerableCells(Workbook workbook)
+    {
+        foreach (var worksheet in workbook.Worksheets)
+        {
+            foreach (var (y, row) in EnumerableRows(worksheet))
+            {
+                foreach (var (x, cell) in EnumerableCells(row))
+                {
+                    yield return (y, x, cell);
+                }
+            }
         }
     }
 

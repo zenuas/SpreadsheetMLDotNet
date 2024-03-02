@@ -6,6 +6,8 @@ public class Cell
 {
     public required ICellValue Value { get; set; }
     public Font? Font { get; set; }
+    public Fill? Fill { get; set; }
+    public Border? Border { get; set; }
 
     public static implicit operator Cell(byte x) => new() { Value = new CellValueDouble { Value = x } };
 
