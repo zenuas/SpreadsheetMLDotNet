@@ -86,24 +86,22 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
 <worksheet xmlns=""{FormatNamespaces.SpreadsheetMLMains[(int)format]}"">
   <sheetData>
 ");
-        for (var y = 0; y < worksheet.Rows.Count; y++)
+        foreach (var (y, row) in EnumerableRows(worksheet))
         {
-            var row = worksheet.Rows[y];
             var row_attr = new Dictionary<string, string>();
             if (row.Height is { } height) { row_attr["ht"] = height.ToString(); row_attr["customHeight"] = "1"; }
             if (row.Cells.Count == 0 && row_attr.Count == 0) continue;
 
-            row_attr["r"] = (y + worksheet.StartRowIndex).ToString();
+            row_attr["r"] = y.ToString();
 
             stream.Write($"    <row {row_attr.Select(kv => $@"{kv.Key}=""{SecurityElement.Escape(kv.Value)}""").Join(" ")}>\r\n");
-            for (var x = 0; x < row.Cells.Count; x++)
+            foreach (var (x, cell) in EnumerableCells(row))
             {
-                var cell = row.Cells[x];
                 var cell_attr = new Dictionary<string, string>();
                 if (cell.Value is CellValueNull && cell_attr.Count == 0) continue;
 
                 var (cell_type, escaped_value) = GetCellValueFormat(cell.Value);
-                cell_attr["r"] = SpreadsheetML.ConvertCellAddress(y + worksheet.StartRowIndex, x + row.StartCellIndex);
+                cell_attr["r"] = SpreadsheetML.ConvertCellAddress(y, x);
                 cell_attr["t"] = cell_type.GetAttributeOrDefault<AliasAttribute>()!.Name;
 
                 stream.Write(
@@ -118,6 +116,22 @@ $@"      <c {cell_attr.Select(kv => $@"{kv.Key}=""{SecurityElement.Escape(kv.Val
 $@"  </sheetData>
 </worksheet>
 ");
+    }
+
+    public static IEnumerable<(int Index, Row Row)> EnumerableRows(Worksheet worksheet)
+    {
+        for (var y = 0; y < worksheet.Rows.Count; y++)
+        {
+            yield return (y + worksheet.StartRowIndex, worksheet.Rows[y]);
+        }
+    }
+
+    public static IEnumerable<(int Index, Cell Cell)> EnumerableCells(Row row)
+    {
+        for (var x = 0; x < row.Cells.Count; x++)
+        {
+            yield return (x + row.StartCellIndex, row.Cells[x]);
+        }
     }
 
     public static (CellTypes CellType, string EscapedValue) GetCellValueFormat(ICellValue value) => value switch
