@@ -81,7 +81,7 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
         foreach (var fill in styles.Fills)
         {
             stream.Write("    <fill>\r\n");
-            stream.Write("      <patternFill patternType=\"solid\">\r\n");
+            stream.Write($"      <patternFill patternType=\"{fill.PatternType.GetAttributeOrDefault<AliasAttribute>()!.Name}\">\r\n");
             if (fill.ForegroundColor is { } fg) stream.Write($"        <fgColor rgb=\"{fg.Name.ToUpper()}\"/>\r\n");
             if (fill.BackgroundColor is { } bg) stream.Write($"        <bgColor rgb=\"{bg.Name.ToUpper()}\"/>\r\n");
             stream.Write("      </patternFill>\r\n");
