@@ -13,9 +13,9 @@ public class Fill : IEquatable<Fill>
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        if (PatternType != other.PatternType) return false;
-        if (ForegroundColor != other.ForegroundColor) return false;
-        if (BackgroundColor != other.BackgroundColor) return false;
+        if (!Equals(PatternType, other.PatternType)) return false;
+        if (!Equals(ForegroundColor, other.ForegroundColor)) return false;
+        if (!Equals(BackgroundColor, other.BackgroundColor)) return false;
         return true;
     }
 

@@ -12,9 +12,9 @@ public class CellStyle : IEquatable<CellStyle>
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        if ((Font is { } && !Font.Equals(other.Font)) || (Font is null && other.Font is { })) return false;
-        if ((Fill is { } && !Fill.Equals(other.Fill)) || (Fill is null && other.Fill is { })) return false;
-        if ((Border is { } && !Border.Equals(other.Border)) || (Border is null && other.Border is { })) return false;
+        if (!Equals(Font, other.Font)) return false;
+        if (!Equals(Fill, other.Fill)) return false;
+        if (!Equals(Border, other.Border)) return false;
         return true;
     }
 
