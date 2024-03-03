@@ -49,12 +49,19 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
         stream.Write($"  <fills count=\"{styles.Fills.Count}\">\r\n");
         foreach (var fill in styles.Fills)
         {
-            stream.Write("    <fill>\r\n");
-            stream.Write($"      <patternFill patternType=\"{fill.PatternType.GetAttributeOrDefault<AliasAttribute>()!.Name}\">\r\n");
-            if (fill.ForegroundColor is { } fg) stream.Write($"        <fgColor rgb=\"{fg.ToStringArgb()}\"/>\r\n");
-            if (fill.BackgroundColor is { } bg) stream.Write($"        <bgColor rgb=\"{bg.ToStringArgb()}\"/>\r\n");
-            stream.Write("      </patternFill>\r\n");
-            stream.Write("    </fill>\r\n");
+            if (fill.ForegroundColor is null && fill.BackgroundColor is null)
+            {
+                stream.Write("    <fill/>\r\n");
+            }
+            else
+            {
+                stream.Write("    <fill>\r\n");
+                stream.Write($"      <patternFill patternType=\"{fill.PatternType.GetAttributeOrDefault<AliasAttribute>()!.Name}\">\r\n");
+                if (fill.ForegroundColor is { } fg) stream.Write($"        <fgColor rgb=\"{fg.ToStringArgb()}\"/>\r\n");
+                if (fill.BackgroundColor is { } bg) stream.Write($"        <bgColor rgb=\"{bg.ToStringArgb()}\"/>\r\n");
+                stream.Write("      </patternFill>\r\n");
+                stream.Write("    </fill>\r\n");
+            }
         }
         stream.Write("  </fills>\r\n");
 
@@ -68,15 +75,28 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
         }
         foreach (var border in styles.Borders)
         {
-            stream.Write("    <border>\r\n");
-            WriteBorderStyle(stream, "start", border.Start);
-            WriteBorderStyle(stream, "end", border.End);
-            WriteBorderStyle(stream, "top", border.Top);
-            WriteBorderStyle(stream, "bottom", border.Bottom);
-            WriteBorderStyle(stream, "diagonal", border.Diagonal);
-            WriteBorderStyle(stream, "vertical", border.Vertical);
-            WriteBorderStyle(stream, "horizontal", border.Horizontal);
-            stream.Write("    </border>\r\n");
+            if (border.Start is null &&
+                border.End is null &&
+                border.Top is null &&
+                border.Bottom is null &&
+                border.Diagonal is null &&
+                border.Vertical is null &&
+                border.Horizontal is null)
+            {
+                stream.Write("    <border/>\r\n");
+            }
+            else
+            {
+                stream.Write("    <border>\r\n");
+                WriteBorderStyle(stream, "start", border.Start);
+                WriteBorderStyle(stream, "end", border.End);
+                WriteBorderStyle(stream, "top", border.Top);
+                WriteBorderStyle(stream, "bottom", border.Bottom);
+                WriteBorderStyle(stream, "diagonal", border.Diagonal);
+                WriteBorderStyle(stream, "vertical", border.Vertical);
+                WriteBorderStyle(stream, "horizontal", border.Horizontal);
+                stream.Write("    </border>\r\n");
+            }
         }
         stream.Write("  </borders>\r\n");
 
