@@ -142,7 +142,7 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
         workbook.Worksheets.Each((worksheet, i) => zip
             .CreateEntry($"xl/worksheets/sheet{i + 1}.xml")
             .Open()
-            .Using(x => WriteWorksheet(x, worksheet, format, styles, cellstyles)));
+            .Using(x => WriteWorksheet(x, worksheet, format, cellstyles)));
         return [.. cellstyles];
     }
 
@@ -160,7 +160,7 @@ $@"  </sheets>
 ");
     }
 
-    public static void WriteWorksheet(Stream stream, Worksheet worksheet, FormatNamespace format, CellStyles? styles, List<CellStyle> cellstyles)
+    public static void WriteWorksheet(Stream stream, Worksheet worksheet, FormatNamespace format, List<CellStyle> cellstyles)
     {
         stream.Write(
 $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
