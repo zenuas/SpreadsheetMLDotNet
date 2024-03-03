@@ -2,7 +2,7 @@
 
 namespace SpreadsheetMLDotNet.Data;
 
-public class CellStyles
+public class CellStyles : IRelationshipable
 {
     public List<Font> Fonts { get; init; } = [];
     public List<Fill> Fills { get; init; } = [];

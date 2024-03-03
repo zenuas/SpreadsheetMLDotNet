@@ -69,8 +69,45 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
         stream.Write(
 $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
 <styleSheet xmlns=""{FormatNamespaces.SpreadsheetMLMains[(int)format]}"">
-</styleSheet>
 ");
+        stream.Write($"  <fonts count=\"{styles.Fonts.Count}\">\r\n");
+        foreach (var font in styles.Fonts)
+        {
+            stream.Write("    <font/>\r\n");
+        }
+        stream.Write("  </fonts>\r\n");
+
+        stream.Write($"  <fills count=\"{styles.Fills.Count}\">\r\n");
+        foreach (var fill in styles.Fills)
+        {
+            stream.Write("    <fill>\r\n");
+            stream.Write("      <patternFill patternType=\"solid\">\r\n");
+            if (fill.ForegroundColor is { } fg) stream.Write($"        <fgColor rgb=\"{fg.Name.ToUpper()}\"/>\r\n");
+            if (fill.BackgroundColor is { } bg) stream.Write($"        <bgColor rgb=\"{bg.Name.ToUpper()}\"/>\r\n");
+            stream.Write("      </patternFill>\r\n");
+            stream.Write("    </fill>\r\n");
+        }
+        stream.Write("  </fills>\r\n");
+
+        stream.Write($"  <borders count=\"{styles.Borders.Count}\">\r\n");
+        foreach (var borde in styles.Borders)
+        {
+            stream.Write("    <border/>\r\n");
+        }
+        stream.Write("  </borders>\r\n");
+
+        stream.Write($"  <cellXfs>\r\n");
+        foreach (var cellstyle in cellstyles)
+        {
+            var attr = new Dictionary<string, string>();
+            if (cellstyle.Font is { } font) { attr["fontId"] = styles.Fonts.IndexOf(font).ToString(); attr["applyFont"] = "1"; }
+            if (cellstyle.Fill is { } fill) { attr["fillId"] = styles.Fills.IndexOf(fill).ToString(); attr["applyFill"] = "1"; }
+            if (cellstyle.Border is { } border) { attr["borderId"] = styles.Borders.IndexOf(border).ToString(); attr["applyBorder"] = "1"; }
+            stream.Write($"    <xf {attr.Select(kv => $@"{kv.Key}=""{SecurityElement.Escape(kv.Value)}""").Join(" ")}/>\r\n");
+        }
+        stream.Write("  </cellXfs>\r\n");
+
+        stream.Write("</styleSheet>\r\n");
     }
 
     public static void WriteRelationships(Stream stream, Dictionary<IRelationshipable, string> reletionship_to_id, IEnumerable<(IRelationshipable Reletionship, string Type, string Path)> reletionships) => WriteRelationships(stream, reletionship_to_id, reletionships.ToArray());
@@ -93,7 +130,10 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
 
         zip.CreateEntry("xl/_rels/workbook.xml.rels")
             .Open()
-            .Using(x => WriteRelationships(x, reletionship_to_id, workbook.Worksheets.Select((w, i) => (w.Cast<IRelationshipable>(), FormatNamespaces.Worksheets[(int)format], $"worksheets/sheet{i + 1}.xml"))));
+            .Using(x => WriteRelationships(x, reletionship_to_id,
+                workbook.Worksheets.Select((w, i) => (w.Cast<IRelationshipable>(), FormatNamespaces.Worksheets[(int)format], $"worksheets/sheet{i + 1}.xml"))
+                .Then(_ => styles is { }, x => x.Concat((styles!, FormatNamespaces.Styles[(int)format], "styles.xml")))
+            ));
 
         var cellstyles = new List<CellStyle>() { new() };
         workbook.Worksheets.Each((worksheet, i) => zip
@@ -136,6 +176,17 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
             foreach (var (x, cell) in EnumerableCells(row))
             {
                 var cell_attr = new Dictionary<string, string>();
+                if (cell.Font is { } || cell.Fill is { } || cell.Border is { })
+                {
+                    var style = new CellStyle() { Font = cell.Font, Fill = cell.Fill, Border = cell.Border };
+                    var styleindex = cellstyles.IndexOf(style);
+                    if (styleindex < 0)
+                    {
+                        styleindex = cellstyles.Count;
+                        cellstyles.Add(style);
+                    }
+                    cell_attr["s"] = styleindex.ToString();
+                }
                 if (cell.Value is CellValueNull && cell_attr.Count == 0) continue;
 
                 var (cell_type, escaped_value) = GetCellValueFormat(cell.Value);
