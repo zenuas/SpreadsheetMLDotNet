@@ -29,7 +29,18 @@ public static class SpreadsheetMLExport
             .Open()
             .Using(x => WriteRelationships(x, reletionship_to_id, (workbook, FormatNamespaces.OfficeDocuments[(int)format], "xl/workbook.xml")));
 
-        var cellstyles = WriteWorkbook(zip, workbook, format, reletionship_to_id, styles);
+        zip.CreateEntry("xl/workbook.xml")
+            .Open()
+            .Using(x => WriteWorkbook(x, workbook, format, reletionship_to_id));
+
+        zip.CreateEntry("xl/_rels/workbook.xml.rels")
+            .Open()
+            .Using(x => WriteRelationships(x, reletionship_to_id,
+                workbook.Worksheets.Select((w, i) => (w.Cast<IRelationshipable>(), FormatNamespaces.Worksheets[(int)format], $"worksheets/sheet{i + 1}.xml"))
+                .Then(_ => styles is { }, x => x.Concat((styles!, FormatNamespaces.Styles[(int)format], "styles.xml")))
+            ));
+
+        var cellstyles = WriteWorkbook(zip, workbook, format);
         if (styles is { })
         {
             zip.CreateEntry("xl/styles.xml")
@@ -125,19 +136,8 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
         stream.Write($"</Relationships>\r\n");
     }
 
-    public static CellStyle[] WriteWorkbook(ZipArchive zip, Workbook workbook, FormatNamespace format, Dictionary<IRelationshipable, string> reletionship_to_id, CellStyles? styles)
+    public static CellStyle[] WriteWorkbook(ZipArchive zip, Workbook workbook, FormatNamespace format)
     {
-        zip.CreateEntry("xl/workbook.xml")
-            .Open()
-            .Using(x => WriteWorkbook(x, workbook, format, reletionship_to_id));
-
-        zip.CreateEntry("xl/_rels/workbook.xml.rels")
-            .Open()
-            .Using(x => WriteRelationships(x, reletionship_to_id,
-                workbook.Worksheets.Select((w, i) => (w.Cast<IRelationshipable>(), FormatNamespaces.Worksheets[(int)format], $"worksheets/sheet{i + 1}.xml"))
-                .Then(_ => styles is { }, x => x.Concat((styles!, FormatNamespaces.Styles[(int)format], "styles.xml")))
-            ));
-
         var cellstyles = new List<CellStyle>() { new() }; // index 0 cannot be used in Excel
         workbook.Worksheets.Each((worksheet, i) => zip
             .CreateEntry($"xl/worksheets/sheet{i + 1}.xml")
