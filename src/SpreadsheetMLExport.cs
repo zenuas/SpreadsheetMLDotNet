@@ -135,7 +135,7 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
                 .Then(_ => styles is { }, x => x.Concat((styles!, FormatNamespaces.Styles[(int)format], "styles.xml")))
             ));
 
-        var cellstyles = new List<CellStyle>() { new() };
+        var cellstyles = new List<CellStyle>() { new() }; // index 0 cannot be used in Excel
         workbook.Worksheets.Each((worksheet, i) => zip
             .CreateEntry($"xl/worksheets/sheet{i + 1}.xml")
             .Open()
