@@ -4,6 +4,7 @@ using SpreadsheetMLDotNet.Data;
 using SpreadsheetMLDotNet.Data.Styles;
 using SpreadsheetMLDotNet.Data.Workbook;
 using SpreadsheetMLDotNet.Data.Worksheets;
+using SpreadsheetMLDotNet.Extension;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -96,17 +97,32 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
         {
             stream.Write("    <fill>\r\n");
             stream.Write($"      <patternFill patternType=\"{fill.PatternType.GetAttributeOrDefault<AliasAttribute>()!.Name}\">\r\n");
-            if (fill.ForegroundColor is { } fg) stream.Write($"        <fgColor rgb=\"{fg.Name.ToUpper()}\"/>\r\n");
-            if (fill.BackgroundColor is { } bg) stream.Write($"        <bgColor rgb=\"{bg.Name.ToUpper()}\"/>\r\n");
+            if (fill.ForegroundColor is { } fg) stream.Write($"        <fgColor rgb=\"{fg.ToStringArgb()}\"/>\r\n");
+            if (fill.BackgroundColor is { } bg) stream.Write($"        <bgColor rgb=\"{bg.ToStringArgb()}\"/>\r\n");
             stream.Write("      </patternFill>\r\n");
             stream.Write("    </fill>\r\n");
         }
         stream.Write("  </fills>\r\n");
 
         stream.Write($"  <borders count=\"{styles.Borders.Count}\">\r\n");
-        foreach (var borde in styles.Borders)
+        static void WriteBorderStyle(Stream stream, string tag, BorderPropertiesType? borderpr)
         {
-            stream.Write("    <border/>\r\n");
+            if (borderpr is null) return;
+            stream.Write($"      <{tag} style=\"{borderpr.Style.GetAttributeOrDefault<AliasAttribute>()!.Name}\">\r\n");
+            if (borderpr.Color is { } color) stream.Write($"        <color rgb=\"{color.ToStringArgb()}\"/>\r\n");
+            stream.Write($"      </{tag}>\r\n");
+        }
+        foreach (var border in styles.Borders)
+        {
+            stream.Write("    <border>\r\n");
+            WriteBorderStyle(stream, "start", border.Start);
+            WriteBorderStyle(stream, "end", border.End);
+            WriteBorderStyle(stream, "top", border.Top);
+            WriteBorderStyle(stream, "bottom", border.Bottom);
+            WriteBorderStyle(stream, "diagonal", border.Diagonal);
+            WriteBorderStyle(stream, "vertical", border.Vertical);
+            WriteBorderStyle(stream, "horizontal", border.Horizontal);
+            stream.Write("    </border>\r\n");
         }
         stream.Write("  </borders>\r\n");
 
