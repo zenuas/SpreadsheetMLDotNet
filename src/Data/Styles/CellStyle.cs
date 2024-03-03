@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SpreadsheetMLDotNet.Data;
+namespace SpreadsheetMLDotNet.Data.Styles;
 
 public class CellStyle : IEquatable<CellStyle>
 {

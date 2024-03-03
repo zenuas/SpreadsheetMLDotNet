@@ -1,4 +1,4 @@
-﻿namespace SpreadsheetMLDotNet.Data;
+﻿namespace SpreadsheetMLDotNet.Data.Worksheets;
 
 public class CellValueDouble : ICellValue
 {

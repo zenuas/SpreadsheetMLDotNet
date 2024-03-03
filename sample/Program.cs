@@ -2,6 +2,8 @@
 using SpreadsheetMLDotNet;
 using SpreadsheetMLDotNet.Attributes;
 using SpreadsheetMLDotNet.Data;
+using SpreadsheetMLDotNet.Data.Styles;
+using SpreadsheetMLDotNet.Data.Workbook;
 using System;
 
 var book = new Workbook();

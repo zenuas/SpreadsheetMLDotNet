@@ -1,6 +1,6 @@
 ﻿using Mina.Attributes;
 
-namespace SpreadsheetMLDotNet.Data;
+namespace SpreadsheetMLDotNet.Data.Worksheets;
 
 public enum ErrorValues
 {

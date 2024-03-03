@@ -1,17 +1,17 @@
 ﻿using System;
 
-namespace SpreadsheetMLDotNet.Data;
+namespace SpreadsheetMLDotNet.Data.Styles;
 
-public class Font : IEquatable<Font>
+public class Border : IEquatable<Border>
 {
-    public bool Equals(Font? other)
+    public bool Equals(Border? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
         return true;
     }
 
-    public override bool Equals(object? obj) => Equals(obj as Font);
+    public override bool Equals(object? obj) => Equals(obj as Border);
 
     public override int GetHashCode()
     {

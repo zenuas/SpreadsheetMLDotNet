@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using SpreadsheetMLDotNet.Data;
+using SpreadsheetMLDotNet.Data.Workbook;
 using System.IO;
 using System.Linq;
 

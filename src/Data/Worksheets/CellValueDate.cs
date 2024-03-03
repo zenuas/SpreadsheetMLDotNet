@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SpreadsheetMLDotNet.Data;
+namespace SpreadsheetMLDotNet.Data.Worksheets;
 
 public class CellValueDate : ICellValue
 {

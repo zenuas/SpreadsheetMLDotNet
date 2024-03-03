@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SpreadsheetMLDotNet.Data;
+namespace SpreadsheetMLDotNet.Data.Worksheets;
 
 public class Row
 {

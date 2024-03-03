@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using SpreadsheetMLDotNet.Data.Worksheets;
+using System.Collections.Generic;
 
-namespace SpreadsheetMLDotNet.Data;
+namespace SpreadsheetMLDotNet.Data.Workbook;
 
 public class Workbook : IRelationshipable
 {

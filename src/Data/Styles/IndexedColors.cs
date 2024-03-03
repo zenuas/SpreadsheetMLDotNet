@@ -1,7 +1,7 @@
 ﻿using Mina.Attributes;
 using SpreadsheetMLDotNet.Attributes;
 
-namespace SpreadsheetMLDotNet.Data;
+namespace SpreadsheetMLDotNet.Data.Styles;
 
 public enum IndexedColors
 {

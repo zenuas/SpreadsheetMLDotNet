@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SpreadsheetMLDotNet.Data;
+namespace SpreadsheetMLDotNet.Data.Styles;
 
 public class CellStyles : IRelationshipable
 {

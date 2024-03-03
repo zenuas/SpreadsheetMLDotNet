@@ -1,6 +1,7 @@
-﻿using System;
+﻿using SpreadsheetMLDotNet.Data.Styles;
+using System;
 
-namespace SpreadsheetMLDotNet.Data;
+namespace SpreadsheetMLDotNet.Data.Worksheets;
 
 public class Cell
 {
