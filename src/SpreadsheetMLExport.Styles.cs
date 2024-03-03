@@ -42,7 +42,44 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
         stream.Write($"  <fonts count=\"{styles.Fonts.Count}\">\r\n");
         foreach (var font in styles.Fonts)
         {
-            stream.Write("    <font/>\r\n");
+            if (font.FontName == "" &&
+                font.CharacterSet is null &&
+                font.FontFamily is null &&
+                font.Bold is null &&
+                font.Italic is null &&
+                font.StrikeThrough is null &&
+                font.Outline is null &&
+                font.Shadow is null &&
+                font.Condense is null &&
+                font.Extend is null &&
+                font.Color is null &&
+                font.FontSize is null &&
+                font.Underline is null &&
+                font.VerticalAlignment is null &&
+                font.Scheme is null)
+            {
+                stream.Write("    <font/>\r\n");
+            }
+            else
+            {
+                stream.Write("    <font>\r\n");
+                if (font.FontName != "") stream.Write($"      <name val=\"{SecurityElement.Escape(font.FontName)}\"/>\r\n");
+                if (font.CharacterSet is { } charset) stream.Write($"      <charset val=\"{(int)charset}\"/>\r\n");
+                if (font.FontFamily is { } family) stream.Write($"      <family val=\"{(int)family}\"/>\r\n");
+                if (font.Bold is { } b) stream.Write($"      <b val=\"{(b ? "1" : "0")}\"/>\r\n");
+                if (font.Italic is { } i) stream.Write($"      <i val=\"{(i ? "1" : "0")}\"/>\r\n");
+                if (font.StrikeThrough is { } strike) stream.Write($"      <strike val=\"{(strike ? "1" : "0")}\"/>\r\n");
+                if (font.Outline is { } outline) stream.Write($"      <outline val=\"{(outline ? "1" : "0")}\"/>\r\n");
+                if (font.Shadow is { } shadow) stream.Write($"      <shadow val=\"{(shadow ? "1" : "0")}\"/>\r\n");
+                if (font.Condense is { } condense) stream.Write($"      <condense val=\"{(condense ? "1" : "0")}\"/>\r\n");
+                if (font.Extend is { } extend) stream.Write($"      <extend val=\"{(extend ? "1" : "0")}\"/>\r\n");
+                if (font.Color is { } color) stream.Write($"      <color rgb=\"{color.ToStringArgb()}\"/>\r\n");
+                if (font.FontSize is { } sz) stream.Write($"      <sz val=\"{sz}\"/>\r\n");
+                if (font.Underline is { } u) stream.Write($"      <u val=\"{u.GetAttributeOrDefault<AliasAttribute>()!.Name}\"/>\r\n");
+                if (font.VerticalAlignment is { } vertAlign) stream.Write($"      <vertAlign val=\"{vertAlign.GetAttributeOrDefault<AliasAttribute>()!.Name}\"/>\r\n");
+                if (font.Scheme is { } scheme) stream.Write($"      <scheme val=\"{scheme.GetAttributeOrDefault<AliasAttribute>()!.Name}\"/>\r\n");
+                stream.Write("    </font>\r\n");
+            }
         }
         stream.Write("  </fonts>\r\n");
 

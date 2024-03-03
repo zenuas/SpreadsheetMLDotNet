@@ -17,6 +17,7 @@ sheet.GetRow(3).Height = 32.1;
 sheet.GetCell("A4").Fill = new() { ForegroundColor = IndexedColors.Indexed2.GetAttributeOrDefault<ArgbAttribute>()!.Color };
 sheet.GetCell("F2").Fill = new() { ForegroundColor = IndexedColors.Indexed2.GetAttributeOrDefault<ArgbAttribute>()!.Color, PatternType = PatternTypes.DarkUp };
 sheet.GetCell("C2").Border = new(Borders.Top | Borders.Bottom, BorderStyles.Thin, Color.Red);
+sheet.GetCell("C2").Font = new() { Color = Color.Blue, FontSize = 22, Underline = UnderlineTypes.DoubleUnderline };
 SpreadsheetML.Export("New.Strict.xlsx", book, FormatNamespace.Strict);
 SpreadsheetML.Export("New.Transitional.xlsx", book, FormatNamespace.Transitional);
 
