@@ -55,8 +55,5 @@ public class Border : IEquatable<Border>
 
     public override bool Equals(object? obj) => Equals(obj as Border);
 
-    public override int GetHashCode()
-    {
-        return base.GetHashCode();
-    }
+    public override int GetHashCode() => HashCode.Combine(Start, End, Top, Bottom, Diagonal, Vertical, Horizontal);
 }
