@@ -109,7 +109,7 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
 
             row_attr["r"] = y.ToString();
 
-            stream.Write($"    <row {row_attr.Select(kv => $@"{kv.Key}=""{SecurityElement.Escape(kv.Value)}""").Join(" ")}>\r\n");
+            stream.Write($"    <row {AttributesToString(row_attr)}>\r\n");
             foreach (var (x, cell) in EnumerableCells(row))
             {
                 var cell_attr = new Dictionary<string, string>();
@@ -121,7 +121,7 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
                 cell_attr["t"] = cell_type.GetAttributeOrDefault<AliasAttribute>()!.Name;
 
                 stream.Write(
-$@"      <c {cell_attr.Select(kv => $@"{kv.Key}=""{SecurityElement.Escape(kv.Value)}""").Join(" ")}>
+$@"      <c {AttributesToString(cell_attr)}>
         <v>{escaped_value}</v>
       </c>
 ");
@@ -133,6 +133,8 @@ $@"  </sheetData>
 </worksheet>
 ");
     }
+
+    public static string AttributesToString(Dictionary<string, string> attr) => attr.Select(kv => $@"{kv.Key}=""{SecurityElement.Escape(kv.Value)}""").Join(" ");
 
     public static IEnumerable<(int Index, Row Row)> EnumerableRows(Worksheet worksheet)
     {

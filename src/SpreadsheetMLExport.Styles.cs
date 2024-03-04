@@ -6,7 +6,6 @@ using SpreadsheetMLDotNet.Data.Workbook;
 using SpreadsheetMLDotNet.Extension;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security;
 
 namespace SpreadsheetMLDotNet;
@@ -167,7 +166,7 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
             if (cellstyle.Border is { } border) { attr["borderId"] = styles.Borders.IndexOf(border).ToString(); attr["applyBorder"] = "1"; }
             if (cellstyle.Alignment is { } alignment) { attr["applyAlignment"] = "1"; }
 
-            var xf_attr_s = attr.Select(kv => $@"{kv.Key}=""{SecurityElement.Escape(kv.Value)}""").Join(" ");
+            var xf_attr_s = AttributesToString(attr);
             if (cellstyle.Alignment is { })
             {
                 stream.Write($"    <xf {xf_attr_s}>\r\n");
@@ -183,7 +182,7 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
                     if (align.TextRotation is { } rotation) alignment_attr["textRotation"] = rotation.ToString();
                     if (align.VerticalAlignment is { } vertical) alignment_attr["vertical"] = vertical.GetAttributeOrDefault<AliasAttribute>()!.Name;
                     if (align.WrapText is { } wrap) alignment_attr["wrapText"] = wrap ? "1" : "0";
-                    stream.Write($"      <alignment {alignment_attr.Select(kv => $@"{kv.Key}=""{SecurityElement.Escape(kv.Value)}""").Join(" ")}/>\r\n");
+                    stream.Write($"      <alignment {AttributesToString(alignment_attr)}/>\r\n");
                 }
                 stream.Write("    </xf>\r\n");
             }
