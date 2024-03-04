@@ -167,9 +167,10 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
             if (cellstyle.Border is { } border) { attr["borderId"] = styles.Borders.IndexOf(border).ToString(); attr["applyBorder"] = "1"; }
             if (cellstyle.Alignment is { } alignment) { attr["applyAlignment"] = "1"; }
 
+            var xf_attr_s = attr.Select(kv => $@"{kv.Key}=""{SecurityElement.Escape(kv.Value)}""").Join(" ");
             if (cellstyle.Alignment is { })
             {
-                stream.Write($"    <xf {attr.Select(kv => $@"{kv.Key}=""{SecurityElement.Escape(kv.Value)}""").Join(" ")}>\r\n");
+                stream.Write($"    <xf {xf_attr_s}>\r\n");
                 if (cellstyle.Alignment is { } align)
                 {
                     var alignment_attr = new Dictionary<string, string>();
@@ -188,7 +189,7 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
             }
             else
             {
-                stream.Write($"    <xf {attr.Select(kv => $@"{kv.Key}=""{SecurityElement.Escape(kv.Value)}""").Join(" ")}/>\r\n");
+                stream.Write($"    <xf {xf_attr_s}/>\r\n");
             }
         }
         stream.Write("  </cellXfs>\r\n");
