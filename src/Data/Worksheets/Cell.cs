@@ -3,7 +3,7 @@ using System;
 
 namespace SpreadsheetMLDotNet.Data.Worksheets;
 
-public class Cell
+public class Cell : IHaveStyle
 {
     public required ICellValue Value { get; set; }
     public Font? Font { get; set; }

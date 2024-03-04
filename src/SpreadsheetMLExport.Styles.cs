@@ -36,6 +36,24 @@ public static partial class SpreadsheetMLExport
             };
     }
 
+    public static bool TryAddStyleIndex(IHaveStyle have, List<CellStyle> cellstyles, out int index)
+    {
+        index = -1;
+        if (have.Font is null &&
+            have.Fill is null &&
+            have.Border is null &&
+            have.Alignment is null) return false;
+
+        var style = new CellStyle() { Font = have.Font, Fill = have.Fill, Border = have.Border, Alignment = have.Alignment };
+        index = cellstyles.IndexOf(style);
+        if (index < 0)
+        {
+            index = cellstyles.Count;
+            cellstyles.Add(style);
+        }
+        return true;
+    }
+
     public static void WriteStyles(Stream stream, CellStyles styles, CellStyle[] cellstyles, FormatNamespace format)
     {
         stream.Write(
