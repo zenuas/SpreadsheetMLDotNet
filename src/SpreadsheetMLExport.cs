@@ -113,9 +113,9 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
             foreach (var (x, cell) in EnumerableCells(row))
             {
                 var cell_attr = new Dictionary<string, string>();
-                if (cell.Font is { } || cell.Fill is { } || cell.Border is { })
+                if (cell.Font is { } || cell.Fill is { } || cell.Border is { } || cell.Alignment is { })
                 {
-                    var style = new CellStyle() { Font = cell.Font, Fill = cell.Fill, Border = cell.Border };
+                    var style = new CellStyle() { Font = cell.Font, Fill = cell.Fill, Border = cell.Border, Alignment = cell.Alignment };
                     var styleindex = cellstyles.IndexOf(style);
                     if (styleindex < 0)
                     {

@@ -18,11 +18,13 @@ public static partial class SpreadsheetMLExport
         var fonts = new HashSet<Font>();
         var fills = new HashSet<Fill>();
         var borders = new HashSet<Border>();
+        var alignments = new HashSet<Alignment>();
         foreach (var (_, _, cell) in EnumerableCells(workbook))
         {
             if (cell.Font is { } font) fonts.Add(font);
             if (cell.Fill is { } fill) fills.Add(fill);
             if (cell.Border is { } border) borders.Add(border);
+            if (cell.Alignment is { } alignment) alignments.Add(alignment);
         }
         return fonts.Count == 0 && fills.Count == 0 && borders.Count == 0 ? null
             : new()
@@ -30,6 +32,7 @@ public static partial class SpreadsheetMLExport
                 Fonts = [new(), .. fonts],        // index 0 cannot be used in Excel
                 Fills = [new(), new(), .. fills], // index 0 and 1 cannot be used in Excel
                 Borders = [new(), .. borders],    // index 0 cannot be used in Excel
+                Alignments = [.. alignments],
             };
     }
 
@@ -144,7 +147,31 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
             if (cellstyle.Font is { } font) { attr["fontId"] = styles.Fonts.IndexOf(font).ToString(); attr["applyFont"] = "1"; }
             if (cellstyle.Fill is { } fill) { attr["fillId"] = styles.Fills.IndexOf(fill).ToString(); attr["applyFill"] = "1"; }
             if (cellstyle.Border is { } border) { attr["borderId"] = styles.Borders.IndexOf(border).ToString(); attr["applyBorder"] = "1"; }
-            stream.Write($"    <xf {attr.Select(kv => $@"{kv.Key}=""{SecurityElement.Escape(kv.Value)}""").Join(" ")}/>\r\n");
+            if (cellstyle.Alignment is { } alignment) { attr["applyAlignment"] = "1"; }
+
+            if (cellstyle.Alignment is { })
+            {
+                stream.Write($"    <xf {attr.Select(kv => $@"{kv.Key}=""{SecurityElement.Escape(kv.Value)}""").Join(" ")}>\r\n");
+                if (cellstyle.Alignment is { } align)
+                {
+                    var alignment_attr = new Dictionary<string, string>();
+                    if (align.HorizontalAlignment is { } horizontal) alignment_attr["horizontal"] = horizontal.GetAttributeOrDefault<AliasAttribute>()!.Name;
+                    if (align.Indent is { } indent) alignment_attr["indent"] = indent.ToString();
+                    if (align.JustifyLastLine is { } justify) alignment_attr["justifyLastLine"] = justify ? "1" : "0";
+                    if (align.ReadingOrder is { } reading) alignment_attr["readingOrder"] = ((uint)reading).ToString();
+                    if (align.RelativeIndent is { } relative) alignment_attr["relativeIndent"] = relative.ToString();
+                    if (align.ShrinkToFit is { } shrink) alignment_attr["shrinkToFit"] = shrink ? "1" : "0";
+                    if (align.TextRotation is { } rotation) alignment_attr["textRotation"] = rotation.ToString();
+                    if (align.VerticalAlignment is { } vertical) alignment_attr["vertical"] = vertical.GetAttributeOrDefault<AliasAttribute>()!.Name;
+                    if (align.WrapText is { } wrap) alignment_attr["wrapText"] = wrap ? "1" : "0";
+                    stream.Write($"      <alignment {alignment_attr.Select(kv => $@"{kv.Key}=""{SecurityElement.Escape(kv.Value)}""").Join(" ")}/>\r\n");
+                }
+                stream.Write("    </xf>\r\n");
+            }
+            else
+            {
+                stream.Write($"    <xf {attr.Select(kv => $@"{kv.Key}=""{SecurityElement.Escape(kv.Value)}""").Join(" ")}/>\r\n");
+            }
         }
         stream.Write("  </cellXfs>\r\n");
 
