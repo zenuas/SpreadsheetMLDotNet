@@ -1,6 +1,6 @@
-﻿using Mina.Extension;
-using SpreadsheetMLDotNet.Data;
+﻿using SpreadsheetMLDotNet.Data;
 using SpreadsheetMLDotNet.Data.Styles;
+using SpreadsheetMLDotNet.Extension;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -29,12 +29,12 @@ public static partial class SpreadsheetMLExport
 
     public static void WriteStyles(Stream stream, CellStyle[] cellstyles, FormatNamespace format)
     {
-        stream.Write(
-$@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
-<styleSheet xmlns=""{FormatNamespaces.SpreadsheetMLMains[(int)format]}"">
-");
+        stream.WriteLine($"""
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="{FormatNamespaces.SpreadsheetMLMains[(int)format]}">
+""");
         List<Font> fonts = [new(), .. cellstyles.Select(x => x.Font).OfType<Font>().ToHashSet()]; // index 0 cannot be used in Excel
-        stream.Write($"  <fonts count=\"{fonts.Count}\">\r\n");
+        stream.WriteLine($"""  <fonts count="{fonts.Count}">""");
         foreach (var font in fonts)
         {
             if (font.FontName == "" &&
@@ -53,60 +53,60 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
                 font.VerticalAlignment is null &&
                 font.Scheme is null)
             {
-                stream.Write("    <font/>\r\n");
+                stream.WriteLine("    <font/>");
             }
             else
             {
-                stream.Write("    <font>\r\n");
-                if (font.FontName != "") stream.Write($"      <name val=\"{ToAttribute(font.FontName)}\"/>\r\n");
-                if (font.CharacterSet is { } charset) stream.Write($"      <charset val=\"{ToAttribute(charset)}\"/>\r\n");
-                if (font.FontFamily is { } family) stream.Write($"      <family val=\"{ToAttribute(family)}\"/>\r\n");
-                if (font.Bold is { } b) stream.Write($"      <b val=\"{ToAttribute(b)}\"/>\r\n");
-                if (font.Italic is { } i) stream.Write($"      <i val=\"{ToAttribute(i)}\"/>\r\n");
-                if (font.StrikeThrough is { } strike) stream.Write($"      <strike val=\"{ToAttribute(strike)}\"/>\r\n");
-                if (font.Outline is { } outline) stream.Write($"      <outline val=\"{ToAttribute(outline)}\"/>\r\n");
-                if (font.Shadow is { } shadow) stream.Write($"      <shadow val=\"{ToAttribute(shadow)}\"/>\r\n");
-                if (font.Condense is { } condense) stream.Write($"      <condense val=\"{ToAttribute(condense)}\"/>\r\n");
-                if (font.Extend is { } extend) stream.Write($"      <extend val=\"{ToAttribute(extend)}\"/>\r\n");
-                if (font.Color is { } color) stream.Write($"      <color rgb=\"{ToAttribute(color)}\"/>\r\n");
-                if (font.FontSize is { } sz) stream.Write($"      <sz val=\"{ToAttribute(sz)}\"/>\r\n");
-                if (font.Underline is { } u) stream.Write($"      <u val=\"{ToAttributeEnumAlias(u)}\"/>\r\n");
-                if (font.VerticalAlignment is { } vertAlign) stream.Write($"      <vertAlign val=\"{ToAttributeEnumAlias(vertAlign)}\"/>\r\n");
-                if (font.Scheme is { } scheme) stream.Write($"      <scheme val=\"{ToAttributeEnumAlias(scheme)}\"/>\r\n");
-                stream.Write("    </font>\r\n");
+                stream.WriteLine("    <font>");
+                if (font.FontName != "") stream.WriteLine($"""      <name val="{ToAttribute(font.FontName)}"/>""");
+                if (font.CharacterSet is { } charset) stream.WriteLine($"""      <charset val="{ToAttribute(charset)}"/>""");
+                if (font.FontFamily is { } family) stream.WriteLine($"""      <family val="{ToAttribute(family)}"/>""");
+                if (font.Bold is { } b) stream.WriteLine($"""      <b val="{ToAttribute(b)}"/>""");
+                if (font.Italic is { } i) stream.WriteLine($"""      <i val="{ToAttribute(i)}"/>""");
+                if (font.StrikeThrough is { } strike) stream.WriteLine($"""      <strike val="{ToAttribute(strike)}"/>""");
+                if (font.Outline is { } outline) stream.WriteLine($"""      <outline val="{ToAttribute(outline)}"/>""");
+                if (font.Shadow is { } shadow) stream.WriteLine($"""      <shadow val="{ToAttribute(shadow)}"/>""");
+                if (font.Condense is { } condense) stream.WriteLine($"""      <condense val="{ToAttribute(condense)}"/>""");
+                if (font.Extend is { } extend) stream.WriteLine($"""      <extend val="{ToAttribute(extend)}"/>""");
+                if (font.Color is { } color) stream.WriteLine($"""      <color rgb="{ToAttribute(color)}"/>""");
+                if (font.FontSize is { } sz) stream.WriteLine($"""      <sz val="{ToAttribute(sz)}"/>""");
+                if (font.Underline is { } u) stream.WriteLine($"""      <u val="{ToAttributeEnumAlias(u)}"/>""");
+                if (font.VerticalAlignment is { } vertAlign) stream.WriteLine($"""      <vertAlign val="{ToAttributeEnumAlias(vertAlign)}"/>""");
+                if (font.Scheme is { } scheme) stream.WriteLine($"""      <scheme val="{ToAttributeEnumAlias(scheme)}"/>""");
+                stream.WriteLine("    </font>");
             }
         }
-        stream.Write("  </fonts>\r\n");
+        stream.WriteLine("  </fonts>");
 
         List<Fill> fills = [new(), new(), .. cellstyles.Select(x => x.Fill).OfType<Fill>().ToHashSet()]; // index 0 and 1 cannot be used in Excel
-        stream.Write($"  <fills count=\"{fills.Count}\">\r\n");
+        stream.WriteLine($"""  <fills count="{fills.Count}">""");
         foreach (var fill in fills)
         {
             if (fill.ForegroundColor is null && fill.BackgroundColor is null)
             {
-                stream.Write("    <fill/>\r\n");
+                stream.WriteLine("    <fill/>");
             }
             else
             {
-                stream.Write("    <fill>\r\n");
-                stream.Write($"      <patternFill patternType=\"{ToAttributeEnumAlias(fill.PatternType)}\">\r\n");
-                if (fill.ForegroundColor is { } fg) stream.Write($"        <fgColor rgb=\"{ToAttribute(fg)}\"/>\r\n");
-                if (fill.BackgroundColor is { } bg) stream.Write($"        <bgColor rgb=\"{ToAttribute(bg)}\"/>\r\n");
-                stream.Write("      </patternFill>\r\n");
-                stream.Write("    </fill>\r\n");
+                stream.WriteLine("    <fill>");
+                stream.WriteLine($"""      <patternFill patternType="{ToAttributeEnumAlias(fill.PatternType)}">""");
+                if (fill.ForegroundColor is { } fg) stream.WriteLine($"""        <fgColor rgb="{ToAttribute(fg)}"/>""");
+                if (fill.BackgroundColor is { } bg) stream.WriteLine($"""        <bgColor rgb="{ToAttribute(bg)}"/>""");
+                stream.WriteLine("      </patternFill>");
+                stream.WriteLine("    </fill>");
             }
         }
-        stream.Write("  </fills>\r\n");
+        stream.WriteLine("  </fills>");
 
         List<Border> borders = [new(), .. cellstyles.Select(x => x.Border).OfType<Border>().ToHashSet()]; // index 0 cannot be used in Excel
-        stream.Write($"  <borders count=\"{borders.Count}\">\r\n");
+        stream.WriteLine($"""  <borders count="{borders.Count}">""");
         static void WriteBorderStyle(Stream stream, string tag, BorderPropertiesType? borderpr)
         {
             if (borderpr is null) return;
-            stream.Write($"      <{tag} style=\"{ToAttributeEnumAlias(borderpr.Style)}\"{(borderpr.Color is null ? "/" : "")}>\r\n");
+            stream.WriteLine($"""      <{tag} style="{ToAttributeEnumAlias(borderpr.Style)}"{(borderpr.Color is null ? "/" : "")}>""");
             if (borderpr.Color is null) return;
-            stream.Write($"        <color rgb=\"{ToAttribute(borderpr.Color.Value)}\"/>\r\n");
-            stream.Write($"      </{tag}>\r\n");
+            stream.WriteLine($"""        <color rgb="{ToAttribute(borderpr.Color.Value)}"/>""");
+            stream.WriteLine($"      </{tag}>");
         }
         foreach (var border in borders)
         {
@@ -118,11 +118,11 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
                 border.Vertical is null &&
                 border.Horizontal is null)
             {
-                stream.Write("    <border/>\r\n");
+                stream.WriteLine("    <border/>");
             }
             else
             {
-                stream.Write("    <border>\r\n");
+                stream.WriteLine("    <border>");
                 WriteBorderStyle(stream, "start", border.Start);
                 WriteBorderStyle(stream, "end", border.End);
                 WriteBorderStyle(stream, "top", border.Top);
@@ -130,12 +130,12 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
                 WriteBorderStyle(stream, "diagonal", border.Diagonal);
                 WriteBorderStyle(stream, "vertical", border.Vertical);
                 WriteBorderStyle(stream, "horizontal", border.Horizontal);
-                stream.Write("    </border>\r\n");
+                stream.WriteLine("    </border>");
             }
         }
-        stream.Write("  </borders>\r\n");
+        stream.WriteLine("  </borders>");
 
-        stream.Write("  <cellXfs>\r\n");
+        stream.WriteLine("  <cellXfs>");
         foreach (var cellstyle in cellstyles)
         {
             var attr = new Dictionary<string, string>();
@@ -147,7 +147,7 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
             var xf_attr_s = AttributesToString(attr);
             if (cellstyle.Alignment is { })
             {
-                stream.Write($"    <xf {xf_attr_s}>\r\n");
+                stream.WriteLine($"    <xf {xf_attr_s}>");
                 if (cellstyle.Alignment is { } align)
                 {
                     var alignment_attr = new Dictionary<string, string>();
@@ -160,17 +160,17 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
                     TryAddAttribute(alignment_attr, "textRotation", align.TextRotation);
                     TryAddAttributeEnumAlias(alignment_attr, "vertical", align.VerticalAlignment);
                     TryAddAttribute(alignment_attr, "wrapText", align.WrapText);
-                    stream.Write($"      <alignment {AttributesToString(alignment_attr)}/>\r\n");
+                    stream.WriteLine($"      <alignment {AttributesToString(alignment_attr)}/>");
                 }
-                stream.Write("    </xf>\r\n");
+                stream.WriteLine("    </xf>");
             }
             else
             {
-                stream.Write($"    <xf {xf_attr_s}/>\r\n");
+                stream.WriteLine($"    <xf {xf_attr_s}/>");
             }
         }
-        stream.Write("  </cellXfs>\r\n");
+        stream.WriteLine("  </cellXfs>");
 
-        stream.Write("</styleSheet>\r\n");
+        stream.WriteLine("</styleSheet>");
     }
 }

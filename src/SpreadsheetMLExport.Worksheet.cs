@@ -4,6 +4,7 @@ using SpreadsheetMLDotNet.Data;
 using SpreadsheetMLDotNet.Data.Styles;
 using SpreadsheetMLDotNet.Data.Workbook;
 using SpreadsheetMLDotNet.Data.Worksheets;
+using SpreadsheetMLDotNet.Extension;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,11 +16,11 @@ public static partial class SpreadsheetMLExport
 {
     public static void WriteWorksheet(Stream stream, Worksheet worksheet, FormatNamespace format, List<CellStyle> cellstyles)
     {
-        stream.Write(
-$@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
-<worksheet xmlns=""{FormatNamespaces.SpreadsheetMLMains[(int)format]}"">
+        stream.WriteLine($"""
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="{FormatNamespaces.SpreadsheetMLMains[(int)format]}">
   <sheetData>
-");
+""");
         foreach (var (y, row) in EnumerableRows(worksheet))
         {
             var row_attr = new Dictionary<string, string>();
@@ -28,7 +29,7 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
 
             row_attr["r"] = y.ToString();
 
-            stream.Write($"    <row {AttributesToString(row_attr)}>\r\n");
+            stream.WriteLine($"    <row {AttributesToString(row_attr)}>");
             foreach (var (x, cell) in EnumerableCells(row))
             {
                 var cell_attr = new Dictionary<string, string>();
@@ -39,18 +40,18 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
                 cell_attr["r"] = SpreadsheetML.ConvertCellAddress(y, x);
                 cell_attr["t"] = cell_type.GetAttributeOrDefault<AliasAttribute>()!.Name;
 
-                stream.Write(
-$@"      <c {AttributesToString(cell_attr)}>
+                stream.WriteLine($"""
+      <c {AttributesToString(cell_attr)}>
         <v>{escaped_value}</v>
       </c>
-");
+""");
             }
-            stream.Write($"    </row>\r\n");
+            stream.WriteLine("    </row>");
         }
-        stream.Write(
-$@"  </sheetData>
+        stream.WriteLine("""
+  </sheetData>
 </worksheet>
-");
+""");
     }
     public static IEnumerable<(int Index, Row Row)> EnumerableRows(Worksheet worksheet)
     {
