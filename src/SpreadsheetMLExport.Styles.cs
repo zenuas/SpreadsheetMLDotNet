@@ -123,8 +123,9 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
         static void WriteBorderStyle(Stream stream, string tag, BorderPropertiesType? borderpr)
         {
             if (borderpr is null) return;
-            stream.Write($"      <{tag} style=\"{ToAttributeEnumAlias(borderpr.Style)}\">\r\n");
-            if (borderpr.Color is { } color) stream.Write($"        <color rgb=\"{ToAttribute(color)}\"/>\r\n");
+            stream.Write($"      <{tag} style=\"{ToAttributeEnumAlias(borderpr.Style)}\"{(borderpr.Color is null ? "/" : "")}>\r\n");
+            if (borderpr.Color is null) return;
+            stream.Write($"        <color rgb=\"{ToAttribute(borderpr.Color.Value)}\"/>\r\n");
             stream.Write($"      </{tag}>\r\n");
         }
         foreach (var border in styles.Borders)
