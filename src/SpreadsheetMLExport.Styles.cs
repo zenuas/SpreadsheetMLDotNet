@@ -58,21 +58,21 @@ public static partial class SpreadsheetMLExport
             else
             {
                 stream.WriteLine("    <font>");
-                if (font.FontName != "") stream.WriteLine($"""      <name val="{ToAttribute(font.FontName)}"/>""");
-                if (font.CharacterSet is { } charset) stream.WriteLine($"""      <charset val="{ToAttribute(charset)}"/>""");
-                if (font.FontFamily is { } family) stream.WriteLine($"""      <family val="{ToAttribute(family)}"/>""");
-                if (font.Bold is { } b) stream.WriteLine($"""      <b val="{ToAttribute(b)}"/>""");
-                if (font.Italic is { } i) stream.WriteLine($"""      <i val="{ToAttribute(i)}"/>""");
-                if (font.StrikeThrough is { } strike) stream.WriteLine($"""      <strike val="{ToAttribute(strike)}"/>""");
-                if (font.Outline is { } outline) stream.WriteLine($"""      <outline val="{ToAttribute(outline)}"/>""");
-                if (font.Shadow is { } shadow) stream.WriteLine($"""      <shadow val="{ToAttribute(shadow)}"/>""");
-                if (font.Condense is { } condense) stream.WriteLine($"""      <condense val="{ToAttribute(condense)}"/>""");
-                if (font.Extend is { } extend) stream.WriteLine($"""      <extend val="{ToAttribute(extend)}"/>""");
-                if (font.Color is { } color) stream.WriteLine($"""      <color rgb="{ToAttribute(color)}"/>""");
-                if (font.FontSize is { } sz) stream.WriteLine($"""      <sz val="{ToAttribute(sz)}"/>""");
-                if (font.Underline is { } u) stream.WriteLine($"""      <u val="{ToAttributeEnumAlias(u)}"/>""");
-                if (font.VerticalAlignment is { } vertAlign) stream.WriteLine($"""      <vertAlign val="{ToAttributeEnumAlias(vertAlign)}"/>""");
-                if (font.Scheme is { } scheme) stream.WriteLine($"""      <scheme val="{ToAttributeEnumAlias(scheme)}"/>""");
+                TryWriteElement(stream, 6, "name", "val", font.FontName);
+                TryWriteElement(stream, 6, "charset", "val", font.CharacterSet);
+                TryWriteElement(stream, 6, "family", "val", font.FontFamily);
+                TryWriteElement(stream, 6, "b", "val", font.Bold);
+                TryWriteElement(stream, 6, "i", "val", font.Italic);
+                TryWriteElement(stream, 6, "strike", "val", font.StrikeThrough);
+                TryWriteElement(stream, 6, "outline", "val", font.Outline);
+                TryWriteElement(stream, 6, "shadow", "val", font.Shadow);
+                TryWriteElement(stream, 6, "condense", "val", font.Condense);
+                TryWriteElement(stream, 6, "extend", "val", font.Extend);
+                TryWriteElement(stream, 6, "color", "rgb", font.Color);
+                TryWriteElement(stream, 6, "sz", "val", font.FontSize);
+                TryWriteElementEnumAlias(stream, 6, "u", "val", font.Underline);
+                TryWriteElementEnumAlias(stream, 6, "vertAlign", "val", font.VerticalAlignment);
+                TryWriteElementEnumAlias(stream, 6, "scheme", "val", font.Scheme);
                 stream.WriteLine("    </font>");
             }
         }
@@ -90,8 +90,8 @@ public static partial class SpreadsheetMLExport
             {
                 stream.WriteLine("    <fill>");
                 stream.WriteLine($"""      <patternFill patternType="{ToAttributeEnumAlias(fill.PatternType)}">""");
-                if (fill.ForegroundColor is { } fg) stream.WriteLine($"""        <fgColor rgb="{ToAttribute(fg)}"/>""");
-                if (fill.BackgroundColor is { } bg) stream.WriteLine($"""        <bgColor rgb="{ToAttribute(bg)}"/>""");
+                TryWriteElement(stream, 8, "fgColor", "rgb", fill.ForegroundColor);
+                TryWriteElement(stream, 8, "bgColor", "rgb", fill.BackgroundColor);
                 stream.WriteLine("      </patternFill>");
                 stream.WriteLine("    </fill>");
             }
@@ -105,7 +105,7 @@ public static partial class SpreadsheetMLExport
             if (borderpr is null) return;
             stream.WriteLine($"""      <{tag} style="{ToAttributeEnumAlias(borderpr.Style)}"{(borderpr.Color is null ? "/" : "")}>""");
             if (borderpr.Color is null) return;
-            stream.WriteLine($"""        <color rgb="{ToAttribute(borderpr.Color.Value)}"/>""");
+            TryWriteElement(stream, 8, "color", "rgb", borderpr.Color);
             stream.WriteLine($"      </{tag}>");
         }
         foreach (var border in borders)

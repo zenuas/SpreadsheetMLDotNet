@@ -51,6 +51,7 @@ public static partial class SpreadsheetMLExport
     }
 
     public static string AttributesToString(Dictionary<string, string> attr) => attr.Select(kv => $@"{kv.Key}=""{SecurityElement.Escape(kv.Value)}""").Join(" ");
+    public static string Indent(int n) => "".PadLeft(n, ' ');
 
     public static bool TryAddAttribute(Dictionary<string, string> attr, string name, string value) => (value != "").Return(x => { if (x) attr[name] = ToAttribute(value); });
     public static bool TryAddAttribute(Dictionary<string, string> attr, string name, int? value) => (value is { }).Return(x => { if (x) attr[name] = ToAttribute(value!.Value); });
@@ -61,6 +62,16 @@ public static partial class SpreadsheetMLExport
     public static bool TryAddAttribute(Dictionary<string, string> attr, string name, DateTime? value) => (value is { }).Return(x => { if (x) attr[name] = ToAttribute(value!.Value); });
     public static bool TryAddAttribute<E>(Dictionary<string, string> attr, string name, E? value) where E : struct, Enum => (value is { }).Return(x => { if (x) attr[name] = ToAttribute(value!.Value); });
     public static bool TryAddAttributeEnumAlias<E>(Dictionary<string, string> attr, string name, E? value) where E : struct, Enum => (value is { }).Return(x => { if (x) attr[name] = ToAttributeEnumAlias(value!.Value); });
+
+    public static bool TryWriteElement(Stream stream, int indent, string tag, string attr, string value) => (value != "").Return(x => { if (x) stream.WriteLine($"""{Indent(indent)}<{tag} {attr}="{ToAttribute(value)}"/>"""); });
+    public static bool TryWriteElement(Stream stream, int indent, string tag, string attr, int? value) => (value is { }).Return(x => { if (x) stream.WriteLine($"""{Indent(indent)}<{tag} {attr}="{ToAttribute(value!.Value)}"/>"""); });
+    public static bool TryWriteElement(Stream stream, int indent, string tag, string attr, uint? value) => (value is { }).Return(x => { if (x) stream.WriteLine($"""{Indent(indent)}<{tag} {attr}="{ToAttribute(value!.Value)}"/>"""); });
+    public static bool TryWriteElement(Stream stream, int indent, string tag, string attr, double? value) => (value is { }).Return(x => { if (x) stream.WriteLine($"""{Indent(indent)}<{tag} {attr}="{ToAttribute(value!.Value)}"/>"""); });
+    public static bool TryWriteElement(Stream stream, int indent, string tag, string attr, bool? value) => (value is { }).Return(x => { if (x) stream.WriteLine($"""{Indent(indent)}<{tag} {attr}="{ToAttribute(value!.Value)}"/>"""); });
+    public static bool TryWriteElement(Stream stream, int indent, string tag, string attr, Color? value) => (value is { }).Return(x => { if (x) stream.WriteLine($"""{Indent(indent)}<{tag} {attr}="{ToAttribute(value!.Value)}"/>"""); });
+    public static bool TryWriteElement(Stream stream, int indent, string tag, string attr, DateTime? value) => (value is { }).Return(x => { if (x) stream.WriteLine($"""{Indent(indent)}<{tag} {attr}="{ToAttribute(value!.Value)}"/>"""); });
+    public static bool TryWriteElement<E>(Stream stream, int indent, string tag, string attr, E? value) where E : struct, Enum => (value is { }).Return(x => { if (x) stream.WriteLine($"""{Indent(indent)}<{tag} {attr}="{ToAttribute(value!.Value)}"/>"""); });
+    public static bool TryWriteElementEnumAlias<E>(Stream stream, int indent, string tag, string attr, E? value) where E : struct, Enum => (value is { }).Return(x => { if (x) stream.WriteLine($"""{Indent(indent)}<{tag} {attr}="{ToAttributeEnumAlias(value!.Value)}"/>"""); });
 
     public static string ToAttribute(string value) => SecurityElement.Escape(value);
     public static string ToAttribute(int value) => value.ToString();
