@@ -1,6 +1,7 @@
 ﻿using Mina.Attributes;
 using Mina.Extension;
 using SpreadsheetMLDotNet.Data;
+using SpreadsheetMLDotNet.Data.Styles;
 using SpreadsheetMLDotNet.Data.Workbook;
 using SpreadsheetMLDotNet.Extension;
 using System;
@@ -19,11 +20,12 @@ public static partial class SpreadsheetMLExport
     {
         using var zip = new ZipArchive(stream, ZipArchiveMode.Create, leave_open);
         var reletionship_to_id = new Dictionary<IRelationshipable, string>();
-        var styles = GetStyles(workbook);
+
+        var cellstyles = WriteWorkbook(zip, workbook, format);
 
         zip.CreateEntry("[Content_Types].xml")
             .Open()
-            .Using(x => WriteContentTypes(x, styles));
+            .Using(x => WriteContentTypes(x, cellstyles.Length > 1));
 
         zip.CreateEntry("_rels/.rels")
             .Open()
@@ -37,21 +39,18 @@ public static partial class SpreadsheetMLExport
             .Open()
             .Using(x => WriteRelationships(x, reletionship_to_id,
                 workbook.Worksheets.Select((w, i) => (w.Cast<IRelationshipable>(), FormatNamespaces.Worksheets[(int)format], $"worksheets/sheet{i + 1}.xml"))
-                .Then(_ => styles is { }, x => x.Concat((styles!, FormatNamespaces.Styles[(int)format], "styles.xml")))
+                .Then(_ => cellstyles.Length > 1, x => x.Concat((new CellStyles(), FormatNamespaces.Styles[(int)format], "styles.xml")))
             ));
 
-        var cellstyles = WriteWorkbook(zip, workbook, format);
-        if (styles is { })
+        if (cellstyles.Length > 1)
         {
             zip.CreateEntry("xl/styles.xml")
                 .Open()
-                .Using(x => WriteStyles(x, styles, cellstyles, format));
+                .Using(x => WriteStyles(x, cellstyles, format));
         }
     }
 
     public static string AttributesToString(Dictionary<string, string> attr) => attr.Select(kv => $@"{kv.Key}=""{SecurityElement.Escape(kv.Value)}""").Join(" ");
-
-    public static string AddRelationship(Dictionary<IRelationshipable, string> reletionship_to_id, IRelationshipable reletionship) => reletionship_to_id.GetOrNew(reletionship, () => $"rId{reletionship_to_id.Count + 1}");
 
     public static bool TryAddAttribute(Dictionary<string, string> attr, string name, string value) => (value != "").Return(x => { if (x) attr[name] = ToAttribute(value); });
     public static bool TryAddAttribute(Dictionary<string, string> attr, string name, int? value) => (value is { }).Return(x => { if (x) attr[name] = ToAttribute(value!.Value); });

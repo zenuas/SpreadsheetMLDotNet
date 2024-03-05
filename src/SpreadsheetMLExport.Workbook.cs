@@ -11,13 +11,13 @@ namespace SpreadsheetMLDotNet;
 
 public static partial class SpreadsheetMLExport
 {
-    public static void WriteContentTypes(Stream stream, CellStyles? styles) => stream.Write(
+    public static void WriteContentTypes(Stream stream, bool styles_exists) => stream.Write(
 $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
 <Types xmlns=""http://schemas.openxmlformats.org/package/2006/content-types"">
   <Default Extension=""rels"" ContentType=""application/vnd.openxmlformats-package.relationships+xml""/>
   <Default Extension=""xml"" ContentType=""application/xml""/>
   <Override PartName=""/xl/workbook.xml"" ContentType=""application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml""/>
-{(styles is null ? "" : "  <Override PartName=\"/xl/styles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml\"/>\r\n")}</Types>
+{(styles_exists ? "  <Override PartName=\"/xl/styles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml\"/>\r\n" : "")}</Types>
 ");
 
     public static void WriteRelationships(Stream stream, Dictionary<IRelationshipable, string> reletionship_to_id, IEnumerable<(IRelationshipable Reletionship, string Type, string Path)> reletionships) => WriteRelationships(stream, reletionship_to_id, reletionships.ToArray());
@@ -55,4 +55,6 @@ $@"  </sheets>
 </workbook>
 ");
     }
+
+    public static string AddRelationship(Dictionary<IRelationshipable, string> reletionship_to_id, IRelationshipable reletionship) => reletionship_to_id.GetOrNew(reletionship, () => $"rId{reletionship_to_id.Count + 1}");
 }

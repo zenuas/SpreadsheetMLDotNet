@@ -1,37 +1,14 @@
 ﻿using Mina.Extension;
 using SpreadsheetMLDotNet.Data;
 using SpreadsheetMLDotNet.Data.Styles;
-using SpreadsheetMLDotNet.Data.Workbook;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace SpreadsheetMLDotNet;
 
 public static partial class SpreadsheetMLExport
 {
-    public static CellStyles? GetStyles(Workbook workbook)
-    {
-        var fonts = new HashSet<Font>();
-        var fills = new HashSet<Fill>();
-        var borders = new HashSet<Border>();
-        var alignments = new HashSet<Alignment>();
-        foreach (var (_, _, cell) in EnumerableCells(workbook))
-        {
-            if (cell.Font is { } font) fonts.Add(font);
-            if (cell.Fill is { } fill) fills.Add(fill);
-            if (cell.Border is { } border) borders.Add(border);
-            if (cell.Alignment is { } alignment) alignments.Add(alignment);
-        }
-        return fonts.Count == 0 && fills.Count == 0 && borders.Count == 0 ? null
-            : new()
-            {
-                Fonts = [new(), .. fonts],        // index 0 cannot be used in Excel
-                Fills = [new(), new(), .. fills], // index 0 and 1 cannot be used in Excel
-                Borders = [new(), .. borders],    // index 0 cannot be used in Excel
-                Alignments = [.. alignments],
-            };
-    }
-
     public static bool TryAddStyleIndex(IHaveStyle have, List<CellStyle> cellstyles, out int index)
     {
         index = -1;
@@ -50,14 +27,15 @@ public static partial class SpreadsheetMLExport
         return true;
     }
 
-    public static void WriteStyles(Stream stream, CellStyles styles, CellStyle[] cellstyles, FormatNamespace format)
+    public static void WriteStyles(Stream stream, CellStyle[] cellstyles, FormatNamespace format)
     {
         stream.Write(
 $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
 <styleSheet xmlns=""{FormatNamespaces.SpreadsheetMLMains[(int)format]}"">
 ");
-        stream.Write($"  <fonts count=\"{styles.Fonts.Count}\">\r\n");
-        foreach (var font in styles.Fonts)
+        List<Font> fonts = [new(), .. cellstyles.Select(x => x.Font).OfType<Font>().ToHashSet()]; // index 0 cannot be used in Excel
+        stream.Write($"  <fonts count=\"{fonts.Count}\">\r\n");
+        foreach (var font in fonts)
         {
             if (font.FontName == "" &&
                 font.CharacterSet is null &&
@@ -100,8 +78,9 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
         }
         stream.Write("  </fonts>\r\n");
 
-        stream.Write($"  <fills count=\"{styles.Fills.Count}\">\r\n");
-        foreach (var fill in styles.Fills)
+        List<Fill> fills = [new(), new(), .. cellstyles.Select(x => x.Fill).OfType<Fill>().ToHashSet()]; // index 0 and 1 cannot be used in Excel
+        stream.Write($"  <fills count=\"{fills.Count}\">\r\n");
+        foreach (var fill in fills)
         {
             if (fill.ForegroundColor is null && fill.BackgroundColor is null)
             {
@@ -119,7 +98,8 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
         }
         stream.Write("  </fills>\r\n");
 
-        stream.Write($"  <borders count=\"{styles.Borders.Count}\">\r\n");
+        List<Border> borders = [new(), .. cellstyles.Select(x => x.Border).OfType<Border>().ToHashSet()]; // index 0 cannot be used in Excel
+        stream.Write($"  <borders count=\"{borders.Count}\">\r\n");
         static void WriteBorderStyle(Stream stream, string tag, BorderPropertiesType? borderpr)
         {
             if (borderpr is null) return;
@@ -128,7 +108,7 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
             stream.Write($"        <color rgb=\"{ToAttribute(borderpr.Color.Value)}\"/>\r\n");
             stream.Write($"      </{tag}>\r\n");
         }
-        foreach (var border in styles.Borders)
+        foreach (var border in borders)
         {
             if (border.Start is null &&
                 border.End is null &&
@@ -159,9 +139,9 @@ $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
         foreach (var cellstyle in cellstyles)
         {
             var attr = new Dictionary<string, string>();
-            if (cellstyle.Font is { } font) { attr["fontId"] = styles.Fonts.IndexOf(font).ToString(); attr["applyFont"] = "1"; }
-            if (cellstyle.Fill is { } fill) { attr["fillId"] = styles.Fills.IndexOf(fill).ToString(); attr["applyFill"] = "1"; }
-            if (cellstyle.Border is { } border) { attr["borderId"] = styles.Borders.IndexOf(border).ToString(); attr["applyBorder"] = "1"; }
+            if (cellstyle.Font is { } font) { attr["fontId"] = fonts.IndexOf(font).ToString(); attr["applyFont"] = "1"; }
+            if (cellstyle.Fill is { } fill) { attr["fillId"] = fills.IndexOf(fill).ToString(); attr["applyFill"] = "1"; }
+            if (cellstyle.Border is { } border) { attr["borderId"] = borders.IndexOf(border).ToString(); attr["applyBorder"] = "1"; }
             if (cellstyle.Alignment is { }) { attr["applyAlignment"] = "1"; }
 
             var xf_attr_s = AttributesToString(attr);
