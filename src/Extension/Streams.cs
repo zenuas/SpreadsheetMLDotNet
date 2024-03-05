@@ -1,15 +1,15 @@
-﻿using System.IO;
-using System.Text;
+﻿using Mina.Extension;
+using System.IO;
 
 namespace SpreadsheetMLDotNet.Extension;
 
 public static class Streams
 {
-    public static void WriteLine(this Stream self) => self.Write(Encoding.UTF8.GetBytes("\r\n"));
+    public static void WriteLine(this Stream self) => self.Write([(byte)'\r', (byte)'\n']);
 
     public static void WriteLine(this Stream self, string s)
     {
-        self.Write(Encoding.UTF8.GetBytes(s));
+        self.Write(s);
         self.WriteLine();
     }
 }
