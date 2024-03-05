@@ -175,6 +175,7 @@ $@"  </sheetData>
         CellValueError x => (CellTypes.Error, x.Value.GetAttributeOrDefault<AliasAttribute>()!.Name),
         CellValueDouble x => (CellTypes.Number, x.Value.ToString()),
         CellValueString x => (CellTypes.String, SecurityElement.Escape(x.Value)),
+        CellValueNull => (CellTypes.String, ""),
         _ => throw new ArgumentOutOfRangeException(nameof(value)),
     };
 
