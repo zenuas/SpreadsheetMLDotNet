@@ -30,7 +30,7 @@ public static partial class SpreadsheetMLExport
 
             row_attr["r"] = y.ToString();
 
-            stream.WriteLine($"    <row {AttributesToString(row_attr)}>");
+            stream.WriteLine($"    <row {AttributesToString(row_attr)}{(row.Cells.Count == 0 ? "/" : "")}>");
             foreach (var (x, cell) in EnumerableCells(row))
             {
                 var cell_attr = new Dictionary<string, string>();
@@ -47,7 +47,7 @@ public static partial class SpreadsheetMLExport
       </c>
 """);
             }
-            stream.WriteLine("    </row>");
+            if (row.Cells.Count > 0) stream.WriteLine("    </row>");
         }
         stream.WriteLine("""
   </sheetData>
