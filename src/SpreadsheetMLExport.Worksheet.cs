@@ -25,6 +25,7 @@ public static partial class SpreadsheetMLExport
         {
             var row_attr = new Dictionary<string, string>();
             if (TryAddAttribute(row_attr, "ht", row.Height)) row_attr["customHeight"] = "1";
+            if (TryAddStyleIndex(row, cellstyles, out var row_styleindex)) { row_attr["s"] = row_styleindex.ToString(); row_attr["customFormat"] = "1"; }
             if (row.Cells.Count == 0 && row_attr.Count == 0) continue;
 
             row_attr["r"] = y.ToString();
@@ -33,7 +34,7 @@ public static partial class SpreadsheetMLExport
             foreach (var (x, cell) in EnumerableCells(row))
             {
                 var cell_attr = new Dictionary<string, string>();
-                if (TryAddStyleIndex(cell, cellstyles, out var styleindex)) cell_attr["s"] = styleindex.ToString();
+                if (TryAddStyleIndex(cell, cellstyles, out var cell_styleindex)) cell_attr["s"] = cell_styleindex.ToString();
                 if (cell.Value is CellValueNull && cell_attr.Count == 0) continue;
 
                 var (cell_type, escaped_value) = GetCellValueFormat(cell.Value);
