@@ -16,9 +16,13 @@ public class Row : IHaveStyle
     public Border? Border { get; set; }
     public Alignment? Alignment { get; set; }
 
-    public Cell GetCell(int index) => index < StartCellIndex || index > StartCellIndex + Cells.Count - 1
-        ? new Cell { Value = CellValueNull.Instance }.Return(x => SetCell(index, x))
+    public Cell? TryGetCell(int index) => index < StartCellIndex || index > StartCellIndex + Cells.Count - 1
+        ? null
         : Cells[index - StartCellIndex];
+
+    public Cell GetCell(int index) => TryGetCell(index) is { } cell
+        ? cell
+        : new Cell { Value = CellValueNull.Instance }.Return(x => SetCell(index, x));
 
     public void SetCell(int index, Cell cell)
     {

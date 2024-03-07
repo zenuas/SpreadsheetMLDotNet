@@ -11,9 +11,13 @@ public class Worksheet : IRelationshipable
     public int StartRowIndex { get; set; } = 0;
     public List<Row> Rows { get; init; } = [];
 
-    public Row GetRow(int index) => index < StartRowIndex || index > StartRowIndex + Rows.Count - 1
-        ? new Row().Return(x => SetRow(index, x))
+    public Row? TryGetRow(int index) => index < StartRowIndex || index > StartRowIndex + Rows.Count - 1
+        ? null
         : Rows[index - StartRowIndex];
+
+    public Row GetRow(int index) => TryGetRow(index) is { } row
+        ? row
+        : new Row().Return(x => SetRow(index, x));
 
     public void SetRow(int index, Row row)
     {
