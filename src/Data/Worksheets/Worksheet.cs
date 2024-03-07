@@ -10,6 +10,8 @@ public class Worksheet : IRelationshipable
     public required string Name { get; set; }
     public int StartRowIndex { get; set; } = 0;
     public List<Row> Rows { get; init; } = [];
+    public int StartColumnIndex { get; set; } = 0;
+    public List<Column> Columns { get; init; } = [];
 
     public Row? TryGetRow(int index) => index < StartRowIndex || index > StartRowIndex + Rows.Count - 1
         ? null
@@ -37,6 +39,39 @@ public class Worksheet : IRelationshipable
         else
         {
             Rows[index - StartRowIndex] = row;
+        }
+    }
+
+    public Column? TryGetColumn(string col) => TryGetColumn(SpreadsheetML.ConvertColumnNameToIndex(col));
+
+    public Column? TryGetColumn(int index) => index < StartColumnIndex || index > StartColumnIndex + Columns.Count - 1
+        ? null
+        : Columns[index - StartColumnIndex];
+
+    public Column GetColumn(string col) => GetColumn(SpreadsheetML.ConvertColumnNameToIndex(col));
+
+    public Column GetColumn(int index) => TryGetColumn(index) is { } row
+        ? row
+        : new Column().Return(x => SetColumn(index, x));
+
+    public void SetColumn(int index, Column column)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThan(index, 1);
+
+        if (StartColumnIndex < 1 || index < StartColumnIndex)
+        {
+            StartColumnIndex = index;
+            if (StartColumnIndex >= 1 && index + 1 < StartColumnIndex) Columns.InsertRange(0, Lists.Repeat(0).Take(StartColumnIndex - index - 1).Select(_ => new Column()));
+            Columns.Insert(0, column);
+        }
+        else if (index > StartColumnIndex + Columns.Count - 1)
+        {
+            if (index > StartColumnIndex + Columns.Count - 1) Columns.AddRange(Lists.Repeat(0).Take(index - StartColumnIndex - Columns.Count).Select(_ => new Column()));
+            Columns.Add(column);
+        }
+        else
+        {
+            Columns[index - StartColumnIndex] = column;
         }
     }
 
