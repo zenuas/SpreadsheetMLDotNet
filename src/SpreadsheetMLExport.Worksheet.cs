@@ -19,8 +19,24 @@ public static partial class SpreadsheetMLExport
         stream.WriteLine($"""
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <worksheet xmlns="{FormatNamespaces.SpreadsheetMLMains[(int)format]}">
-  <sheetData>
 """);
+        if (worksheet.Columns.Count > 0)
+        {
+            stream.WriteLine("  <cols>");
+            foreach (var (x, col) in EnumerableColumns(worksheet))
+            {
+                var col_attr = new Dictionary<string, string>();
+                col_attr["min"] = col_attr["max"] = x.ToString();
+                TryAddAttribute(col_attr, "width", col.Width);
+                TryAddAttribute(col_attr, "bestFit", col.BestFitColumnWidth);
+                if (TryAddStyleIndex(col, cellstyles, out var col_styleindex)) col_attr["style"] = col_styleindex.ToString();
+
+                stream.WriteLine($"    <col {AttributesToString(col_attr)}/>");
+            }
+            stream.WriteLine("  </cols>");
+        }
+
+        stream.WriteLine("  <sheetData>");
         foreach (var (y, row) in EnumerableRows(worksheet))
         {
             var row_attr = new Dictionary<string, string>();
@@ -54,6 +70,7 @@ public static partial class SpreadsheetMLExport
 </worksheet>
 """);
     }
+
     public static IEnumerable<(int Index, Row Row)> EnumerableRows(Worksheet worksheet)
     {
         for (var y = 0; y < worksheet.Rows.Count; y++)
@@ -81,6 +98,14 @@ public static partial class SpreadsheetMLExport
                     yield return (y, x, cell);
                 }
             }
+        }
+    }
+
+    public static IEnumerable<(int Index, Column Column)> EnumerableColumns(Worksheet worksheet)
+    {
+        for (var x = 0; x < worksheet.Columns.Count; x++)
+        {
+            yield return (x + worksheet.StartColumnIndex, worksheet.Columns[x]);
         }
     }
 

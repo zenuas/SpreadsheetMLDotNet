@@ -15,6 +15,8 @@ sheet.SetCell("F2", "xF2");
 sheet.SetCell("A4", "xA4");
 sheet.GetRow(3).Height = 32.1;
 sheet.GetRow(3).Fill = new() { ForegroundColor = Color.Gray };
+sheet.GetColumn("F").Width = 32.1;
+sheet.GetColumn("F").Fill = new() { ForegroundColor = Color.LightCyan };
 sheet.GetCell("A4").Fill = new() { ForegroundColor = IndexedColors.Indexed2.GetAttributeOrDefault<ArgbAttribute>()!.Color };
 sheet.GetCell("F2").Fill = new() { ForegroundColor = IndexedColors.Indexed2.GetAttributeOrDefault<ArgbAttribute>()!.Color, PatternType = PatternTypes.DarkUp };
 sheet.GetCell("C2").Border = new(Borders.Top | Borders.Bottom, BorderStyles.Thin, Color.Red);
