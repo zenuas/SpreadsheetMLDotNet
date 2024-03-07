@@ -40,6 +40,10 @@ public class Worksheet : IRelationshipable
         }
     }
 
+    public Cell? TryGetCell(string address) => SpreadsheetML.ConvertCellAddress(address).To(x => TryGetCell(x.Row, x.Column));
+
+    public Cell? TryGetCell(int row, int column) => TryGetRow(row)?.TryGetCell(column);
+
     public Cell GetCell(string address) => SpreadsheetML.ConvertCellAddress(address).To(x => GetCell(x.Row, x.Column));
 
     public Cell GetCell(int row, int column) => GetRow(row).GetCell(column);
