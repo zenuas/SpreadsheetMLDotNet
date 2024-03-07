@@ -36,7 +36,7 @@ public static partial class SpreadsheetMLExport
             stream.WriteLine("  </cols>");
         }
 
-        stream.WriteLine("  <sheetData>");
+        stream.WriteLine($"  <sheetData{(worksheet.Rows.Count == 0 ? "/" : "")}>");
         foreach (var (y, row) in EnumerableRows(worksheet))
         {
             var row_attr = new Dictionary<string, string>();
@@ -65,10 +65,8 @@ public static partial class SpreadsheetMLExport
             }
             if (row.Cells.Count > 0) stream.WriteLine("    </row>");
         }
-        stream.WriteLine("""
-  </sheetData>
-</worksheet>
-""");
+        if (worksheet.Rows.Count > 0) stream.WriteLine("  </sheetData>");
+        stream.WriteLine("</worksheet>");
     }
 
     public static IEnumerable<(int Index, Row Row)> EnumerableRows(Worksheet worksheet)
