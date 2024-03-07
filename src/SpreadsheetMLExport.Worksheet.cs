@@ -57,11 +57,12 @@ public static partial class SpreadsheetMLExport
                 cell_attr["r"] = SpreadsheetML.ConvertCellAddress(y, x);
                 cell_attr["t"] = cell_type.GetAttributeOrDefault<AliasAttribute>()!.Name;
 
-                stream.WriteLine($"""
-      <c {AttributesToString(cell_attr)}>
-        <v>{escaped_value}</v>
-      </c>
-""");
+                stream.WriteLine($"      <c {AttributesToString(cell_attr)}{(escaped_value == "" ? "/" : "")}>");
+                if (escaped_value != "")
+                {
+                    stream.WriteLine($"        <v>{escaped_value}</v>");
+                    stream.WriteLine("      </c>");
+                }
             }
             if (row.Cells.Count > 0) stream.WriteLine("    </row>");
         }
