@@ -27,8 +27,8 @@ public static partial class SpreadsheetMLExport
             {
                 var col_attr = new Dictionary<string, string>();
                 col_attr["min"] = col_attr["max"] = x.ToString();
-                TryAddAttribute(col_attr, "width", col.Width);
-                TryAddAttribute(col_attr, "bestFit", col.BestFitColumnWidth);
+                if (TryAddAttribute(col_attr, "width", col.Width)) col_attr["customWidth"] = "1";
+                if (TryAddAttribute(col_attr, "bestFit", col.BestFitColumnWidth)) col_attr["customWidth"] = "1";
                 if (TryAddStyleIndex(col, cellstyles, out var col_styleindex)) col_attr["style"] = col_styleindex.ToString();
 
                 stream.WriteLine($"    <col {AttributesToString(col_attr)}/>");
