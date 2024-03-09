@@ -18,6 +18,13 @@ public class SpreadsheetMLCalculationTest
         Assert.Equal<(TokenTypes, string)>(SpreadsheetMLCalculation.ParseTokens("\"123\"\" abc\""), [(TokenTypes.String, "123\" abc")]);
         Assert.Equal<(TokenTypes, string)>(SpreadsheetMLCalculation.ParseTokens("a+1"), [(TokenTypes.Token, "a"), (TokenTypes.Operator, "+"), (TokenTypes.Number, "1")]);
         Assert.Equal<(TokenTypes, string)>(SpreadsheetMLCalculation.ParseTokens("a + 1"), [(TokenTypes.Token, "a"), (TokenTypes.Operator, "+"), (TokenTypes.Number, "1")]);
+        Assert.Equal<(TokenTypes, string)>(SpreadsheetMLCalculation.ParseTokens("a<=1>=b"), [
+            (TokenTypes.Token, "a"),
+            (TokenTypes.Operator, "<="),
+            (TokenTypes.Number, "1"),
+            (TokenTypes.Operator, ">="),
+            (TokenTypes.Token, "b")
+        ]);
         Assert.Equal<(TokenTypes, string)>(SpreadsheetMLCalculation.ParseTokens("(abc-123+\"xyz\")"), [
             (TokenTypes.LeftParenthesis, "("),
             (TokenTypes.Token, "abc"),

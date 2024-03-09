@@ -113,7 +113,7 @@ public static class SpreadsheetMLCalculation
                     {
                         if ((c == '<' || c == '>') && i + 1 < formula.Length && formula[i + 1] == '=')
                         {
-                            tokens.Add((TokenTypes.Operator, formula[i..(i + 1)]));
+                            tokens.Add((TokenTypes.Operator, formula[i..(i + 2)]));
                             i++;
                         }
                         else
