@@ -1,6 +1,8 @@
 ﻿using Mina.Extension;
 using SpreadsheetMLDotNet.Data;
 using SpreadsheetMLDotNet.Data.Workbook;
+using SpreadsheetMLDotNet.Data.Worksheets;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -12,9 +14,13 @@ public static class SpreadsheetML
 
     public static WorkbookReader CreateWorkbookReader(Stream stream, bool leave_open = false) => SpreadsheetMLReader.OpenReader(stream, leave_open);
 
-    public static void Export(string export_path, Workbook workbook, FormatNamespace format = FormatNamespace.Strict) => File.Create(export_path).Using(x => Export(x, workbook, false, format));
+    public static void Export(string export_path, Workbook workbook, FormatNamespace format = FormatNamespace.Strict) => Export(export_path, workbook, SpreadsheetMLCalculation.Calculation(workbook), format);
 
-    public static void Export(Stream stream, Workbook workbook, bool leave_open = false, FormatNamespace format = FormatNamespace.Strict) => SpreadsheetMLExport.DoExport(stream, workbook, leave_open, format);
+    public static void Export(string export_path, Workbook workbook, Dictionary<string, WorksheetCalculation> calc, FormatNamespace format = FormatNamespace.Strict) => File.Create(export_path).Using(x => Export(x, workbook, calc, false, format));
+
+    public static void Export(Stream stream, Workbook workbook, bool leave_open = false, FormatNamespace format = FormatNamespace.Strict) => Export(stream, workbook, SpreadsheetMLCalculation.Calculation(workbook), leave_open, format);
+
+    public static void Export(Stream stream, Workbook workbook, Dictionary<string, WorksheetCalculation> calc, bool leave_open = false, FormatNamespace format = FormatNamespace.Strict) => SpreadsheetMLExport.DoExport(stream, workbook, calc, leave_open, format);
 
 
     public static (int Row, int Column) ConvertCellAddress(string cell)

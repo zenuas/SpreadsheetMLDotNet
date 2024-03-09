@@ -3,6 +3,7 @@ using Mina.Extension;
 using SpreadsheetMLDotNet.Data;
 using SpreadsheetMLDotNet.Data.Styles;
 using SpreadsheetMLDotNet.Data.Workbook;
+using SpreadsheetMLDotNet.Data.Worksheets;
 using SpreadsheetMLDotNet.Extension;
 using System;
 using System.Collections.Generic;
@@ -16,12 +17,12 @@ namespace SpreadsheetMLDotNet;
 
 public static partial class SpreadsheetMLExport
 {
-    public static void DoExport(Stream stream, Workbook workbook, bool leave_open, FormatNamespace format)
+    public static void DoExport(Stream stream, Workbook workbook, Dictionary<string, WorksheetCalculation> calc, bool leave_open, FormatNamespace format)
     {
         using var zip = new ZipArchive(stream, ZipArchiveMode.Create, leave_open);
         var reletionship_to_id = new Dictionary<IRelationshipable, string>();
 
-        var cellstyles = WriteWorkbook(zip, workbook, format);
+        var cellstyles = WriteWorkbook(zip, workbook, format, calc);
 
         zip.CreateEntry("[Content_Types].xml")
             .Open()

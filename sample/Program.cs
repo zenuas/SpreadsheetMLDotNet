@@ -4,6 +4,7 @@ using SpreadsheetMLDotNet.Attributes;
 using SpreadsheetMLDotNet.Data;
 using SpreadsheetMLDotNet.Data.Styles;
 using SpreadsheetMLDotNet.Data.Workbook;
+using SpreadsheetMLDotNet.Data.Worksheets;
 using System;
 using System.Drawing;
 
@@ -14,6 +15,7 @@ sheet.SetCell("D2", "xD2");
 sheet.SetCell("F2", "xF2");
 sheet.SetCell("A4", "xA4");
 sheet.SetCell("A6", 1_234_567);
+sheet.SetCell("B6", new Cell { Value = new CellFormula { Formula = "A6+1" } });
 sheet.SetCell("A7", new DateTime(2000, 1, 23, 0, 0, 0));
 sheet.SetCell("A8", new DateTime(2000, 1, 23, 4, 56, 7, 89));
 sheet.GetRow(3).Height = 32.1;

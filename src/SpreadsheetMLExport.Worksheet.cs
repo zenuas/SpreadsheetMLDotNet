@@ -14,7 +14,7 @@ namespace SpreadsheetMLDotNet;
 
 public static partial class SpreadsheetMLExport
 {
-    public static void WriteWorksheet(Stream stream, Worksheet worksheet, FormatNamespace format, List<CellStyle> cellstyles)
+    public static void WriteWorksheet(Stream stream, Worksheet worksheet, FormatNamespace format, List<CellStyle> cellstyles, Dictionary<string, WorksheetCalculation> calc)
     {
         stream.WriteLine($"""
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -53,14 +53,15 @@ public static partial class SpreadsheetMLExport
                 if (TryAddStyleIndex(cell, cellstyles, out var cell_styleindex)) cell_attr["s"] = cell_styleindex.ToString();
                 if (cell.Value is CellValueNull && cell_attr.Count == 0) continue;
 
-                var (cell_type, escaped_value) = GetCellValueFormat(cell.Value);
-                cell_attr["r"] = SpreadsheetML.ConvertCellAddress(y, x);
+                var addr = cell_attr["r"] = SpreadsheetML.ConvertCellAddress(y, x);
+                var (cell_type, escaped_value) = GetCellValueFormat(cell.Value is CellFormula && calc.TryGetValue(worksheet.Name, out var xc) && xc.Calculation.TryGetValue(addr, out var xv) ? xv! : cell.Value);
                 cell_attr["t"] = cell_type.GetAttributeOrDefault<AliasAttribute>()!.Name;
 
-                stream.WriteLine($"      <c {AttributesToString(cell_attr)}{(escaped_value == "" ? "/" : "")}>");
-                if (escaped_value != "")
+                stream.WriteLine($"      <c {AttributesToString(cell_attr)}{(escaped_value == "" && cell.Value is not CellFormula ? "/" : "")}>");
+                if (escaped_value != "" || cell.Value is CellFormula)
                 {
-                    stream.WriteLine($"        <v>{escaped_value}</v>");
+                    if (cell.Value is CellFormula formula) stream.WriteLine($"        <f>{formula.Formula}</f>");
+                    if (escaped_value != "") stream.WriteLine($"        <v>{escaped_value}</v>");
                     stream.WriteLine("      </c>");
                 }
             }
@@ -116,6 +117,7 @@ public static partial class SpreadsheetMLExport
         CellValueDouble x => (CellTypes.Number, x.Value.ToString()),
         CellValueString x => (CellTypes.String, SecurityElement.Escape(x.Value)),
         CellValueNull => (CellTypes.String, ""),
+        CellFormula => (CellTypes.String, ""),
         _ => throw new ArgumentOutOfRangeException(nameof(value)),
     };
 }

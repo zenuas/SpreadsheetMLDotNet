@@ -2,6 +2,7 @@
 using SpreadsheetMLDotNet.Data;
 using SpreadsheetMLDotNet.Data.Styles;
 using SpreadsheetMLDotNet.Data.Workbook;
+using SpreadsheetMLDotNet.Data.Worksheets;
 using SpreadsheetMLDotNet.Extension;
 using System.Collections.Generic;
 using System.IO;
@@ -33,13 +34,13 @@ public static partial class SpreadsheetMLExport
         stream.WriteLine("</Relationships>");
     }
 
-    public static CellStyle[] WriteWorkbook(ZipArchive zip, Workbook workbook, FormatNamespace format)
+    public static CellStyle[] WriteWorkbook(ZipArchive zip, Workbook workbook, FormatNamespace format, Dictionary<string, WorksheetCalculation> calc)
     {
         var cellstyles = new List<CellStyle>() { new() }; // index 0 cannot be used in Excel
         workbook.Worksheets.Each((worksheet, i) => zip
             .CreateEntry($"xl/worksheets/sheet{i + 1}.xml")
             .Open()
-            .Using(x => WriteWorksheet(x, worksheet, format, cellstyles)));
+            .Using(x => WriteWorksheet(x, worksheet, format, cellstyles, calc)));
         return [.. cellstyles];
     }
 
