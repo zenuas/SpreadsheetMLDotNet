@@ -2,7 +2,7 @@
 
 namespace SpreadsheetMLDotNet.Test;
 
-public class ZipFormatTest
+public class SpreadsheetMLTest
 {
     [Fact]
     public void ConvertColumnNameToIndexTest()

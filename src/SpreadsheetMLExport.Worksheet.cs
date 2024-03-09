@@ -87,16 +87,24 @@ public static partial class SpreadsheetMLExport
         }
     }
 
-    public static IEnumerable<(int Row, int Column, Cell Cell)> EnumerableCells(Workbook workbook)
+    public static IEnumerable<(int Row, int Column, Cell Cell, Worksheet Worksheet)> EnumerableCells(Workbook workbook)
     {
         foreach (var worksheet in workbook.Worksheets)
         {
-            foreach (var (y, row) in EnumerableRows(worksheet))
+            foreach (var (y, x, cell) in EnumerableCells(worksheet))
             {
-                foreach (var (x, cell) in EnumerableCells(row))
-                {
-                    yield return (y, x, cell);
-                }
+                yield return (y, x, cell, worksheet);
+            }
+        }
+    }
+
+    public static IEnumerable<(int Row, int Column, Cell Cell)> EnumerableCells(Worksheet worksheet)
+    {
+        foreach (var (y, row) in EnumerableRows(worksheet))
+        {
+            foreach (var (x, cell) in EnumerableCells(row))
+            {
+                yield return (y, x, cell);
             }
         }
     }
