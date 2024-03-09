@@ -54,13 +54,13 @@ public static partial class SpreadsheetMLExport
                 if (cell.Value is CellValueNull && cell_attr.Count == 0) continue;
 
                 var addr = cell_attr["r"] = SpreadsheetML.ConvertCellAddress(y, x);
-                var (cell_type, escaped_value) = GetCellValueFormat(cell.Value is CellFormula && calc.TryGetValue(worksheet.Name, out var xc) && xc.Calculation.TryGetValue(addr, out var xv) ? xv! : cell.Value);
+                var (cell_type, escaped_value) = GetCellValueFormat(cell.Value is CellValueFormula && calc.TryGetValue(worksheet.Name, out var xc) && xc.Calculation.TryGetValue(addr, out var xv) ? xv! : cell.Value);
                 cell_attr["t"] = cell_type.GetAttributeOrDefault<AliasAttribute>()!.Name;
 
-                stream.WriteLine($"      <c {AttributesToString(cell_attr)}{(escaped_value == "" && cell.Value is not CellFormula ? "/" : "")}>");
-                if (escaped_value != "" || cell.Value is CellFormula)
+                stream.WriteLine($"      <c {AttributesToString(cell_attr)}{(escaped_value == "" && cell.Value is not CellValueFormula ? "/" : "")}>");
+                if (escaped_value != "" || cell.Value is CellValueFormula)
                 {
-                    if (cell.Value is CellFormula formula) stream.WriteLine($"        <f>{formula.Formula}</f>");
+                    if (cell.Value is CellValueFormula formula) stream.WriteLine($"        <f>{formula.Value}</f>");
                     if (escaped_value != "") stream.WriteLine($"        <v>{escaped_value}</v>");
                     stream.WriteLine("      </c>");
                 }
@@ -125,7 +125,7 @@ public static partial class SpreadsheetMLExport
         CellValueDouble x => (CellTypes.Number, x.Value.ToString()),
         CellValueString x => (CellTypes.String, SecurityElement.Escape(x.Value)),
         CellValueNull => (CellTypes.String, ""),
-        CellFormula => (CellTypes.String, ""),
+        CellValueFormula => (CellTypes.String, ""),
         _ => throw new ArgumentOutOfRangeException(nameof(value)),
     };
 }

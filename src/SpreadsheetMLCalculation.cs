@@ -163,14 +163,95 @@ public static class SpreadsheetMLCalculation
     {
         switch (formula)
         {
+            case Token token:
+                return CalculationCell(calc, current_sheet, token.Value);
+
             case Unary unary:
                 break;
 
             case Expression expr:
+                var left = Evaluate(expr.Left, calc, current_sheet);
+                var right = Evaluate(expr.Right, calc, current_sheet);
+                switch (left)
+                {
+                    case CellValueString str:
+                        return EvaluateString(str, expr.Operator, right);
+
+                    case CellValueDouble num:
+                        return EvaluateDouble(num, expr.Operator, right);
+
+                    case CellValueDate date:
+                        return EvaluateDate(date, expr.Operator, right);
+                }
+                break;
+
+            case Number number:
+                return new CellValueDouble { Value = number.Value };
+
+            case Calculation.String str:
+                return new CellValueString { Value = str.Value };
+
+            case Date date:
+                return new CellValueDate { Value = date.Value };
+
+            case FunctionCall call:
                 break;
         }
         return CellValueNull.Instance;
     }
+
+    public static ICellValue EvaluateDouble(CellValueDouble left, string op, ICellValue right)
+    {
+        var rx = EvaluateToDouble(right);
+        return rx is null ? CellValueError.VALUE
+            : op switch
+            {
+                "+" => new CellValueDouble { Value = left.Value + rx.Value },
+                "-" => new CellValueDouble { Value = left.Value - rx.Value },
+                "*" => new CellValueDouble { Value = left.Value * rx.Value },
+                "/" => rx.Value == 0 ? CellValueError.DIV_0 : new CellValueDouble { Value = left.Value / rx.Value },
+                _ => CellValueError.VALUE,
+            };
+    }
+
+    public static ICellValue EvaluateString(CellValueString left, string op, ICellValue right)
+    {
+        var rx = EvaluateToString(right);
+        return op switch
+        {
+            "+" => new CellValueString { Value = left.Value + rx },
+            "&" => new CellValueString { Value = left.Value + rx },
+            _ => CellValueError.VALUE,
+        };
+    }
+
+    public static ICellValue EvaluateDate(CellValueDate left, string op, ICellValue right)
+    {
+        var rx = EvaluateToDouble(right);
+        return rx is null ? CellValueError.VALUE
+            : op switch
+            {
+                "+" => new CellValueDate { Value = left.Value.AddDays(rx.Value) },
+                _ => CellValueError.VALUE,
+            };
+    }
+
+    public static double? EvaluateToDouble(ICellValue value) => value switch
+    {
+        CellValueString x => double.TryParse(x.Value, out var d) ? d : null,
+        CellValueDouble x => x.Value,
+        CellValueBoolean x => x.Value ? 1 : 0,
+        _ => null
+    };
+
+    public static string EvaluateToString(ICellValue value) => value switch
+    {
+        CellValueString x => x.Value,
+        CellValueDouble x => x.Value.ToString(),
+        CellValueDate x => x.Value.ToString(),
+        CellValueBoolean x => x.Value ? "TRUE" : "FALSE",
+        _ => ""
+    };
 
     public static bool IsWord(char c) => c == '_' || char.IsAsciiLetterOrDigit(c);
 
@@ -179,6 +260,7 @@ public static class SpreadsheetMLCalculation
         c == '+' ||
         c == '*' ||
         c == '/' ||
+        c == '&' ||
         c == '<' ||
         c == '>';
 }
