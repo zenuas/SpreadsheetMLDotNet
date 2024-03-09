@@ -89,17 +89,17 @@ public static class SpreadsheetMLCalculation
                     break;
 
                 default:
-                    if (IsNumber(c))
+                    if (char.IsAsciiDigit(c))
                     {
                         var j = i + 1;
                         for (; j < formula.Length; j++)
                         {
-                            if (!IsNumber(formula[j])) break;
+                            if (!char.IsAsciiDigit(formula[j])) break;
                         }
                         tokens.Add((TokenTypes.Number, formula[i..j]));
                         i = j - 1;
                     }
-                    else if (IsAlphabet(c))
+                    else if (char.IsAsciiLetter(c))
                     {
                         var j = i + 1;
                         for (; j < formula.Length; j++)
@@ -140,25 +140,7 @@ public static class SpreadsheetMLCalculation
         return CellValueNull.Instance;
     }
 
-    public static bool IsNumber(char c) => c >= '0' && c <= '9';
-
-    public static bool IsNoneZeroNumber(char c) => c >= '1' && c <= '9';
-
-    public static bool IsBinary(char c) => c == '0' || c == '1';
-
-    public static bool IsOctal(char c) => c >= '0' && c <= '7';
-
-    public static bool IsHexadecimal(char c) => (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
-
-    public static bool IsFloatingNumber(char c) => c == '.' || IsNumber(c);
-
-    public static bool IsLowerAlphabet(char c) => c >= 'a' && c <= 'z';
-
-    public static bool IsUpperAlphabet(char c) => c >= 'A' && c <= 'Z';
-
-    public static bool IsAlphabet(char c) => IsLowerAlphabet(c) || IsUpperAlphabet(c);
-
-    public static bool IsWord(char c) => c == '_' || IsLowerAlphabet(c) || IsUpperAlphabet(c) || IsNumber(c);
+    public static bool IsWord(char c) => c == '_' || char.IsAsciiLetterOrDigit(c);
 
     public static bool IsOperator(char c) =>
         c == '-' ||
