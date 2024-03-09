@@ -42,4 +42,23 @@ public class SpreadsheetMLCalculationTest
         Assert.Equal<(TokenTypes, string)>(SpreadsheetMLCalculation.ParseTokens("\""), [(TokenTypes.String, "")]);
         Assert.Equal<(TokenTypes, string)>(SpreadsheetMLCalculation.ParseTokens("\"abc"), [(TokenTypes.String, "abc")]);
     }
+
+    [Fact]
+    public void ParseTest()
+    {
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("a"), new Token() { Value = "a" });
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("a+1"), new Expression() { Operator = "+", Left = new Token() { Value = "a" }, Right = new Number() { Value = 1 } });
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("a+b*c"), new Expression()
+        {
+            Operator = "+",
+            Left = new Token() { Value = "a" },
+            Right = new Expression() { Operator = "*", Left = new Token() { Value = "b" }, Right = new Token() { Value = "c" } },
+        });
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("a*b+c"), new Expression()
+        {
+            Operator = "+",
+            Left = new Expression() { Operator = "*", Left = new Token() { Value = "a" }, Right = new Token() { Value = "b" } },
+            Right = new Token() { Value = "c" },
+        });
+    }
 }

@@ -2,6 +2,7 @@
 using SpreadsheetMLDotNet.Calculation;
 using SpreadsheetMLDotNet.Data.Workbook;
 using SpreadsheetMLDotNet.Data.Worksheets;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -41,11 +42,42 @@ public static class SpreadsheetMLCalculation
         }
     }
 
-    public static IFormula Parse(string formula)
+    public static IFormula Parse(string formula) => Parse(ParseTokens(formula));
+
+    public static IFormula Parse(Span<(TokenTypes Type, string Value)> values)
     {
-        var tokens = ParseTokens(formula);
-        throw new();
+        if (values.Length == 0) return new Null();
+        if (values.Length == 1) return ParseValue(values[0].Type, values[0].Value);
+
+        if (values[0].Type == TokenTypes.LeftParenthesis)
+        {
+
+        }
+        else
+        {
+            switch (values[1].Type)
+            {
+                case TokenTypes.Operator:
+                    var left = ParseValue(values[0].Type, values[0].Value);
+                    var right = Parse(values[2..]);
+                    if (right is Expression rx && rx.Operator.In("+", "-") && values[1].Value.In("*", "/"))
+                    {
+                        return new Expression() { Operator = rx.Operator, Left = new Expression() { Operator = values[1].Value, Left = left, Right = rx.Left }, Right = rx.Right };
+                    }
+                    return new Expression() { Operator = values[1].Value, Left = left, Right = right };
+
+                case TokenTypes.LeftParenthesis:
+                    break;
+            }
+        }
+        return new Error();
     }
+
+    public static IFormula ParseValue(TokenTypes type, string value) =>
+        type == TokenTypes.Token ? new Token() { Value = value } :
+        type == TokenTypes.String ? new Token() { Value = value } :
+        type == TokenTypes.Number ? new Number() { Value = double.Parse(value) } :
+        throw new();
 
     public static (TokenTypes Type, string Value)[] ParseTokens(string formula)
     {
@@ -124,7 +156,7 @@ public static class SpreadsheetMLCalculation
                     break;
             }
         }
-        return tokens.ToArray();
+        return [.. tokens];
     }
 
     public static ICellValue Evaluate(IFormula formula, Dictionary<string, WorksheetCalculation> calc, Worksheet current_sheet)
