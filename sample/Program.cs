@@ -30,6 +30,7 @@ sheet.GetCell("C2").Alignment = new() { HorizontalAlignment = HorizontalAlignmen
 sheet.GetCell("B6").Border = new(Borders.End, BorderStyles.Thin, null);
 sheet.GetCell("A6").NumberFormat = new NumberFormatId { FormatId = NumberFormats.GeneralIntSeparate };
 sheet.GetCell("A7").NumberFormat = new NumberFormatCode { FormatCode = "yyyy/mm/dd" };
+sheet.GetCell("A7").Alignment = new() { ShrinkToFit = true };
 SpreadsheetML.Export("New.Strict.xlsx", book, FormatNamespace.Strict);
 SpreadsheetML.Export("New.Transitional.xlsx", book, FormatNamespace.Transitional);
 
