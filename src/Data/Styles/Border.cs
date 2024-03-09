@@ -1,9 +1,8 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace SpreadsheetMLDotNet.Data.Styles;
 
-public class Border : IEquatable<Border>
+public struct Border()
 {
     public BorderPropertiesType? Start { get; set; }
     public BorderPropertiesType? End { get; set; }
@@ -13,9 +12,7 @@ public class Border : IEquatable<Border>
     public BorderPropertiesType? Vertical { get; set; }
     public BorderPropertiesType? Horizontal { get; set; }
 
-    public Border() { }
-
-    public Border(Borders borders, BorderStyles style, Color? color) => SetBorder(borders, style, color);
+    public Border(Borders borders, BorderStyles style, Color? color) : this() => SetBorder(borders, style, color);
 
     public void SetBorder(Borders borders, BorderStyles style, Color? color)
     {
@@ -38,22 +35,4 @@ public class Border : IEquatable<Border>
         Vertical = null;
         Horizontal = null;
     }
-
-    public bool Equals(Border? other)
-    {
-        if (other is null) return false;
-        if (ReferenceEquals(this, other)) return true;
-        if (!Equals(Start, other.Start)) return false;
-        if (!Equals(End, other.End)) return false;
-        if (!Equals(Top, other.Top)) return false;
-        if (!Equals(Bottom, other.Bottom)) return false;
-        if (!Equals(Diagonal, other.Diagonal)) return false;
-        if (!Equals(Vertical, other.Vertical)) return false;
-        if (!Equals(Horizontal, other.Horizontal)) return false;
-        return true;
-    }
-
-    public override bool Equals(object? obj) => Equals(obj as Border);
-
-    public override int GetHashCode() => HashCode.Combine(Start, End, Top, Bottom, Diagonal, Vertical, Horizontal);
 }
