@@ -8,6 +8,7 @@ public class CellStyle : IEquatable<CellStyle>
     public Fill? Fill { get; init; }
     public Border? Border { get; init; }
     public Alignment? Alignment { get; init; }
+    public INumberFormat? NumberFormat { get; init; }
 
     public bool Equals(CellStyle? other)
     {
@@ -17,10 +18,11 @@ public class CellStyle : IEquatable<CellStyle>
         if (!Equals(Fill, other.Fill)) return false;
         if (!Equals(Border, other.Border)) return false;
         if (!Equals(Alignment, other.Alignment)) return false;
+        if (!Equals(NumberFormat, other.NumberFormat)) return false;
         return true;
     }
 
     public override bool Equals(object? obj) => Equals(obj as CellStyle);
 
-    public override int GetHashCode() => HashCode.Combine(Font, Fill, Border, Alignment);
+    public override int GetHashCode() => HashCode.Combine(Font, Fill, Border, Alignment, NumberFormat);
 }

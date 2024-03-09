@@ -10,6 +10,7 @@ public class Cell : IHaveStyle
     public Fill? Fill { get; set; }
     public Border? Border { get; set; }
     public Alignment? Alignment { get; set; }
+    public INumberFormat? NumberFormat { get; set; }
 
     public static implicit operator Cell(byte x) => new() { Value = new CellValueDouble { Value = x } };
 

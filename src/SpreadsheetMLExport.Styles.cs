@@ -4,6 +4,7 @@ using SpreadsheetMLDotNet.Extension;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security;
 
 namespace SpreadsheetMLDotNet;
 
@@ -15,9 +16,10 @@ public static partial class SpreadsheetMLExport
         if (have.Font is null &&
             have.Fill is null &&
             have.Border is null &&
-            have.Alignment is null) return false;
+            have.Alignment is null &&
+            have.NumberFormat is null) return false;
 
-        var style = new CellStyle() { Font = have.Font, Fill = have.Fill, Border = have.Border, Alignment = have.Alignment };
+        var style = new CellStyle() { Font = have.Font, Fill = have.Fill, Border = have.Border, Alignment = have.Alignment, NumberFormat = have.NumberFormat };
         index = cellstyles.IndexOf(style);
         if (index < 0)
         {
@@ -33,6 +35,19 @@ public static partial class SpreadsheetMLExport
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <styleSheet xmlns="{FormatNamespaces.SpreadsheetMLMains[(int)format]}">
 """);
+        var format_count = 100;
+        var format_list = cellstyles.Select(x => x.NumberFormat).OfType<NumberFormatCode>().ToHashSet().OrderBy(x => x.FormatCode).ToList();
+        var formats = format_list.ToDictionary(x => x, x => format_count++);
+        if (formats.Count > 0)
+        {
+            stream.WriteLine($"""  <numFmts count="{formats.Count}">""");
+            foreach (var fmt in format_list)
+            {
+                stream.WriteLine($"""    <numFmt numFmtId="{formats[fmt]}" formatCode="{SecurityElement.Escape(fmt.FormatCode)}"/>""");
+            }
+            stream.WriteLine("  </numFmts>");
+        }
+
         List<Font> fonts = [new(), .. cellstyles.Select(x => x.Font).OfType<Font>().ToHashSet()]; // index 0 cannot be used in Excel
         stream.WriteLine($"""  <fonts count="{fonts.Count}">""");
         foreach (var font in fonts)
@@ -143,6 +158,8 @@ public static partial class SpreadsheetMLExport
             if (cellstyle.Fill is { } fill) { attr["fillId"] = fills.IndexOf(fill).ToString(); attr["applyFill"] = "1"; }
             if (cellstyle.Border is { } border) { attr["borderId"] = borders.IndexOf(border).ToString(); attr["applyBorder"] = "1"; }
             if (cellstyle.Alignment is { }) { attr["applyAlignment"] = "1"; }
+            if (cellstyle.NumberFormat is NumberFormatId fmtid) { attr["numFmtId"] = ((int)fmtid.FormatId).ToString(); attr["applyNumberFormat"] = "1"; }
+            if (cellstyle.NumberFormat is NumberFormatCode fmtcode) { attr["numFmtId"] = formats[fmtcode].ToString(); attr["applyNumberFormat"] = "1"; }
 
             var xf_attr_s = AttributesToString(attr);
             if (cellstyle.Alignment is { })
