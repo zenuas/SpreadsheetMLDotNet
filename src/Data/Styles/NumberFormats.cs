@@ -290,4 +290,99 @@ public enum NumberFormats
     /// ko-kr: mm-dd
     /// </summary>
     Local58 = 58,
+
+    /// <summary>
+    /// th-th: t0
+    /// </summary>
+    Local59 = 59,
+
+    /// <summary>
+    /// th-th: t0.00
+    /// </summary>
+    Local60 = 60,
+
+    /// <summary>
+    /// th-th: t#,##0
+    /// </summary>
+    Local61 = 61,
+
+    /// <summary>
+    /// th-th: t#,##0.00
+    /// </summary>
+    Local62 = 62,
+
+    /// <summary>
+    /// th-th: t0%
+    /// </summary>
+    Local67 = 67,
+
+    /// <summary>
+    /// th-th: t0.00%
+    /// </summary>
+    Local68 = 68,
+
+    /// <summary>
+    /// th-th: t# ?/?
+    /// </summary>
+    Local69 = 69,
+
+    /// <summary>
+    /// th-th: t# ??/??
+    /// </summary>
+    Local70 = 70,
+
+    /// <summary>
+    /// th-th: ว/ด/ปปปป
+    /// </summary>
+    Local71 = 71,
+
+    /// <summary>
+    /// th-th: ว-ดดด-ปป
+    /// </summary>
+    Local72 = 72,
+
+    /// <summary>
+    /// th-th: ว-ดดด
+    /// </summary>
+    Local73 = 73,
+
+    /// <summary>
+    /// th-th: ดดด-ปป
+    /// </summary>
+    Local74 = 74,
+
+    /// <summary>
+    /// th-th: ช:นน
+    /// </summary>
+    Local75 = 75,
+
+    /// <summary>
+    /// th-th: ช:นน:ทท
+    /// </summary>
+    Local76 = 76,
+
+    /// <summary>
+    /// th-th: ว/ด/ปปปป ช:นน
+    /// </summary>
+    Local77 = 77,
+
+    /// <summary>
+    /// th-th: นน:ทท
+    /// </summary>
+    Local78 = 78,
+
+    /// <summary>
+    /// th-th: [ช]:นน:ทท
+    /// </summary>
+    Local79 = 79,
+
+    /// <summary>
+    /// th-th: นน:ทท.0
+    /// </summary>
+    Local80 = 80,
+
+    /// <summary>
+    /// th-th: d/m/bb
+    /// </summary>
+    Local81 = 81,
 }
