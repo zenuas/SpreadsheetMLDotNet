@@ -14,7 +14,8 @@ sheet.SetCell("D2", "xD2");
 sheet.SetCell("F2", "xF2");
 sheet.SetCell("A4", "xA4");
 sheet.SetCell("A6", 1_234_567);
-sheet.SetCell("A7", 45383);
+sheet.SetCell("A7", new DateTime(2000, 1, 23, 0, 0, 0));
+sheet.SetCell("A8", new DateTime(2000, 1, 23, 4, 56, 7, 89));
 sheet.GetRow(3).Height = 32.1;
 sheet.GetRow(3).Fill = new() { ForegroundColor = Color.Gray };
 sheet.GetColumn("F").Width = 6;
@@ -31,6 +32,8 @@ sheet.GetCell("B6").Border = new(Borders.End, BorderStyles.Thin, null);
 sheet.GetCell("A6").NumberFormat = new NumberFormatId { FormatId = NumberFormats.GeneralIntSeparate };
 sheet.GetCell("A7").NumberFormat = new NumberFormatCode { FormatCode = "yyyy/mm/dd" };
 sheet.GetCell("A7").Alignment = new() { ShrinkToFit = true };
+sheet.GetCell("A8").NumberFormat = new NumberFormatCode { FormatCode = "yyyy/mm/dd" };
+sheet.GetCell("A8").Alignment = new() { ShrinkToFit = true };
 SpreadsheetML.Export("New.Strict.xlsx", book, FormatNamespace.Strict);
 SpreadsheetML.Export("New.Transitional.xlsx", book, FormatNamespace.Transitional);
 

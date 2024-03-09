@@ -111,7 +111,7 @@ public static partial class SpreadsheetMLExport
     public static (CellTypes CellType, string EscapedValue) GetCellValueFormat(ICellValue value) => value switch
     {
         CellValueBoolean x => (CellTypes.Boolean, x.Value.ToString()),
-        CellValueDate x => (CellTypes.Date, x.Value.ToString()),
+        CellValueDate x => (CellTypes.Date, x.Value.ToString(x.Value.Ticks % TimeSpan.TicksPerDay == 0 ? "yyyy-MM-dd" : "o")), // ISO 8601 style, if date is short style in Excel
         CellValueError x => (CellTypes.Error, x.Value.GetAttributeOrDefault<AliasAttribute>()!.Name),
         CellValueDouble x => (CellTypes.Number, x.Value.ToString()),
         CellValueString x => (CellTypes.String, SecurityElement.Escape(x.Value)),
