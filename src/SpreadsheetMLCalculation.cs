@@ -87,16 +87,14 @@ public static class SpreadsheetMLCalculation
             case TokenTypes.Operator:
                 {
                     var (right, length) = Parse(values[(next + 1)..], parenthesis_level);
-                    if (right is Expression rx && rx.Operator.In("+", "-") && values[next].Value.In("*", "/"))
-                    {
-                        return (new Expression() { Operator = rx.Operator, Left = new Expression() { Operator = values[next].Value, Left = left, Right = rx.Left }, Right = rx.Right }, next + length + 1);
-                    }
-                    return (new Expression() { Operator = values[next].Value, Left = left, Right = right }, next + length + 1);
+                    return right is Expression rx && rx.Operator.In("+", "-") && values[next].Value.In("*", "/")
+                        ? (new Expression() { Operator = rx.Operator, Left = new Expression() { Operator = values[next].Value, Left = left, Right = rx.Left }, Right = rx.Right }, next + length + 1)
+                        : (new Expression() { Operator = values[next].Value, Left = left, Right = right }, next + length + 1);
                 }
 
             case TokenTypes.LeftParenthesis:
                 {
-                    if (!(left is Token token)) break;
+                    if (left is not Token token) break;
                     var args = new List<IFormula>();
                     var total_length = next + 1;
                     while (true)
