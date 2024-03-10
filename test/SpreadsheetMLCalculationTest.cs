@@ -68,8 +68,8 @@ public class SpreadsheetMLCalculationTest
         Assert.Equivalent(SpreadsheetMLCalculation.Parse("(a+b)*(c-d)"), new Expression()
         {
             Operator = "*",
-            Left = new Expression() { Operator = "+", Left = new Token() { Value = "a" }, Right = new Token() { Value = "b" } },
-            Right = new Expression() { Operator = "-", Left = new Token() { Value = "c" }, Right = new Token() { Value = "d" } },
+            Left = new Unary() { Operator = "()", Value = new Expression() { Operator = "+", Left = new Token() { Value = "a" }, Right = new Token() { Value = "b" } } },
+            Right = new Unary() { Operator = "()", Value = new Expression() { Operator = "-", Left = new Token() { Value = "c" }, Right = new Token() { Value = "d" } } },
         });
     }
 
@@ -84,11 +84,15 @@ public class SpreadsheetMLCalculationTest
             Left = new Token() { Value = "a" },
             Right = new Number() { Value = 1 }
         });
-        Assert.Equivalent(SpreadsheetMLCalculation.Parse("(a+1))"), new Expression()
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("(a+1))"), new Unary()
         {
-            Operator = "+",
-            Left = new Token() { Value = "a" },
-            Right = new Number() { Value = 1 }
+            Operator = "()",
+            Value = new Expression()
+            {
+                Operator = "+",
+                Left = new Token() { Value = "a" },
+                Right = new Number() { Value = 1 }
+            }
         });
     }
 }

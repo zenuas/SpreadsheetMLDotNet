@@ -53,6 +53,9 @@ public static class SpreadsheetMLCalculation
         if (values[0].Type == TokenTypes.LeftParenthesis)
         {
             (left, next) = Parse(values[1..], parenthesis_level + 1);
+            left = new Unary() { Operator = "()", Value = left };
+            next += 2;
+            if (next >= values.Length) return (left, next);
         }
         else if (values[0].Type == TokenTypes.RightParenthesis)
         {
@@ -71,11 +74,11 @@ public static class SpreadsheetMLCalculation
         {
             case TokenTypes.Operator:
                 var (right, length) = Parse(values[(next + 1)..], parenthesis_level);
-                if (right is Expression rx && rx.Operator.In("+", "-") && values[1].Value.In("*", "/"))
+                if (right is Expression rx && rx.Operator.In("+", "-") && values[next].Value.In("*", "/"))
                 {
-                    return (new Expression() { Operator = rx.Operator, Left = new Expression() { Operator = values[1].Value, Left = left, Right = rx.Left }, Right = rx.Right }, length + 2);
+                    return (new Expression() { Operator = rx.Operator, Left = new Expression() { Operator = values[next].Value, Left = left, Right = rx.Left }, Right = rx.Right }, next + length + 1);
                 }
-                return (new Expression() { Operator = values[1].Value, Left = left, Right = right }, length + 2);
+                return (new Expression() { Operator = values[next].Value, Left = left, Right = right }, next + length + 1);
 
             case TokenTypes.LeftParenthesis:
                 break;
@@ -180,7 +183,7 @@ public static class SpreadsheetMLCalculation
                 return CalculationCell(calc, current_sheet, token.Value);
 
             case Unary unary:
-                break;
+                return Evaluate(unary.Value, calc, current_sheet);
 
             case Expression expr:
                 var left = Evaluate(expr.Left, calc, current_sheet);
