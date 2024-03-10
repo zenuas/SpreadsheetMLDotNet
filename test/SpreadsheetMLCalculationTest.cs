@@ -47,7 +47,12 @@ public class SpreadsheetMLCalculationTest
     public void ParseTest()
     {
         Assert.Equivalent(SpreadsheetMLCalculation.Parse("a"), new Token() { Value = "a" });
-        Assert.Equivalent(SpreadsheetMLCalculation.Parse("a+1"), new Expression() { Operator = "+", Left = new Token() { Value = "a" }, Right = new Number() { Value = 1 } });
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("a+1"), new Expression()
+        {
+            Operator = "+",
+            Left = new Token() { Value = "a" },
+            Right = new Number() { Value = 1 }
+        });
         Assert.Equivalent(SpreadsheetMLCalculation.Parse("a+b*c"), new Expression()
         {
             Operator = "+",
