@@ -102,10 +102,39 @@ public class SpreadsheetMLCalculationTest
         });
     }
 
+
+    [Fact]
+    public void ParseFunctionTest()
+    {
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("SUM()"), new FunctionCall() { Name = "SUM", Arguments = [] }, true);
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("SUM(1)"), new FunctionCall() { Name = "SUM", Arguments = [new Number() { Value = 1 }] }, true);
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("SUM(1,2)"), new FunctionCall()
+        {
+            Name = "SUM",
+            Arguments = [
+                new Number() { Value = 1 },
+                new Number() { Value = 2 },
+            ]
+        }, true);
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("SUM(1+2,3)"), new FunctionCall()
+        {
+            Name = "SUM",
+            Arguments = [
+                new Expression() { Operator = "+", Left = new Number() { Value = 1 }, Right = new Number() { Value = 2 } },
+                new Number() { Value = 3 },
+            ]
+        }, true);
+    }
+
     [Fact]
     public void ParseBadTest()
     {
         Assert.Equivalent(SpreadsheetMLCalculation.Parse(")"), new Error());
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse(","), new Error());
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse(":"), new Error());
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse(")a"), new Error());
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse(",a"), new Error());
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse(":a"), new Error());
         Assert.Equivalent(SpreadsheetMLCalculation.Parse("a)"), new Token() { Value = "a" });
         Assert.Equivalent(SpreadsheetMLCalculation.Parse("a+1)"), new Expression()
         {
