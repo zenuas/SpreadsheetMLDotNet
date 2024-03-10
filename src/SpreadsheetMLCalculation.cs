@@ -42,42 +42,55 @@ public static class SpreadsheetMLCalculation
         }
     }
 
-    public static IFormula Parse(string formula) => Parse(ParseTokens(formula));
+    public static IFormula Parse(string formula) => Parse(ParseTokens(formula), 0).Formula;
 
-    public static IFormula Parse(Span<(TokenTypes Type, string Value)> values)
+    public static (IFormula Formula, int Length) Parse(Span<(TokenTypes Type, string Value)> values, int parenthesis_level)
     {
-        if (values.Length == 0) return new Null();
-        if (values.Length == 1) return ParseValue(values[0].Type, values[0].Value);
+        if (values.Length == 0) return (new Null(), 0);
 
+        IFormula left;
+        int next = 1;
         if (values[0].Type == TokenTypes.LeftParenthesis)
         {
-
+            (left, next) = Parse(values[1..], parenthesis_level + 1);
+        }
+        else if (values[0].Type == TokenTypes.RightParenthesis)
+        {
+            return parenthesis_level <= 0 ? (new Error(), 0) : (new Null(), 1);
+        }
+        else if (values.Length == 1)
+        {
+            return (ParseValue(values[0].Type, values[0].Value), 1);
         }
         else
         {
-            switch (values[1].Type)
-            {
-                case TokenTypes.Operator:
-                    var left = ParseValue(values[0].Type, values[0].Value);
-                    var right = Parse(values[2..]);
-                    if (right is Expression rx && rx.Operator.In("+", "-") && values[1].Value.In("*", "/"))
-                    {
-                        return new Expression() { Operator = rx.Operator, Left = new Expression() { Operator = values[1].Value, Left = left, Right = rx.Left }, Right = rx.Right };
-                    }
-                    return new Expression() { Operator = values[1].Value, Left = left, Right = right };
-
-                case TokenTypes.LeftParenthesis:
-                    break;
-            }
+            left = ParseValue(values[0].Type, values[0].Value);
         }
-        return new Error();
+
+        switch (values[next].Type)
+        {
+            case TokenTypes.Operator:
+                var (right, length) = Parse(values[(next + 1)..], parenthesis_level);
+                if (right is Expression rx && rx.Operator.In("+", "-") && values[1].Value.In("*", "/"))
+                {
+                    return (new Expression() { Operator = rx.Operator, Left = new Expression() { Operator = values[1].Value, Left = left, Right = rx.Left }, Right = rx.Right }, length + 2);
+                }
+                return (new Expression() { Operator = values[1].Value, Left = left, Right = right }, length + 2);
+
+            case TokenTypes.LeftParenthesis:
+                break;
+
+            case TokenTypes.RightParenthesis:
+                return (left, next);
+        }
+        return (new Error(), 0);
     }
 
     public static IFormula ParseValue(TokenTypes type, string value) =>
         type == TokenTypes.Token ? new Token() { Value = value } :
         type == TokenTypes.String ? new Token() { Value = value } :
         type == TokenTypes.Number ? new Number() { Value = double.Parse(value) } :
-        throw new();
+        new Error();
 
     public static (TokenTypes Type, string Value)[] ParseTokens(string formula)
     {

@@ -65,5 +65,30 @@ public class SpreadsheetMLCalculationTest
             Left = new Expression() { Operator = "*", Left = new Token() { Value = "a" }, Right = new Token() { Value = "b" } },
             Right = new Token() { Value = "c" },
         });
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("(a+b)*(c-d)"), new Expression()
+        {
+            Operator = "*",
+            Left = new Expression() { Operator = "+", Left = new Token() { Value = "a" }, Right = new Token() { Value = "b" } },
+            Right = new Expression() { Operator = "-", Left = new Token() { Value = "c" }, Right = new Token() { Value = "d" } },
+        });
+    }
+
+    [Fact]
+    public void ParseBadTest()
+    {
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse(")"), new Error());
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("a)"), new Token() { Value = "a" });
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("a+1)"), new Expression()
+        {
+            Operator = "+",
+            Left = new Token() { Value = "a" },
+            Right = new Number() { Value = 1 }
+        });
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("(a+1))"), new Expression()
+        {
+            Operator = "+",
+            Left = new Token() { Value = "a" },
+            Right = new Number() { Value = 1 }
+        });
     }
 }
