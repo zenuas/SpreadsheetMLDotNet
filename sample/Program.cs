@@ -15,7 +15,7 @@ sheet.SetCell("D2", "xD2");
 sheet.SetCell("F2", "xF2");
 sheet.SetCell("A4", "xA4");
 sheet.SetCell("A6", 1_234_567);
-sheet.SetCell("B6", new Cell { Value = new CellValueFormula { Value = "A6+1" } });
+sheet.SetCell("B6", Cell.FromFormula("A6+1"));
 sheet.SetCell("A7", new DateTime(2000, 1, 23, 0, 0, 0));
 sheet.SetCell("A8", new DateTime(2000, 1, 23, 4, 56, 7, 89));
 sheet.GetRow(3).Height = 32.1;

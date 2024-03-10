@@ -31,4 +31,6 @@ public class Cell : IHaveStyle
     public static implicit operator Cell(ErrorValues x) => new() { Value = CellValueError.GetValue(x) };
 
     public static implicit operator Cell(string x) => new() { Value = new CellValueString { Value = x } };
+
+    public static Cell FromFormula(string x) => new() { Value = new CellValueFormula { Value = x } };
 }
