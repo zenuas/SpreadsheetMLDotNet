@@ -124,6 +124,7 @@ public class SpreadsheetMLCalculationTest
                 new Number() { Value = 3 },
             ]
         }, true);
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("(SUM())"), new Unary() { Operator = "()", Value = new FunctionCall() { Name = "SUM", Arguments = [] } }, true);
     }
 
     [Fact]

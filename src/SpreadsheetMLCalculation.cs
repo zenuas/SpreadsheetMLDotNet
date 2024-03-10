@@ -99,8 +99,8 @@ public static class SpreadsheetMLCalculation
                     var total_length = next + 1;
                     while (true)
                     {
-                        var (arg, length) = Parse(values[total_length..], parenthesis_level);
-                        if (length == 0) break;
+                        var (arg, length) = Parse(values[total_length..], parenthesis_level + 1);
+                        if (arg is Error || arg is Null) break;
                         args.Add(arg);
                         total_length += length;
                     }
