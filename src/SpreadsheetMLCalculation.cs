@@ -210,6 +210,7 @@ public static class SpreadsheetMLCalculation
                 "-" => new CellValueDouble { Value = left.Value - rx.Value },
                 "*" => new CellValueDouble { Value = left.Value * rx.Value },
                 "/" => rx.Value == 0 ? CellValueError.DIV_0 : new CellValueDouble { Value = left.Value / rx.Value },
+                "=" => new CellValueBoolean { Value = left.Value.Equals(rx.Value) },
                 _ => CellValueError.VALUE,
             };
     }
@@ -221,12 +222,14 @@ public static class SpreadsheetMLCalculation
         {
             "+" => new CellValueString { Value = left.Value + rx },
             "&" => new CellValueString { Value = left.Value + rx },
+            "=" => new CellValueBoolean { Value = left.Value == rx },
             _ => CellValueError.VALUE,
         };
     }
 
     public static ICellValue EvaluateDate(CellValueDate left, string op, ICellValue right)
     {
+        if (op == "=") return new CellValueBoolean { Value = left.Value.Equals(EvaluateToDate(right)) };
         var rx = EvaluateToDouble(right);
         return rx is null ? CellValueError.VALUE
             : op switch
@@ -253,6 +256,12 @@ public static class SpreadsheetMLCalculation
         _ => ""
     };
 
+    public static DateTime? EvaluateToDate(ICellValue value) => value switch
+    {
+        CellValueDate x => x.Value,
+        _ => null
+    };
+
     public static bool IsWord(char c) => c == '_' || char.IsAsciiLetterOrDigit(c);
 
     public static bool IsOperator(char c) =>
@@ -261,6 +270,7 @@ public static class SpreadsheetMLCalculation
         c == '*' ||
         c == '/' ||
         c == '&' ||
+        c == '=' ||
         c == '<' ||
         c == '>';
 }
