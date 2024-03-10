@@ -71,6 +71,35 @@ public class SpreadsheetMLCalculationTest
             Left = new Unary() { Operator = "()", Value = new Expression() { Operator = "+", Left = new Token() { Value = "a" }, Right = new Token() { Value = "b" } } },
             Right = new Unary() { Operator = "()", Value = new Expression() { Operator = "-", Left = new Token() { Value = "c" }, Right = new Token() { Value = "d" } } },
         });
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("+a"), new Unary() { Operator = "+", Value = new Token() { Value = "a" } });
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("-a*b"), new Expression()
+        {
+            Operator = "*",
+            Left = new Unary() { Operator = "-", Value = new Token() { Value = "a" } },
+            Right = new Token() { Value = "b" },
+        });
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("-a*b+c"), new Expression
+        {
+            Operator = "+",
+            Left = new Expression()
+            {
+                Operator = "*",
+                Left = new Unary() { Operator = "-", Value = new Token() { Value = "a" } },
+                Right = new Token() { Value = "b" },
+            },
+            Right = new Token() { Value = "c" },
+        });
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("-a+b*c"), new Expression
+        {
+            Operator = "+",
+            Left = new Unary() { Operator = "-", Value = new Token() { Value = "a" } },
+            Right = new Expression()
+            {
+                Operator = "*",
+                Left = new Token() { Value = "b" },
+                Right = new Token() { Value = "c" },
+            },
+        });
     }
 
     [Fact]
@@ -93,6 +122,13 @@ public class SpreadsheetMLCalculationTest
                 Left = new Token() { Value = "a" },
                 Right = new Number() { Value = 1 }
             }
+        });
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("+"), new Error());
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("a+ +"), new Expression()
+        {
+            Operator = "+",
+            Left = new Token() { Value = "a" },
+            Right = new Null()
         });
     }
 }

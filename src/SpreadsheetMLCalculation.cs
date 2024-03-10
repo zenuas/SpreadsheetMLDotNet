@@ -61,6 +61,18 @@ public static class SpreadsheetMLCalculation
         {
             return parenthesis_level <= 0 ? (new Error(), 0) : (new Null(), 1);
         }
+        else if (values[0].Type == TokenTypes.Operator)
+        {
+            (left, next) = Parse(values[1..], parenthesis_level);
+            if (left is Error || left is Null) return (left, next + 1);
+            if (left is Expression expr)
+            {
+                var termleft = TerminatedLeft(expr);
+                termleft.Left = new Unary { Operator = values[0].Value, Value = termleft.Left };
+                return (left, next + 1);
+            }
+            return (new Unary() { Operator = values[0].Value, Value = left }, next + 1);
+        }
         else if (values.Length == 1)
         {
             return (ParseValue(values[0].Type, values[0].Value), 1);
@@ -88,6 +100,8 @@ public static class SpreadsheetMLCalculation
         }
         return (new Error(), 0);
     }
+
+    public static Expression TerminatedLeft(Expression parent) => parent.Left is Expression lx ? TerminatedLeft(lx) : parent;
 
     public static IFormula ParseValue(TokenTypes type, string value) =>
         type == TokenTypes.Token ? new Token() { Value = value } :
