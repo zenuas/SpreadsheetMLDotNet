@@ -197,7 +197,13 @@ public static class SpreadsheetMLCalculation
                 return CalculationCell(calc, current_sheet, token.Value);
 
             case Unary unary:
-                return Evaluate(unary.Value, calc, current_sheet);
+                if (unary.Operator.In("+", "()")) return Evaluate(unary.Value, calc, current_sheet);
+                if (unary.Operator == "-")
+                {
+                    var value = Evaluate(unary.Value, calc, current_sheet);
+                    if (value is CellValueDouble d) return new CellValueDouble { Value = -d.Value };
+                }
+                return CellValueError.VALUE;
 
             case Expression expr:
                 var left = Evaluate(expr.Left, calc, current_sheet);
