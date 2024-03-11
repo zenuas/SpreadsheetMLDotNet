@@ -1,6 +1,6 @@
 ﻿namespace SpreadsheetMLDotNet.Calculation;
 
-public class Number : IFormula
+public readonly struct Number : IFormula
 {
     public required double Value { get; init; }
 }

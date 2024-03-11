@@ -1,5 +1,5 @@
 ﻿namespace SpreadsheetMLDotNet.Calculation;
 
-public class Null : IFormula
+public readonly struct Null : IFormula
 {
 }

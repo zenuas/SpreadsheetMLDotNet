@@ -2,7 +2,7 @@
 
 namespace SpreadsheetMLDotNet.Calculation;
 
-public class FunctionCall : IFormula
+public readonly struct FunctionCall() : IFormula
 {
     public required string Name { get; init; }
     public List<IFormula> Arguments { get; init; } = [];

@@ -2,7 +2,7 @@
 
 namespace SpreadsheetMLDotNet.Calculation;
 
-public class Date : IFormula
+public readonly struct Date : IFormula
 {
     public required DateTime Value { get; init; }
 }
