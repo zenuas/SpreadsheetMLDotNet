@@ -61,7 +61,11 @@ public static class SpreadsheetMLCalculation
 
             case TokenTypes.LeftParenthesis:
                 {
-                    if (left is not Token token) break;
+                    var fname =
+                        left is Token token ? token.Value
+                        : left is Unary lu && lu.Operator != "()" && lu.Value is Token unary_token ? unary_token.Value
+                        : "";
+                    if (fname == "") break;
                     var args = new List<IFormula>();
                     var total_length = next + 1;
                     while (true)
@@ -71,7 +75,8 @@ public static class SpreadsheetMLCalculation
                         args.Add(arg);
                         total_length += length;
                     }
-                    return (new FunctionCall { Name = token.Value, Arguments = args }, total_length);
+                    var fcall = new FunctionCall { Name = fname, Arguments = args };
+                    return (left is Unary unary ? new Unary { Operator = unary.Operator, Value = fcall } : fcall, total_length);
                 }
 
             case TokenTypes.Comma:

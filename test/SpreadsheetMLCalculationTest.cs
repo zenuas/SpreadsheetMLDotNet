@@ -125,6 +125,11 @@ public class SpreadsheetMLCalculationTest
             ]
         }, true);
         Assert.Equivalent(SpreadsheetMLCalculation.Parse("(SUM())"), new Unary() { Operator = "()", Value = new FunctionCall() { Name = "SUM", Arguments = [] } }, true);
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("-SUM()"), new Unary
+        {
+            Operator = "-",
+            Value = new FunctionCall() { Name = "SUM", Arguments = [] }
+        }, true);
     }
 
     [Fact]
@@ -168,5 +173,7 @@ public class SpreadsheetMLCalculationTest
                 Value = new Null(),
             }
         });
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("(a)SUM()"), new Error(), true);
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("(a)()"), new Error(), true);
     }
 }
