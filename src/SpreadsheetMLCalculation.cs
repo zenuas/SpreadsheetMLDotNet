@@ -147,57 +147,78 @@ public static class SpreadsheetMLCalculation
 
                 case '"':
                     {
-                        var j = i + 1;
-                        for (; j < formula.Length; j++)
-                        {
-                            if (formula[j] == '"')
-                            {
-                                if (j + 1 >= formula.Length || formula[j + 1] != '"') break;
-                                j++;
-                            }
-                        }
-                        tokens.Add((TokenTypes.String, formula[(i + 1)..j].Replace("\"\"", "\"")));
-                        i = j;
+                        var (value, length) = ParseString(formula[i..]);
+                        tokens.Add((TokenTypes.String, value));
+                        i += length - 1;
                     }
                     break;
 
                 default:
                     if (char.IsAsciiDigit(c))
                     {
-                        var j = i + 1;
-                        for (; j < formula.Length; j++)
-                        {
-                            if (!char.IsAsciiDigit(formula[j])) break;
-                        }
-                        tokens.Add((TokenTypes.Number, formula[i..j]));
-                        i = j - 1;
+                        var (value, length) = ParseNumber(formula[i..]);
+                        tokens.Add((TokenTypes.Number, value));
+                        i += length - 1;
                     }
                     else if (char.IsAsciiLetter(c))
                     {
-                        var j = i + 1;
-                        for (; j < formula.Length; j++)
-                        {
-                            if (!IsWord(formula[j])) break;
-                        }
-                        tokens.Add((TokenTypes.Token, formula[i..j]));
-                        i = j - 1;
+                        var (value, length) = ParseToken(formula[i..]);
+                        tokens.Add((TokenTypes.Token, value));
+                        i += length - 1;
                     }
                     else if (IsOperator(c))
                     {
-                        if ((c == '<' || c == '>') && i + 1 < formula.Length && formula[i + 1] == '=')
-                        {
-                            tokens.Add((TokenTypes.Operator, formula[i..(i + 2)]));
-                            i++;
-                        }
-                        else
-                        {
-                            tokens.Add((TokenTypes.Operator, c.ToString()));
-                        }
+                        var (value, length) = ParseOperator(formula[i..]);
+                        tokens.Add((TokenTypes.Operator, value));
+                        i += length - 1;
                     }
                     break;
             }
         }
         return [.. tokens];
+    }
+
+    public static (string Value, int Length) ParseString(string s)
+    {
+        if (s[0] != '"') return ("", 0);
+        int i = 1;
+        for (; i < s.Length; i++)
+        {
+            if (s[i] == '"')
+            {
+                if (i + 1 >= s.Length || s[i + 1] != '"') break;
+                i++;
+            }
+        }
+        return (s[1..i].ToString().Replace("\"\"", "\""), i + 1);
+    }
+
+    public static (string Value, int Length) ParseNumber(string s)
+    {
+        var i = 0;
+        for (; i < s.Length; i++)
+        {
+            if (!char.IsAsciiDigit(s[i])) break;
+        }
+        return (s[0..i], i);
+    }
+
+    public static (string Value, int Length) ParseToken(string s)
+    {
+        var i = 0;
+        for (; i < s.Length; i++)
+        {
+            if (!IsWord(s[i])) break;
+        }
+        return (s[0..i], i);
+    }
+
+    public static (string Value, int Length) ParseOperator(string s)
+    {
+        var c = s[0];
+        return (c == '<' || c == '>') && 1 < s.Length && s[1] == '='
+            ? (s[0..2], 2)
+            : (s[0..1], 1);
     }
 
     public static ICellValue Evaluate(IFormula formula, Dictionary<string, WorksheetCalculation> calc, Worksheet current_sheet)
