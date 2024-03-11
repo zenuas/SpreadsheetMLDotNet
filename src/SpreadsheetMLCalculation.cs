@@ -46,41 +46,8 @@ public static class SpreadsheetMLCalculation
 
     public static (IFormula Formula, int Length) Parse(Span<(TokenTypes Type, string Value)> values, int parenthesis_level)
     {
-        if (values.Length == 0) return (new Null(), 0);
-
-        IFormula left;
-        int next = 1;
-        if (values[0].Type == TokenTypes.LeftParenthesis)
-        {
-            (left, next) = Parse(values[1..], parenthesis_level + 1);
-            left = new Unary() { Operator = "()", Value = left };
-            next += 2;
-            if (next >= values.Length) return (left, next);
-        }
-        else if (values[0].Type == TokenTypes.RightParenthesis)
-        {
-            return parenthesis_level <= 0 ? (new Error(), 0) : (new Null(), 1);
-        }
-        else if (values[0].Type == TokenTypes.Operator)
-        {
-            (left, next) = Parse(values[1..], parenthesis_level);
-            if (left is Error || left is Null) return (left, next + 1);
-            if (left is Expression expr)
-            {
-                var termleft = TerminatedLeft(expr);
-                termleft.Left = new Unary { Operator = values[0].Value, Value = termleft.Left };
-                return (left, next + 1);
-            }
-            return (new Unary() { Operator = values[0].Value, Value = left }, next + 1);
-        }
-        else if (values.Length == 1)
-        {
-            return (ParseValue(values[0].Type, values[0].Value), 1);
-        }
-        else
-        {
-            left = ParseValue(values[0].Type, values[0].Value);
-        }
+        var (left, next) = ParseValue(values, parenthesis_level);
+        if (next >= values.Length) return (left, next);
 
         switch (values[next].Type)
         {
@@ -116,9 +83,33 @@ public static class SpreadsheetMLCalculation
         return (new Error(), 0);
     }
 
+    public static (IFormula Formula, int Length) ParseValue(Span<(TokenTypes Type, string Value)> values, int parenthesis_level)
+    {
+        if (values.Length == 0) return (new Null(), 0);
+
+        if (values[0].Type == TokenTypes.LeftParenthesis)
+        {
+            var (value, next) = Parse(values[1..], parenthesis_level + 1);
+            return (new Unary() { Operator = "()", Value = value }, next + 2);
+        }
+        else if (values[0].Type == TokenTypes.RightParenthesis)
+        {
+            return parenthesis_level <= 0 ? (new Error(), 0) : (new Null(), 1);
+        }
+        else if (values[0].Type == TokenTypes.Operator)
+        {
+            var (value, next) = ParseValue(values[1..], parenthesis_level);
+            return (new Unary() { Operator = values[0].Value, Value = value }, next + 1);
+        }
+        else
+        {
+            return (ParsePrimitive(values[0].Type, values[0].Value), 1);
+        }
+    }
+
     public static Expression TerminatedLeft(Expression parent) => parent.Left is Expression lx ? TerminatedLeft(lx) : parent;
 
-    public static IFormula ParseValue(TokenTypes type, string value) =>
+    public static IFormula ParsePrimitive(TokenTypes type, string value) =>
         type == TokenTypes.Token ? new Token() { Value = value } :
         type == TokenTypes.String ? new Token() { Value = value } :
         type == TokenTypes.Number ? new Number() { Value = double.Parse(value) } :

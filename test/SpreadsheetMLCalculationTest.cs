@@ -153,12 +153,20 @@ public class SpreadsheetMLCalculationTest
                 Right = new Number() { Value = 1 }
             }
         });
-        Assert.Equivalent(SpreadsheetMLCalculation.Parse("+"), new Error());
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("+"), new Unary()
+        {
+            Operator = "+",
+            Value = new Null(),
+        });
         Assert.Equivalent(SpreadsheetMLCalculation.Parse("a+ +"), new Expression()
         {
             Operator = "+",
             Left = new Token() { Value = "a" },
-            Right = new Null()
+            Right = new Unary()
+            {
+                Operator = "+",
+                Value = new Null(),
+            }
         });
     }
 }

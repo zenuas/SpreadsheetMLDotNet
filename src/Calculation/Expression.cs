@@ -2,7 +2,7 @@
 
 public class Expression : IFormula
 {
-    public required string Operator { get; set; }
-    public required IFormula Left { get; set; }
-    public required IFormula Right { get; set; }
+    public required string Operator { get; init; }
+    public required IFormula Left { get; init; }
+    public required IFormula Right { get; init; }
 }
