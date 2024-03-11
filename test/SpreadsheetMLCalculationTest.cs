@@ -173,6 +173,7 @@ public class SpreadsheetMLCalculationTest
                 Value = new Null(),
             }
         });
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("1()"), new Error(), true);
         Assert.Equivalent(SpreadsheetMLCalculation.Parse("(a)SUM()"), new Error(), true);
         Assert.Equivalent(SpreadsheetMLCalculation.Parse("(a)()"), new Error(), true);
     }
