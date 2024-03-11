@@ -190,7 +190,7 @@ public static class SpreadsheetMLCalculation
                 i++;
             }
         }
-        return (s[1..i].ToString().Replace("\"\"", "\""), i + 1);
+        return (s[1..i].Replace("\"\"", "\""), i + 1);
     }
 
     public static (string Value, int Length) ParseNumber(string s)
