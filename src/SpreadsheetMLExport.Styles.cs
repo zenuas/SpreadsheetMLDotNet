@@ -19,7 +19,7 @@ public static partial class SpreadsheetMLExport
             have.Alignment is null &&
             have.NumberFormat is null) return false;
 
-        var style = new CellStyle() { Font = have.Font, Fill = have.Fill, Border = have.Border, Alignment = have.Alignment, NumberFormat = have.NumberFormat };
+        var style = new CellStyle { Font = have.Font, Fill = have.Fill, Border = have.Border, Alignment = have.Alignment, NumberFormat = have.NumberFormat };
         index = cellstyles.IndexOf(style);
         if (index < 0)
         {

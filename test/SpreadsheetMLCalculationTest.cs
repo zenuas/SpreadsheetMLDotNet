@@ -23,7 +23,7 @@ public class SpreadsheetMLCalculationTest
             (TokenTypes.Operator, "<="),
             (TokenTypes.Number, "1"),
             (TokenTypes.Operator, ">="),
-            (TokenTypes.Token, "b")
+            (TokenTypes.Token, "b"),
         ]);
         Assert.Equal<(TokenTypes, string)>(SpreadsheetMLCalculation.ParseTokens("(abc-123+\"xyz\")"), [
             (TokenTypes.LeftParenthesis, "("),
@@ -46,58 +46,58 @@ public class SpreadsheetMLCalculationTest
     [Fact]
     public void ParseTest()
     {
-        Assert.Equivalent(SpreadsheetMLCalculation.Parse("a"), new Token() { Value = "a" });
-        Assert.Equivalent(SpreadsheetMLCalculation.Parse("a+1"), new Expression()
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("a"), new Token { Value = "a" });
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("a+1"), new Expression
         {
             Operator = "+",
-            Left = new Token() { Value = "a" },
-            Right = new Number() { Value = 1 }
+            Left = new Token { Value = "a" },
+            Right = new Number { Value = 1 },
         });
-        Assert.Equivalent(SpreadsheetMLCalculation.Parse("a+b*c"), new Expression()
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("a+b*c"), new Expression
         {
             Operator = "+",
-            Left = new Token() { Value = "a" },
-            Right = new Expression() { Operator = "*", Left = new Token() { Value = "b" }, Right = new Token() { Value = "c" } },
+            Left = new Token { Value = "a" },
+            Right = new Expression { Operator = "*", Left = new Token { Value = "b" }, Right = new Token { Value = "c" } },
         });
-        Assert.Equivalent(SpreadsheetMLCalculation.Parse("a*b+c"), new Expression()
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("a*b+c"), new Expression
         {
             Operator = "+",
-            Left = new Expression() { Operator = "*", Left = new Token() { Value = "a" }, Right = new Token() { Value = "b" } },
-            Right = new Token() { Value = "c" },
+            Left = new Expression { Operator = "*", Left = new Token { Value = "a" }, Right = new Token { Value = "b" } },
+            Right = new Token { Value = "c" },
         });
-        Assert.Equivalent(SpreadsheetMLCalculation.Parse("(a+b)*(c-d)"), new Expression()
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("(a+b)*(c-d)"), new Expression
         {
             Operator = "*",
-            Left = new Unary() { Operator = "()", Value = new Expression() { Operator = "+", Left = new Token() { Value = "a" }, Right = new Token() { Value = "b" } } },
-            Right = new Unary() { Operator = "()", Value = new Expression() { Operator = "-", Left = new Token() { Value = "c" }, Right = new Token() { Value = "d" } } },
+            Left = new Unary { Operator = "()", Value = new Expression { Operator = "+", Left = new Token { Value = "a" }, Right = new Token { Value = "b" } } },
+            Right = new Unary { Operator = "()", Value = new Expression { Operator = "-", Left = new Token { Value = "c" }, Right = new Token { Value = "d" } } },
         });
-        Assert.Equivalent(SpreadsheetMLCalculation.Parse("+a"), new Unary() { Operator = "+", Value = new Token() { Value = "a" } });
-        Assert.Equivalent(SpreadsheetMLCalculation.Parse("-a*b"), new Expression()
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("+a"), new Unary { Operator = "+", Value = new Token { Value = "a" } });
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("-a*b"), new Expression
         {
             Operator = "*",
-            Left = new Unary() { Operator = "-", Value = new Token() { Value = "a" } },
-            Right = new Token() { Value = "b" },
+            Left = new Unary { Operator = "-", Value = new Token { Value = "a" } },
+            Right = new Token { Value = "b" },
         });
         Assert.Equivalent(SpreadsheetMLCalculation.Parse("-a*b+c"), new Expression
         {
             Operator = "+",
-            Left = new Expression()
+            Left = new Expression
             {
                 Operator = "*",
-                Left = new Unary() { Operator = "-", Value = new Token() { Value = "a" } },
-                Right = new Token() { Value = "b" },
+                Left = new Unary { Operator = "-", Value = new Token { Value = "a" } },
+                Right = new Token { Value = "b" },
             },
-            Right = new Token() { Value = "c" },
+            Right = new Token { Value = "c" },
         });
         Assert.Equivalent(SpreadsheetMLCalculation.Parse("-a+b*c"), new Expression
         {
             Operator = "+",
-            Left = new Unary() { Operator = "-", Value = new Token() { Value = "a" } },
-            Right = new Expression()
+            Left = new Unary { Operator = "-", Value = new Token { Value = "a" } },
+            Right = new Expression
             {
                 Operator = "*",
-                Left = new Token() { Value = "b" },
-                Right = new Token() { Value = "c" },
+                Left = new Token { Value = "b" },
+                Right = new Token { Value = "c" },
             },
         });
     }
@@ -106,29 +106,29 @@ public class SpreadsheetMLCalculationTest
     [Fact]
     public void ParseFunctionTest()
     {
-        Assert.Equivalent(SpreadsheetMLCalculation.Parse("SUM()"), new FunctionCall() { Name = "SUM", Arguments = [] }, true);
-        Assert.Equivalent(SpreadsheetMLCalculation.Parse("SUM(1)"), new FunctionCall() { Name = "SUM", Arguments = [new Number() { Value = 1 }] }, true);
-        Assert.Equivalent(SpreadsheetMLCalculation.Parse("SUM(1,2)"), new FunctionCall()
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("SUM()"), new FunctionCall { Name = "SUM", Arguments = [] }, true);
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("SUM(1)"), new FunctionCall { Name = "SUM", Arguments = [new Number { Value = 1 }] }, true);
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("SUM(1,2)"), new FunctionCall
         {
             Name = "SUM",
             Arguments = [
-                new Number() { Value = 1 },
-                new Number() { Value = 2 },
-            ]
+                new Number { Value = 1 },
+                new Number { Value = 2 },
+            ],
         }, true);
-        Assert.Equivalent(SpreadsheetMLCalculation.Parse("SUM(1+2,3)"), new FunctionCall()
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("SUM(1+2,3)"), new FunctionCall
         {
             Name = "SUM",
             Arguments = [
-                new Expression() { Operator = "+", Left = new Number() { Value = 1 }, Right = new Number() { Value = 2 } },
-                new Number() { Value = 3 },
-            ]
+                new Expression { Operator = "+", Left = new Number { Value = 1 }, Right = new Number { Value = 2 } },
+                new Number { Value = 3 },
+            ],
         }, true);
-        Assert.Equivalent(SpreadsheetMLCalculation.Parse("(SUM())"), new Unary() { Operator = "()", Value = new FunctionCall() { Name = "SUM", Arguments = [] } }, true);
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("(SUM())"), new Unary { Operator = "()", Value = new FunctionCall { Name = "SUM", Arguments = [] } }, true);
         Assert.Equivalent(SpreadsheetMLCalculation.Parse("-SUM()"), new Unary
         {
             Operator = "-",
-            Value = new FunctionCall() { Name = "SUM", Arguments = [] }
+            Value = new FunctionCall { Name = "SUM", Arguments = [] },
         }, true);
     }
 
@@ -141,33 +141,33 @@ public class SpreadsheetMLCalculationTest
         Assert.Equivalent(SpreadsheetMLCalculation.Parse(")a"), new Error());
         Assert.Equivalent(SpreadsheetMLCalculation.Parse(",a"), new Error());
         Assert.Equivalent(SpreadsheetMLCalculation.Parse(":a"), new Error());
-        Assert.Equivalent(SpreadsheetMLCalculation.Parse("a)"), new Token() { Value = "a" });
-        Assert.Equivalent(SpreadsheetMLCalculation.Parse("a+1)"), new Expression()
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("a)"), new Token { Value = "a" });
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("a+1)"), new Expression
         {
             Operator = "+",
-            Left = new Token() { Value = "a" },
-            Right = new Number() { Value = 1 }
+            Left = new Token { Value = "a" },
+            Right = new Number { Value = 1 },
         });
-        Assert.Equivalent(SpreadsheetMLCalculation.Parse("(a+1))"), new Unary()
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("(a+1))"), new Unary
         {
             Operator = "()",
-            Value = new Expression()
+            Value = new Expression
             {
                 Operator = "+",
-                Left = new Token() { Value = "a" },
-                Right = new Number() { Value = 1 }
+                Left = new Token { Value = "a" },
+                Right = new Number { Value = 1 },
             }
         });
-        Assert.Equivalent(SpreadsheetMLCalculation.Parse("+"), new Unary()
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("+"), new Unary
         {
             Operator = "+",
             Value = new Null(),
         });
-        Assert.Equivalent(SpreadsheetMLCalculation.Parse("a+ +"), new Expression()
+        Assert.Equivalent(SpreadsheetMLCalculation.Parse("a+ +"), new Expression
         {
             Operator = "+",
-            Left = new Token() { Value = "a" },
-            Right = new Unary()
+            Left = new Token { Value = "a" },
+            Right = new Unary
             {
                 Operator = "+",
                 Value = new Null(),

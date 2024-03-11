@@ -36,7 +36,7 @@ public static partial class SpreadsheetMLExport
 
     public static CellStyle[] WriteWorkbook(ZipArchive zip, Workbook workbook, FormatNamespace format, Dictionary<string, WorksheetCalculation> calc)
     {
-        var cellstyles = new List<CellStyle>() { new() }; // index 0 cannot be used in Excel
+        var cellstyles = new List<CellStyle> { new() }; // index 0 cannot be used in Excel
         workbook.Worksheets.Each((worksheet, i) => zip
             .CreateEntry($"xl/worksheets/sheet{i + 1}.xml")
             .Open()
