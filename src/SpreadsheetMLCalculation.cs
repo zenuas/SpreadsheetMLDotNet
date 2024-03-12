@@ -55,8 +55,8 @@ public static class SpreadsheetMLCalculation
                 {
                     var (right, length) = Parse(values[(next + 1)..], parenthesis_level);
                     return right is Expression rx && rx.Operator.In("+", "-") && values[next].Value.In("*", "/")
-                        ? (new Expression() { Operator = rx.Operator, Left = new Expression() { Operator = values[next].Value, Left = left, Right = rx.Left }, Right = rx.Right }, next + length + 1)
-                        : (new Expression() { Operator = values[next].Value, Left = left, Right = right }, next + length + 1);
+                        ? (new Expression { Operator = rx.Operator, Left = new Expression { Operator = values[next].Value, Left = left, Right = rx.Left }, Right = rx.Right }, next + length + 1)
+                        : (new Expression { Operator = values[next].Value, Left = left, Right = right }, next + length + 1);
                 }
 
             case TokenTypes.LeftParenthesis:
@@ -95,7 +95,7 @@ public static class SpreadsheetMLCalculation
         if (values[0].Type == TokenTypes.LeftParenthesis)
         {
             var (value, next) = Parse(values[1..], parenthesis_level + 1);
-            return (new Unary() { Operator = "()", Value = value }, next + 2);
+            return (new Unary { Operator = "()", Value = value }, next + 2);
         }
         else if (values[0].Type == TokenTypes.RightParenthesis)
         {
@@ -104,7 +104,7 @@ public static class SpreadsheetMLCalculation
         else if (values[0].Type == TokenTypes.Operator)
         {
             var (value, next) = ParseValue(values[1..], parenthesis_level);
-            return (new Unary() { Operator = values[0].Value, Value = value }, next + 1);
+            return (new Unary { Operator = values[0].Value, Value = value }, next + 1);
         }
         else
         {
@@ -115,9 +115,9 @@ public static class SpreadsheetMLCalculation
     public static Expression TerminatedLeft(Expression parent) => parent.Left is Expression lx ? TerminatedLeft(lx) : parent;
 
     public static IFormula ParsePrimitive(TokenTypes type, string value) =>
-        type == TokenTypes.Token ? new Token() { Value = value } :
-        type == TokenTypes.String ? new Token() { Value = value } :
-        type == TokenTypes.Number ? new Number() { Value = double.Parse(value) } :
+        type == TokenTypes.Token ? new Token { Value = value } :
+        type == TokenTypes.String ? new Token { Value = value } :
+        type == TokenTypes.Number ? new Number { Value = double.Parse(value) } :
         new Error();
 
     public static (TokenTypes Type, string Value)[] ParseTokens(string formula)
