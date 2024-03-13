@@ -34,7 +34,7 @@ public static partial class SpreadsheetMLCalculation
         if (!calcwork.TryGetValue(addr, out var value))
         {
             calcwork.Add(addr, null);
-            return calcwork[addr] = Evaluate(Parse(formula.Value), calc, current_sheet);
+            return calcwork[addr] = Evaluate(calc, current_sheet, Parse(formula.Value));
         }
         else
         {
@@ -221,7 +221,7 @@ public static partial class SpreadsheetMLCalculation
             : (s[0..1], 1);
     }
 
-    public static ICellValue Evaluate(IFormula formula, Dictionary<string, WorksheetCalculation> calc, Worksheet current_sheet)
+    public static ICellValue Evaluate(Dictionary<string, WorksheetCalculation> calc, Worksheet current_sheet, IFormula formula)
     {
         switch (formula)
         {
@@ -229,17 +229,17 @@ public static partial class SpreadsheetMLCalculation
                 return CalculationCell(calc, current_sheet, token.Value);
 
             case Unary unary:
-                if (unary.Operator.In("+", "()")) return Evaluate(unary.Value, calc, current_sheet);
+                if (unary.Operator.In("+", "()")) return Evaluate(calc, current_sheet, unary.Value);
                 if (unary.Operator == "-")
                 {
-                    var value = Evaluate(unary.Value, calc, current_sheet);
+                    var value = Evaluate(calc, current_sheet, unary.Value);
                     if (value is CellValueDouble d) return new CellValueDouble { Value = -d.Value };
                 }
                 return CellValueError.VALUE;
 
             case Expression expr:
-                var left = Evaluate(expr.Left, calc, current_sheet);
-                var right = Evaluate(expr.Right, calc, current_sheet);
+                var left = Evaluate(calc, current_sheet, expr.Left);
+                var right = Evaluate(calc, current_sheet, expr.Right);
                 switch (left)
                 {
                     case CellValueString str:
