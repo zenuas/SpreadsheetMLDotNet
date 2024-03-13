@@ -1,5 +1,7 @@
-﻿namespace SpreadsheetMLDotNet.Data.Worksheets;
+﻿using SpreadsheetMLDotNet.Calculation;
 
-public interface ICellValue
+namespace SpreadsheetMLDotNet.Data.Worksheets;
+
+public interface ICellValue : IFormula
 {
 }

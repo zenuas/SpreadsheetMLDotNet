@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace SpreadsheetMLDotNet;
 
-public static class SpreadsheetMLCalculation
+public static partial class SpreadsheetMLCalculation
 {
     public static Dictionary<string, WorksheetCalculation> Calculation(Workbook workbook)
     {
@@ -75,7 +75,7 @@ public static class SpreadsheetMLCalculation
                         args.Add(arg);
                         total_length += length;
                     }
-                    var fcall = new FunctionCall { Name = fname, Arguments = args };
+                    var fcall = new FunctionCall { Name = fname.ToUpperInvariant(), Arguments = [.. args] };
                     return (left is Unary unary ? new Unary { Operator = unary.Operator, Value = fcall } : fcall, total_length);
                 }
 
@@ -263,7 +263,10 @@ public static class SpreadsheetMLCalculation
                 return new CellValueDate { Value = date.Value };
 
             case FunctionCall call:
-                break;
+                return EvaluateFunction(calc, current_sheet, call);
+
+            case ICellValue cell:
+                return cell;
         }
         return CellValueNull.Instance;
     }
