@@ -18,7 +18,7 @@ public static partial class SpreadsheetMLCalculation
 
     public static ICellValue Sum(Dictionary<string, WorksheetCalculation> calc, Worksheet current_sheet, Span<IFormula> values) =>
         values.Length == 0 ? new CellValueDouble { Value = 0 }
-        : Evaluate(calc, current_sheet, values[0]) is not CellValueDouble d
-            ? CellValueError.VALUE
-            : EvaluateDouble(d, "+", Sum(calc, current_sheet, values[1..]));
+        : Evaluate(calc, current_sheet, values[0]) is not CellValueDouble d ? CellValueError.VALUE
+        : values.Length == 1 ? d
+        : EvaluateDouble(d, "+", Sum(calc, current_sheet, values[1..]));
 }
