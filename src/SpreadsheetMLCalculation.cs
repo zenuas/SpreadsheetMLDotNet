@@ -214,9 +214,10 @@ public static partial class SpreadsheetMLCalculation
     public static (string Value, int Length) ParseOperator(string s)
     {
         var c = s[0];
-        return (c == '<' || c == '>') && 1 < s.Length && s[1] == '='
+        return !IsOperator(c) ? ("", 0) :
+            ((c == '<' || c == '>') && 1 < s.Length && s[1] == '='
             ? (s[0..2], 2)
-            : (s[0..1], 1);
+            : (s[0..1], 1));
     }
 
     public static ICellValue Evaluate(Dictionary<string, WorksheetCalculation> calc, Worksheet current_sheet, IFormula formula)
