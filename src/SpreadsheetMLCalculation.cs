@@ -112,8 +112,6 @@ public static partial class SpreadsheetMLCalculation
         }
     }
 
-    public static Expression TerminatedLeft(Expression parent) => parent.Left is Expression lx ? TerminatedLeft(lx) : parent;
-
     public static IFormula ParsePrimitive(TokenTypes type, string value) =>
         type == TokenTypes.Token ? new Token { Value = value } :
         type == TokenTypes.String ? new Token { Value = value } :
