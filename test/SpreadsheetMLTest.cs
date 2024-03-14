@@ -667,4 +667,47 @@ public class SpreadsheetMLTest
         Assert.Equal(SpreadsheetML.ConvertCellAddress(987, 727), "AAY987");
         Assert.Equal(SpreadsheetML.ConvertCellAddress(987, 728), "AAZ987");
     }
+
+    [Fact]
+    public void ConvertCellRangeTest()
+    {
+        Assert.Equal(SpreadsheetML.ConvertCellRange("A1:A1"), ((1, 1), (1, 1)));
+        Assert.Equal(SpreadsheetML.ConvertCellRange("A1:B2"), ((1, 1), (2, 2)));
+        Assert.Equal(SpreadsheetML.ConvertCellRange("B1:D3"), ((1, 2), (3, 4)));
+        Assert.Equal(SpreadsheetML.ConvertCellRange("D2:H6"), ((2, 4), (6, 8)));
+
+        Assert.Equal(SpreadsheetML.ConvertCellRange("B2:A1"), ((2, 2), (1, 1)));
+        Assert.Equal(SpreadsheetML.ConvertCellRange("D3:B1"), ((3, 4), (1, 2)));
+        Assert.Equal(SpreadsheetML.ConvertCellRange("H6:D2"), ((6, 8), (2, 4)));
+    }
+
+    [Fact]
+    public void ConvertRowRangeTest()
+    {
+        Assert.Equal(SpreadsheetML.ConvertRowRange("1:1"), (1, 1));
+        Assert.Equal(SpreadsheetML.ConvertRowRange("1:2"), (1, 2));
+        Assert.Equal(SpreadsheetML.ConvertRowRange("1:3"), (1, 3));
+        Assert.Equal(SpreadsheetML.ConvertRowRange("2:4"), (2, 4));
+        Assert.Equal(SpreadsheetML.ConvertRowRange("3:6"), (3, 6));
+
+        Assert.Equal(SpreadsheetML.ConvertRowRange("2:1"), (2, 1));
+        Assert.Equal(SpreadsheetML.ConvertRowRange("3:1"), (3, 1));
+        Assert.Equal(SpreadsheetML.ConvertRowRange("4:2"), (4, 2));
+        Assert.Equal(SpreadsheetML.ConvertRowRange("6:3"), (6, 3));
+    }
+
+    [Fact]
+    public void ConvertColumnRangeTest()
+    {
+        Assert.Equal(SpreadsheetML.ConvertColumnRange("A:A"), (1, 1));
+        Assert.Equal(SpreadsheetML.ConvertColumnRange("A:B"), (1, 2));
+        Assert.Equal(SpreadsheetML.ConvertColumnRange("A:C"), (1, 3));
+        Assert.Equal(SpreadsheetML.ConvertColumnRange("B:D"), (2, 4));
+        Assert.Equal(SpreadsheetML.ConvertColumnRange("C:F"), (3, 6));
+
+        Assert.Equal(SpreadsheetML.ConvertColumnRange("B:A"), (2, 1));
+        Assert.Equal(SpreadsheetML.ConvertColumnRange("C:A"), (3, 1));
+        Assert.Equal(SpreadsheetML.ConvertColumnRange("D:B"), (4, 2));
+        Assert.Equal(SpreadsheetML.ConvertColumnRange("F:C"), (6, 3));
+    }
 }

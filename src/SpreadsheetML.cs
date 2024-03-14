@@ -29,6 +29,24 @@ public static class SpreadsheetML
         return (int.Parse(cell[split..]), ConvertColumnNameToIndex(cell[0..split]));
     }
 
+    public static ((int Row, int Column) From, (int Row, int Column) To) ConvertCellRange(string range)
+    {
+        var split = range.IndexOf(':');
+        return (ConvertCellAddress(range[0..split]), ConvertCellAddress(range[(split + 1)..]));
+    }
+
+    public static (int From, int To) ConvertRowRange(string range)
+    {
+        var split = range.IndexOf(':');
+        return (int.Parse(range[0..split]), int.Parse(range[(split + 1)..]));
+    }
+
+    public static (int From, int To) ConvertColumnRange(string range)
+    {
+        var split = range.IndexOf(':');
+        return (ConvertColumnNameToIndex(range[0..split]), ConvertColumnNameToIndex(range[(split + 1)..]));
+    }
+
     public static string ConvertCellAddress(int row, int col) => $"{ConvertColumnIndexToName(col)}{row}";
 
     public static int ConvertColumnNameToIndex(string col) => col.Aggregate(0, (n, c) => (n * 26) + c - 'A' + 1);
