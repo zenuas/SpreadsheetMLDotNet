@@ -8,15 +8,16 @@ public class Worksheet : IRelationshipable
     public IndexedList<Row> Rows { get; init; } = new() { New = () => new() };
     public IndexedList<Column> Columns { get; init; } = new() { New = () => new() };
 
+
     public Row? GetRowOrDefault(int row) => Rows.GetOrDefault(row);
 
     public Row GetRow(int row) => Rows.GetOrNewAdd(row);
 
-    public Column? GetColumnOrDefault(string column) => Columns.GetOrDefault(SpreadsheetML.ConvertColumnNameToIndex(column));
+    public Column? GetColumnOrDefault(string column) => GetColumnOrDefault(SpreadsheetML.ConvertColumnNameToIndex(column));
 
     public Column? GetColumnOrDefault(int column) => Columns.GetOrDefault(column);
 
-    public Column GetColumn(string column) => Columns.GetOrNewAdd(SpreadsheetML.ConvertColumnNameToIndex(column));
+    public Column GetColumn(string column) => GetColumn(SpreadsheetML.ConvertColumnNameToIndex(column));
 
     public Column GetColumn(int column) => Columns.GetOrNewAdd(column);
 
