@@ -26,11 +26,12 @@ public static partial class SpreadsheetMLExport
             foreach (var (x, col) in EnumerableColumns(worksheet))
             {
                 var col_attr = new Dictionary<string, string>();
-                col_attr["min"] = col_attr["max"] = x.ToString();
                 if (TryAddAttribute(col_attr, "width", col.Width)) col_attr["customWidth"] = "1";
                 if (TryAddAttribute(col_attr, "bestFit", col.BestFitColumnWidth)) col_attr["customWidth"] = "1";
                 if (TryAddStyleIndex(col, cellstyles, out var col_styleindex)) col_attr["style"] = col_styleindex.ToString();
+                if (col_attr.Count == 0) continue;
 
+                col_attr["min"] = col_attr["max"] = x.ToString();
                 stream.WriteLine($"    <col {AttributesToString(col_attr)}/>");
             }
             stream.WriteLine("  </cols>");
