@@ -21,6 +21,8 @@ sheet.SetCell("A7", new DateTime(2000, 1, 23, 0, 0, 0));
 sheet.SetCell("A8", new DateTime(2000, 1, 23, 4, 56, 7, 89));
 sheet.GetRow(3).Height = 32.1;
 sheet.GetRow(3).Fill = new() { ForegroundColor = Color.Gray };
+sheet.GetRows("10:11").Each(x => x.Height = 38.9);
+sheet.GetColumns("J:L").Each(x => x.Width = 2.5);
 sheet.GetColumn("F").Width = 6;
 sheet.GetColumn("F").BestFitColumnWidth = true;
 sheet.GetColumn("F").Fill = new() { ForegroundColor = Color.LightCyan };
