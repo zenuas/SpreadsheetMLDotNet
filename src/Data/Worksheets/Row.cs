@@ -4,7 +4,6 @@ namespace SpreadsheetMLDotNet.Data.Worksheets;
 
 public class Row : IHaveStyle
 {
-    public int StartCellIndex { get; set; } = 0;
     public IndexedList<Cell> Cells { get; init; } = new() { New = () => new() { Value = CellValueNull.Instance } };
     public double? Height { get; set; } = null;
     public Font? Font { get; set; }
