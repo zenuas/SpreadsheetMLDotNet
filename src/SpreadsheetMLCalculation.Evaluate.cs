@@ -22,7 +22,7 @@ public static partial class SpreadsheetMLCalculation
 
     public static ICellValue CalculationCell(Dictionary<string, WorksheetCalculation> calc, Worksheet current_sheet, string addr)
     {
-        var cell = current_sheet.TryGetCell(addr);
+        var cell = current_sheet.GetCellOrDefault(addr);
         return cell is null ? CellValueNull.Instance
             : cell.Value is CellValueFormula formula ? CalculationCell(calc, current_sheet, formula, addr)
             : cell.Value;

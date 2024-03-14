@@ -71,21 +71,9 @@ public static partial class SpreadsheetMLExport
         stream.WriteLine("</worksheet>");
     }
 
-    public static IEnumerable<(int Index, Row Row)> EnumerableRows(Worksheet worksheet)
-    {
-        for (var y = 0; y < worksheet.Rows.Count; y++)
-        {
-            yield return (y + worksheet.StartRowIndex, worksheet.Rows[y]);
-        }
-    }
+    public static IEnumerable<(int Index, Row Row)> EnumerableRows(Worksheet worksheet) => worksheet.Rows.GetEnumerableWithIndex();
 
-    public static IEnumerable<(int Index, Cell Cell)> EnumerableCells(Row row)
-    {
-        for (var x = 0; x < row.Cells.Count; x++)
-        {
-            yield return (x + row.StartCellIndex, row.Cells[x]);
-        }
-    }
+    public static IEnumerable<(int Index, Cell Cell)> EnumerableCells(Row row) => row.Cells.GetEnumerableWithIndex();
 
     public static IEnumerable<(int Row, int Column, Cell Cell, Worksheet Worksheet)> EnumerableCells(Workbook workbook)
     {
@@ -109,13 +97,7 @@ public static partial class SpreadsheetMLExport
         }
     }
 
-    public static IEnumerable<(int Index, Column Column)> EnumerableColumns(Worksheet worksheet)
-    {
-        for (var x = 0; x < worksheet.Columns.Count; x++)
-        {
-            yield return (x + worksheet.StartColumnIndex, worksheet.Columns[x]);
-        }
-    }
+    public static IEnumerable<(int Index, Column Column)> EnumerableColumns(Worksheet worksheet) => worksheet.Columns.GetEnumerableWithIndex();
 
     public static (CellTypes CellType, string EscapedValue) GetCellValueFormat(ICellValue value) => value switch
     {
