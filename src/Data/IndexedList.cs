@@ -24,13 +24,13 @@ public class IndexedList<T> : List<T> where T : class
 
         if (StartIndex < 1 || index < StartIndex)
         {
-            StartIndex = index;
             if (StartIndex >= 1 && index + 1 < StartIndex) InsertRange(0, Lists.Repeat(0).Take(StartIndex - index - 1).Select(_ => New()));
+            StartIndex = index;
             Insert(0, value);
         }
         else if (index > StartIndex + Count - 1)
         {
-            if (index > StartIndex + Count - 1) AddRange(Lists.Repeat(0).Take(index - StartIndex - Count).Select(_ => New()));
+            if (index > StartIndex + Count) AddRange(Lists.Repeat(0).Take(index - StartIndex - Count).Select(_ => New()));
             Add(value);
         }
         else
