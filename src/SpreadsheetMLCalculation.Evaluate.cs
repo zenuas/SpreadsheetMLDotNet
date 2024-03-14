@@ -34,7 +34,7 @@ public static partial class SpreadsheetMLCalculation
         if (!calcwork.TryGetValue(addr, out var value))
         {
             calcwork.Add(addr, null);
-            return calcwork[addr] = Evaluate(calc, current_sheet, Parse(formula.Value));
+            return calcwork[addr] = Evaluate(calc, current_sheet, SpreadsheetMLParser.Parse(formula.Value));
         }
         else
         {

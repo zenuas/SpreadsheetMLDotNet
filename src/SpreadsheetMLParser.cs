@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SpreadsheetMLDotNet;
 
-public static partial class SpreadsheetMLCalculation
+public static class SpreadsheetMLParser
 {
     public static IFormula Parse(string formula) => Parse(ParseTokens(formula), 0).Formula;
 
