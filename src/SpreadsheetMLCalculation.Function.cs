@@ -7,14 +7,11 @@ namespace SpreadsheetMLDotNet;
 
 public static partial class SpreadsheetMLCalculation
 {
-    public static ICellValue EvaluateFunction(Dictionary<string, WorksheetCalculation> calc, Worksheet current_sheet, FunctionCall call)
+    public static ICellValue EvaluateFunction(Dictionary<string, WorksheetCalculation> calc, Worksheet current_sheet, FunctionCall call) => call.Name switch
     {
-        switch (call.Name)
-        {
-            case "SUM": return Sum(calc, current_sheet, call.Arguments);
-        }
-        return CellValueError.NAME;
-    }
+        "SUM" => Sum(calc, current_sheet, call.Arguments),
+        _ => CellValueError.NAME,
+    };
 
     public static ICellValue Sum(Dictionary<string, WorksheetCalculation> calc, Worksheet current_sheet, Span<IFormula> values) =>
         values.Length == 0 ? new CellValueDouble { Value = 0 }
