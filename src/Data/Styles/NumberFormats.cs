@@ -1,4 +1,6 @@
-﻿namespace SpreadsheetMLDotNet.Data.Styles;
+﻿using SpreadsheetMLDotNet.Attributes;
+
+namespace SpreadsheetMLDotNet.Data.Styles;
 
 public enum NumberFormats
 {
@@ -52,46 +54,55 @@ public enum NumberFormats
     /// <summary>
     /// mm-dd-yy
     /// </summary>
+    [IsDateTime]
     GeneralDateShort = 14,
 
     /// <summary>
     /// d-mmm-yy
     /// </summary>
+    [IsDateTime]
     GeneralDateLong = 15,
 
     /// <summary>
     /// d-mmm
     /// </summary>
+    [IsDateTime]
     GeneralDateMonthDay = 16,
 
     /// <summary>
     /// mmm-yy
     /// </summary>
+    [IsDateTime]
     GeneralDateYearMonth = 17,
 
     /// <summary>
     /// h:mm AM/PM
     /// </summary>
+    [IsDateTime]
     GeneralTimeHourMinute_AMPM = 18,
 
     /// <summary>
     /// h:mm:ss AM/PM
     /// </summary>
+    [IsDateTime]
     GeneralTimeHourMinuteSecond_AMPM = 19,
 
     /// <summary>
     /// h:mm
     /// </summary>
+    [IsDateTime]
     GeneralTimeHourMinute = 20,
 
     /// <summary>
     /// h:mm:ss
     /// </summary>
+    [IsDateTime]
     GeneralTimeHourMinuteSecond = 21,
 
     /// <summary>
     /// m/d/yy h:mm
     /// </summary>
+    [IsDateTime]
     GeneralDateTime = 22,
 
     /// <summary>
@@ -117,6 +128,7 @@ public enum NumberFormats
     /// <summary>
     /// mm:ss
     /// </summary>
+    [IsDateTime]
     GeneralTimeMinuteSecond = 45,
 
     /// <summary>
@@ -127,6 +139,7 @@ public enum NumberFormats
     /// <summary>
     /// mmss.0
     /// </summary>
+    [IsDateTime]
     GeneralTimeMinuteSecondDecimal = 47,
 
     /// <summary>
@@ -145,6 +158,7 @@ public enum NumberFormats
     /// ja-jp: [$-411]ge.m.d
     /// ko-kr: yyyy"年" mm"月" dd"日"
     /// </summary>
+    [IsDateTime]
     LocalEraDateShort = 27,
 
     /// <summary>
@@ -153,6 +167,7 @@ public enum NumberFormats
     /// ja-jp: [$-411]ggge"年"m"月"d"日"
     /// ko-kr: mm-dd
     /// </summary>
+    [IsDateTime]
     LocalEraDateLong = 28,
 
     /// <summary>
@@ -161,6 +176,7 @@ public enum NumberFormats
     /// ja-jp: [$-411]ggge"年"m"月"d"日"
     /// ko-kr: mm-dd
     /// </summary>
+    [IsDateTime]
     LocalEraDateLong2 = 29,
 
     /// <summary>
@@ -169,6 +185,7 @@ public enum NumberFormats
     /// ja-jp: m/d/yy
     /// ko-kr: mm-dd-yy
     /// </summary>
+    [IsDateTime]
     LocalDateShort = 30,
 
     /// <summary>
@@ -177,6 +194,7 @@ public enum NumberFormats
     /// ja-jp: yyyy"年"m"月"d"日"
     /// ko-kr: yyyy"년" mm"월" dd"일"
     /// </summary>
+    [IsDateTime]
     LocalDateLong = 31,
 
     /// <summary>
@@ -185,6 +203,7 @@ public enum NumberFormats
     /// ja-jp: h"時"mm"分"
     /// ko-kr: h"시" mm"분"
     /// </summary>
+    [IsDateTime]
     LocalTimeHourMinute = 32,
 
     /// <summary>
@@ -193,6 +212,7 @@ public enum NumberFormats
     /// ja-jp: h"時"mm"分"ss"秒"
     /// ko-kr: h"시" mm"분" ss"초"
     /// </summary>
+    [IsDateTime]
     LocalTimeHourMinuteSecond = 33,
 
     /// <summary>
@@ -201,6 +221,7 @@ public enum NumberFormats
     /// ja-jp: yyyy"年"m"月"
     /// ko-kr: yyyy-mm-dd
     /// </summary>
+    [IsDateTime]
     Local34 = 34,
 
     /// <summary>
@@ -209,6 +230,7 @@ public enum NumberFormats
     /// ja-jp: m"月"d"日"
     /// ko-kr: yyyy-mm-dd
     /// </summary>
+    [IsDateTime]
     Local35 = 35,
 
     /// <summary>
@@ -217,6 +239,7 @@ public enum NumberFormats
     /// ja-jp: [$-411]ge.m.d
     /// ko-kr: yyyy"年" mm"月" dd"日"
     /// </summary>
+    [IsDateTime]
     Local36 = 36,
 
     /// <summary>
@@ -225,6 +248,7 @@ public enum NumberFormats
     /// ja-jp: [$-411]ge.m.d
     /// ko-kr: yyyy"年" mm"月" dd"日"
     /// </summary>
+    [IsDateTime]
     Local50 = 50,
 
     /// <summary>
@@ -233,6 +257,7 @@ public enum NumberFormats
     /// ja-jp: [$-411]ggge"年"m"月"d"日"
     /// ko-kr: mm-dd
     /// </summary>
+    [IsDateTime]
     Local51 = 51,
 
     /// <summary>
@@ -241,6 +266,7 @@ public enum NumberFormats
     /// ja-jp: yyyy"年"m"月"
     /// ko-kr: yyyy-mm-dd
     /// </summary>
+    [IsDateTime]
     Local52 = 52,
 
     /// <summary>
@@ -249,6 +275,7 @@ public enum NumberFormats
     /// ja-jp: m"月"d"日"
     /// ko-kr: yyyy-mm-dd
     /// </summary>
+    [IsDateTime]
     Local53 = 53,
 
     /// <summary>
@@ -257,6 +284,7 @@ public enum NumberFormats
     /// ja-jp: [$-411]ggge"年"m"月"d"日"
     /// ko-kr: mm-dd
     /// </summary>
+    [IsDateTime]
     Local54 = 54,
 
     /// <summary>
@@ -265,6 +293,7 @@ public enum NumberFormats
     /// ja-jp: yyyy"年"m"月"
     /// ko-kr: yyyy-mm-dd
     /// </summary>
+    [IsDateTime]
     Local55 = 55,
 
     /// <summary>
@@ -273,6 +302,7 @@ public enum NumberFormats
     /// ja-jp: m"月"d"日"
     /// ko-kr: yyyy-mm-dd
     /// </summary>
+    [IsDateTime]
     Local56 = 56,
 
     /// <summary>
@@ -281,6 +311,7 @@ public enum NumberFormats
     /// ja-jp: [$-411]ge.m.d
     /// ko-kr: yyyy"年" mm"月" dd"日"
     /// </summary>
+    [IsDateTime]
     Local57 = 57,
 
     /// <summary>
@@ -289,6 +320,7 @@ public enum NumberFormats
     /// ja-jp: [$-411]ggge"年"m"月"d"日"
     /// ko-kr: mm-dd
     /// </summary>
+    [IsDateTime]
     Local58 = 58,
 
     /// <summary>
@@ -334,55 +366,66 @@ public enum NumberFormats
     /// <summary>
     /// th-th: ว/ด/ปปปป
     /// </summary>
+    [IsDateTime]
     Local71 = 71,
 
     /// <summary>
     /// th-th: ว-ดดด-ปป
     /// </summary>
+    [IsDateTime]
     Local72 = 72,
 
     /// <summary>
     /// th-th: ว-ดดด
     /// </summary>
+    [IsDateTime]
     Local73 = 73,
 
     /// <summary>
     /// th-th: ดดด-ปป
     /// </summary>
+    [IsDateTime]
     Local74 = 74,
 
     /// <summary>
     /// th-th: ช:นน
     /// </summary>
+    [IsDateTime]
     Local75 = 75,
 
     /// <summary>
     /// th-th: ช:นน:ทท
     /// </summary>
+    [IsDateTime]
     Local76 = 76,
 
     /// <summary>
     /// th-th: ว/ด/ปปปป ช:นน
     /// </summary>
+    [IsDateTime]
     Local77 = 77,
 
     /// <summary>
     /// th-th: นน:ทท
     /// </summary>
+    [IsDateTime]
     Local78 = 78,
 
     /// <summary>
     /// th-th: [ช]:นน:ทท
     /// </summary>
+    [IsDateTime]
     Local79 = 79,
 
     /// <summary>
     /// th-th: นน:ทท.0
     /// </summary>
+    [IsDateTime]
     Local80 = 80,
 
     /// <summary>
     /// th-th: d/m/bb
     /// </summary>
+    [IsDateTime]
     Local81 = 81,
 }
