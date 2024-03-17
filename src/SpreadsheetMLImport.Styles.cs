@@ -149,4 +149,13 @@ public static partial class SpreadsheetMLImport
         }
         return [.. cellstyles];
     }
+
+    public static void SetStyle(IHaveStyle style, CellStyle cellstyle)
+    {
+        if (cellstyle.Font is { } font) style.Font = font;
+        if (cellstyle.Fill is { } fill) style.Fill = fill;
+        if (cellstyle.Border is { } border) style.Border = border;
+        if (cellstyle.Alignment is { } alignment) style.Alignment = alignment;
+        if (cellstyle.NumberFormat is { } format) style.NumberFormat = format;
+    }
 }

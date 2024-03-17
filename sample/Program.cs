@@ -54,3 +54,4 @@ foreach (var name in workbook.WorkSheetNames)
 }
 
 var workbook2 = SpreadsheetML.Import("New.Strict.xlsx");
+SpreadsheetML.Export("New.Strict2.xlsx", workbook2, FormatNamespace.Strict);

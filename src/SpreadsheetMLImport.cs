@@ -1,15 +1,12 @@
 ﻿using Mina.Extension;
 using SpreadsheetMLDotNet.Data.Workbook;
-using SpreadsheetMLDotNet.Data.Worksheets;
 using SpreadsheetMLDotNet.Extension;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Xml;
 
 namespace SpreadsheetMLDotNet;
 
@@ -42,7 +39,7 @@ public static partial class SpreadsheetMLImport
         {
             Worksheets = name_ids.Select(nameid => entries[id_to_sheetpath[nameid.Id]]
                 .Open()
-                .Using(x => ReadWorksheet(x, nameid.Name, shared_strings)))
+                .Using(x => ReadWorksheet(x, nameid.Name, shared_strings, cellstyles)))
                 .ToList()
         };
     }
@@ -55,7 +52,7 @@ public static partial class SpreadsheetMLImport
 
     public static bool ToBool(string value) => value == "1";
 
-    public static Color ToColor(string value) => Color.FromName(value);
+    public static Color ToColor(string value) => Colors.FromStringArgb(value);
 
     public static DateTime ToDateTime(string value) => DateTime.Parse(value);
 
@@ -64,17 +61,4 @@ public static partial class SpreadsheetMLImport
     public static T ToEnum<T>(string value) where T : struct => Enum.Parse<T>(value);
 
     public static T? ToEnumAlias<T>(string value) where T : struct, Enum => Enums.ParseWithAlias<T>(value);
-
-    public static Worksheet ReadWorksheet(Stream worksheet, string sheet_name, Dictionary<int, string> shared_strings)
-    {
-        var sheet = new Worksheet { Name = sheet_name };
-        var cell = "";
-        var v = "";
-        var t = CellTypes.Number;
-        foreach (var (reader, hierarchy) in XmlReader.Create(worksheet)
-            .UsingDefer(x => x.GetIteratorWithHierarchy()))
-        {
-        }
-        return sheet;
-    }
 }
