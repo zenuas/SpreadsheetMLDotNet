@@ -91,7 +91,7 @@ public static class SpreadsheetMLReader
 
     public static (string Name, string Id)[] ReadSheetNameToId(Stream workbook) => XmlReader.Create(workbook)
         .UsingDefer(x => x.GetIteratorWithHierarchy())
-        .Where(x => x.Reader.NodeType == XmlNodeType.Element && x.Hierarchy.Join("/") == "workbook/sheets/sheet")
+        .Where(x => x.Hierarchy.Join("/") == "workbook/sheets/sheet/:START")
         .Select(x => (
                 x.Reader.GetAttribute("name")!,
                 (
@@ -104,7 +104,7 @@ public static class SpreadsheetMLReader
 
     public static Dictionary<int, string> ReadSharedStrings(Stream shared_strings) => XmlReader.Create(shared_strings)
         .UsingDefer(x => x.GetIteratorWithHierarchy())
-        .Where(x => x.Reader.NodeType == XmlNodeType.Text && x.Hierarchy.Join("/") == "sst/si/t")
+        .Where(x => x.Hierarchy.Join("/") == "sst/si/t/:START")
         .Select((x, i) => (Index: i, x.Reader.Value))
         .ToDictionary(x => x.Index, x => x.Value);
 
@@ -115,9 +115,10 @@ public static class SpreadsheetMLReader
         var t = CellTypes.Number;
         foreach (var (reader, hierarchy) in XmlReader.Create(worksheet)
             .UsingDefer(x => x.GetIteratorWithHierarchy())
-            .Where(x =>
-                (x.Reader.NodeType == XmlNodeType.Text && x.Hierarchy.Join("/") == "worksheet/sheetData/row/c/v") ||
-                (x.Reader.NodeType.InStruct(XmlNodeType.Element, XmlNodeType.EndElement) && x.Hierarchy.Join("/") == "worksheet/sheetData/row/c"))
+            .Where(x => x.Hierarchy.Join("/").In(
+                "worksheet/sheetData/row/c/v/:TEXT",
+                "worksheet/sheetData/row/c/:START",
+                "worksheet/sheetData/row/c/:END"))
             )
         {
 
