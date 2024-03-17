@@ -14,6 +14,10 @@ public static class SpreadsheetML
 
     public static WorkbookReader CreateWorkbookReader(Stream stream, bool leave_open = false) => SpreadsheetMLReader.OpenReader(stream, leave_open);
 
+    public static Workbook Import(string xlsx_path) => Import(File.OpenRead(xlsx_path));
+
+    public static Workbook Import(Stream stream, bool leave_open = false) => SpreadsheetMLImport.DoImport(stream, leave_open);
+
     public static void Export(string export_path, Workbook workbook, FormatNamespace format = FormatNamespace.Strict) => Export(export_path, workbook, SpreadsheetMLCalculation.Calculation(workbook), format);
 
     public static void Export(string export_path, Workbook workbook, Dictionary<string, WorksheetCalculation> calc, FormatNamespace format = FormatNamespace.Strict) => File.Create(export_path).Using(x => Export(x, workbook, calc, false, format));

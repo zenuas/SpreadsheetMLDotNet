@@ -52,3 +52,5 @@ foreach (var name in workbook.WorkSheetNames)
         Console.WriteLine($"{cell} = {value}");
     }
 }
+
+var workbook2 = SpreadsheetML.Import("New.Strict.xlsx");
