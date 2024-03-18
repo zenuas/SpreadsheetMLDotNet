@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using SpreadsheetMLDotNet.Data.Address;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,4 +52,10 @@ public class Worksheet : IRelationshipable
     public void SetCell(string address, Cell cell) => SpreadsheetML.ConvertCellAddress(address).Return(x => SetCell(x.Row, x.Column, cell));
 
     public void SetCell(int row, int column, Cell cell) => Rows.GetOrNewAdd(row).Cells.SetValue(column, cell);
+
+    public void MergeRows(RowAddressRange range) { }
+
+    public void MergeColumns(ColumnAddressRange range) { }
+
+    public void MergeCells(CellAddressRange range) { }
 }

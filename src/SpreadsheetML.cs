@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using SpreadsheetMLDotNet.Data;
+using SpreadsheetMLDotNet.Data.Address;
 using SpreadsheetMLDotNet.Data.Workbook;
 using SpreadsheetMLDotNet.Data.Worksheets;
 using System.Collections.Generic;
@@ -27,28 +28,28 @@ public static class SpreadsheetML
     public static void Export(Stream stream, Workbook workbook, Dictionary<string, WorksheetCalculation> calc, bool leave_open = false, FormatNamespace format = FormatNamespace.Strict) => SpreadsheetMLExport.DoExport(stream, workbook, calc, leave_open, format);
 
 
-    public static (int Row, int Column) ConvertCellAddress(string cell)
+    public static CellAddress ConvertCellAddress(string cell)
     {
         var split = cell.IndexOfAny(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']);
-        return (int.Parse(cell[split..]), ConvertColumnNameToIndex(cell[0..split]));
+        return new() { Row = int.Parse(cell[split..]), Column = ConvertColumnNameToIndex(cell[0..split]) };
     }
 
-    public static ((int Row, int Column) From, (int Row, int Column) To) ConvertCellRange(string range)
+    public static CellAddressRange ConvertCellRange(string range)
     {
         var split = range.IndexOf(':');
-        return (ConvertCellAddress(range[0..split]), ConvertCellAddress(range[(split + 1)..]));
+        return new() { From = ConvertCellAddress(range[0..split]), To = ConvertCellAddress(range[(split + 1)..]) };
     }
 
-    public static (int From, int To) ConvertRowRange(string range)
+    public static RowAddressRange ConvertRowRange(string range)
     {
         var split = range.IndexOf(':');
-        return (int.Parse(range[0..split]), int.Parse(range[(split + 1)..]));
+        return new() { From = int.Parse(range[0..split]), To = int.Parse(range[(split + 1)..]) };
     }
 
-    public static (int From, int To) ConvertColumnRange(string range)
+    public static ColumnAddressRange ConvertColumnRange(string range)
     {
         var split = range.IndexOf(':');
-        return (ConvertColumnNameToIndex(range[0..split]), ConvertColumnNameToIndex(range[(split + 1)..]));
+        return new() { From = ConvertColumnNameToIndex(range[0..split]), To = ConvertColumnNameToIndex(range[(split + 1)..]) };
     }
 
     public static string ConvertCellAddress(int row, int col) => $"{ConvertColumnIndexToName(col)}{row}";
