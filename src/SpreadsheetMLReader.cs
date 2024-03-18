@@ -117,6 +117,8 @@ public static class SpreadsheetMLReader
             .UsingDefer(x => x.GetIteratorWithHierarchy())
             .Where(x => x.Hierarchy.Join("/").In(
                 "worksheet/sheetData/row/c/v/:TEXT",
+                "worksheet/sheetData/row/c/is/t/:TEXT",
+                "worksheet/sheetData/row/c/is/r/t/:TEXT",
                 "worksheet/sheetData/row/c/:START",
                 "worksheet/sheetData/row/c/:END"))
             )
@@ -134,7 +136,7 @@ public static class SpreadsheetMLReader
             }
             else
             {
-                v = reader.Value;
+                v += reader.Value;
             }
         }
     }
