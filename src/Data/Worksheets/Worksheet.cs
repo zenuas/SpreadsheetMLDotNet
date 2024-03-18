@@ -11,6 +11,7 @@ public class Worksheet : IRelationshipable
     public required string Name { get; set; }
     public IndexedList<Row> Rows { get; init; } = new() { New = () => new() };
     public IndexedList<Column> Columns { get; init; } = new() { New = () => new() };
+    public List<IAddressRange> Merges { get; init; } = [];
 
 
     public Row? GetRowOrDefault(int row) => Rows.GetOrDefault(row);
@@ -53,9 +54,11 @@ public class Worksheet : IRelationshipable
 
     public void SetCell(int row, int column, Cell cell) => Rows.GetOrNewAdd(row).Cells.SetValue(column, cell);
 
-    public void MergeRows(RowAddressRange range) { }
+    public void MergeRows(RowAddressRange range) => Merges.Add(range);
 
-    public void MergeColumns(ColumnAddressRange range) { }
+    public void MergeColumns(ColumnAddressRange range) => Merges.Add(range);
 
-    public void MergeCells(CellAddressRange range) { }
+    public void MergeCells(CellAddressRange range) => Merges.Add(range);
+
+    public void Merge(IAddressRange range) => Merges.Add(range);
 }

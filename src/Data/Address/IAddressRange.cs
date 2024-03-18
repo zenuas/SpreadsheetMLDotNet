@@ -2,4 +2,5 @@
 
 public interface IAddressRange
 {
+    public string ToAddressName();
 }

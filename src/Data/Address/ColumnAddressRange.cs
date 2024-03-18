@@ -11,4 +11,6 @@ public readonly struct ColumnAddressRange : IAddressRange
     public static implicit operator ColumnAddressRange((string From, string To) range) => new() { From = SpreadsheetML.ConvertColumnNameToIndex(range.From), To = SpreadsheetML.ConvertColumnNameToIndex(range.To) };
 
     public static implicit operator ColumnAddressRange(string range) => SpreadsheetML.ConvertColumnRange(range);
+
+    public string ToAddressName() => $"{From}:{To}";
 }

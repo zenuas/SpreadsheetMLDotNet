@@ -69,6 +69,15 @@ public static partial class SpreadsheetMLExport
             if (row.Cells.Count > 0) stream.WriteLine("    </row>");
         }
         if (worksheet.Rows.Count > 0) stream.WriteLine("  </sheetData>");
+        if (worksheet.Merges.Count > 0)
+        {
+            stream.WriteLine($"""  <mergeCells count="{worksheet.Merges.Count}">""");
+            foreach (var merge in worksheet.Merges)
+            {
+                stream.WriteLine($"""    <mergeCell ref="{merge.ToAddressName()}"/>""");
+            }
+            stream.WriteLine("  </mergeCells>");
+        }
         stream.WriteLine("</worksheet>");
     }
 

@@ -9,4 +9,6 @@ public readonly struct RowAddressRange : IAddressRange
     public static implicit operator RowAddressRange((int From, int To) range) => new() { From = range.From, To = range.To };
 
     public static implicit operator RowAddressRange(string range) => SpreadsheetML.ConvertRowRange(range);
+
+    public string ToAddressName() => $"{From}:{To}";
 }

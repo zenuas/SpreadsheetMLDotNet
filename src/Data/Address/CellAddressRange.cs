@@ -11,4 +11,6 @@ public readonly struct CellAddressRange : IAddressRange
     public static implicit operator CellAddressRange((string From, string To) range) => new() { From = range.From, To = range.To };
 
     public static implicit operator CellAddressRange(string range) => SpreadsheetML.ConvertCellRange(range);
+
+    public string ToAddressName() => $"{From}:{To}";
 }
