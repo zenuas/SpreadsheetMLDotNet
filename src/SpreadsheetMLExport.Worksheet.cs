@@ -64,15 +64,15 @@ public static partial class SpreadsheetMLExport
                     stream.WriteLine("        <is>");
                     foreach (var rt in instr.Values)
                     {
-                        stream.WriteLine("        <r>");
+                        stream.WriteLine("          <r>");
                         if (ExistsFontSetting(rt))
                         {
-                            stream.WriteLine("          <rPr>");
-                            WriteFontAttribute(stream, 10, rt);
-                            stream.WriteLine("          </rPr>");
+                            stream.WriteLine("            <rPr>");
+                            WriteFontAttribute(stream, 14, rt);
+                            stream.WriteLine("            </rPr>");
                         }
-                        stream.WriteLine($"          <t>{SecurityElement.Escape(rt.Text)}</t>");
-                        stream.WriteLine("        </r>");
+                        stream.WriteLine($"            <t>{SecurityElement.Escape(rt.Text)}</t>");
+                        stream.WriteLine("          </r>");
                     }
                     stream.WriteLine("        </is>");
                     stream.WriteLine("      </c>");
