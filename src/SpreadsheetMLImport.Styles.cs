@@ -113,14 +113,9 @@ public static partial class SpreadsheetMLImport
                     if (reader.GetAttribute("applyNumberFormat") is { } applyNumberFormat && ToBool(applyNumberFormat))
                     {
                         var numFmtId = ToInt(reader.GetAttribute("numFmtId")!);
-                        if (formats.TryGetValue(numFmtId, out var value))
-                        {
-                            cellstyle.NumberFormat = value;
-                        }
-                        else
-                        {
-                            cellstyle.NumberFormat = new NumberFormatId { FormatId = ToEnum<NumberFormats>(numFmtId) };
-                        }
+                        cellstyle.NumberFormat = formats.TryGetValue(numFmtId, out var value)
+                            ? value
+                            : new NumberFormatId { FormatId = ToEnum<NumberFormats>(numFmtId) };
                     }
                     hasAlignment = reader.GetAttribute("applyAlignment") is { } applyAlignment && ToBool(applyAlignment);
                     break;
