@@ -1,4 +1,5 @@
-﻿using SpreadsheetMLDotNet.Data;
+﻿using Mina.Extension;
+using SpreadsheetMLDotNet.Data;
 using SpreadsheetMLDotNet.Data.Styles;
 using SpreadsheetMLDotNet.Extension;
 using System.Collections.Generic;
@@ -52,42 +53,14 @@ public static partial class SpreadsheetMLExport
         stream.WriteLine($"""  <fonts count="{fonts.Count}">""");
         foreach (var font in fonts)
         {
-            if (font.FontName == "" &&
-                font.CharacterSet is null &&
-                font.FontFamily is null &&
-                font.Bold is null &&
-                font.Italic is null &&
-                font.StrikeThrough is null &&
-                font.Outline is null &&
-                font.Shadow is null &&
-                font.Condense is null &&
-                font.Extend is null &&
-                font.Color is null &&
-                font.FontSize is null &&
-                font.Underline is null &&
-                font.VerticalAlignment is null &&
-                font.Scheme is null)
+            if (!ExistsFontSetting(font))
             {
                 stream.WriteLine("    <font/>");
             }
             else
             {
                 stream.WriteLine("    <font>");
-                TryWriteElement(stream, 6, "name", "val", font.FontName);
-                TryWriteElement(stream, 6, "charset", "val", font.CharacterSet);
-                TryWriteElement(stream, 6, "family", "val", font.FontFamily);
-                TryWriteElement(stream, 6, "b", "val", font.Bold);
-                TryWriteElement(stream, 6, "i", "val", font.Italic);
-                TryWriteElement(stream, 6, "strike", "val", font.StrikeThrough);
-                TryWriteElement(stream, 6, "outline", "val", font.Outline);
-                TryWriteElement(stream, 6, "shadow", "val", font.Shadow);
-                TryWriteElement(stream, 6, "condense", "val", font.Condense);
-                TryWriteElement(stream, 6, "extend", "val", font.Extend);
-                TryWriteElement(stream, 6, "color", "rgb", font.Color);
-                TryWriteElement(stream, 6, "sz", "val", font.FontSize);
-                TryWriteElementEnumAlias(stream, 6, "u", "val", font.Underline);
-                TryWriteElementEnumAlias(stream, 6, "vertAlign", "val", font.VerticalAlignment);
-                TryWriteElementEnumAlias(stream, 6, "scheme", "val", font.Scheme);
+                WriteFontAttribute(stream, 6, font);
                 stream.WriteLine("    </font>");
             }
         }
@@ -189,5 +162,41 @@ public static partial class SpreadsheetMLExport
         stream.WriteLine("  </cellXfs>");
 
         stream.WriteLine("</styleSheet>");
+    }
+
+    public static bool ExistsFontSetting(IFont font) =>
+        font.FontName != "" ||
+        font.CharacterSet is not null ||
+        font.FontFamily is not null ||
+        font.Bold is not null ||
+        font.Italic is not null ||
+        font.StrikeThrough is not null ||
+        font.Outline is not null ||
+        font.Shadow is not null ||
+        font.Condense is not null ||
+        font.Extend is not null ||
+        font.Color is not null ||
+        font.FontSize is not null ||
+        font.Underline is not null ||
+        font.VerticalAlignment is not null ||
+        font.Scheme is not null;
+
+    public static void WriteFontAttribute(Stream stream, int indent, IFont font)
+    {
+        TryWriteElement(stream, indent, "name", "val", font.FontName);
+        TryWriteElement(stream, indent, "charset", "val", font.CharacterSet);
+        TryWriteElement(stream, indent, "family", "val", font.FontFamily);
+        TryWriteElement(stream, indent, "b", "val", font.Bold);
+        TryWriteElement(stream, indent, "i", "val", font.Italic);
+        TryWriteElement(stream, indent, "strike", "val", font.StrikeThrough);
+        TryWriteElement(stream, indent, "outline", "val", font.Outline);
+        TryWriteElement(stream, indent, "shadow", "val", font.Shadow);
+        TryWriteElement(stream, indent, "condense", "val", font.Condense);
+        TryWriteElement(stream, indent, "extend", "val", font.Extend);
+        TryWriteElement(stream, indent, "color", "rgb", font.Color);
+        TryWriteElement(stream, indent, "sz", "val", font.FontSize);
+        TryWriteElementEnumAlias(stream, indent, "u", "val", font.Underline);
+        TryWriteElementEnumAlias(stream, indent, "vertAlign", "val", font.VerticalAlignment);
+        TryWriteElementEnumAlias(stream, indent, "scheme", "val", font.Scheme);
     }
 }

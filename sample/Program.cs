@@ -41,6 +41,11 @@ sheet.GetCell("A8").NumberFormat = new NumberFormatCode { FormatCode = "yyyy/mm/
 sheet.GetCell("A8").Alignment = new() { ShrinkToFit = true };
 sheet.MergeCells("B10:C11");
 sheet.MergeColumns("N:O");
+var rt = new CellValueInlineString();
+rt.Values.Add(new() { Text = "a" });
+rt.Values.Add(new() { Text = "b", Bold = true });
+rt.Values.Add(new() { Text = "c", Color = Color.Red });
+sheet.SetCell("B14", new Cell { Value = rt });
 SpreadsheetML.Export("New.Strict.xlsx", book, FormatNamespace.Strict);
 SpreadsheetML.Export("New.Transitional.xlsx", book, FormatNamespace.Transitional);
 

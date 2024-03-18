@@ -2,9 +2,9 @@
 
 namespace SpreadsheetMLDotNet.Data.Styles;
 
-public struct Font() : IFont
+public interface IFont
 {
-    public string FontName { get; set; } = "";
+    public string FontName { get; set; }
     public CharacterSets? CharacterSet { get; set; }
     public FontFamilies? FontFamily { get; set; }
     public bool? Bold { get; set; }

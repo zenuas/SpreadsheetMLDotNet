@@ -58,8 +58,26 @@ public static partial class SpreadsheetMLExport
                 var (cell_type, escaped_value) = GetCellValueFormat(cell.Value is CellValueFormula && calc.TryGetValue(worksheet.Name, out var xc) && xc.Calculation.TryGetValue(addr, out var xv) ? xv! : cell.Value);
                 cell_attr["t"] = cell_type.GetAttributeOrDefault<AliasAttribute>()!.Name;
 
-                stream.WriteLine($"      <c {AttributesToString(cell_attr)}{(escaped_value == "" && cell.Value is not CellValueFormula ? "/" : "")}>");
-                if (escaped_value != "" || cell.Value is CellValueFormula)
+                stream.WriteLine($"      <c {AttributesToString(cell_attr)}{(escaped_value == "" && cell.Value is not CellValueFormula && (cell_type != CellTypes.InlineString || cell.Value.Cast<CellValueInlineString>().Values.Count == 0) ? "/" : "")}>");
+                if (cell_type == CellTypes.InlineString && cell.Value is CellValueInlineString instr && instr.Values.Count > 0)
+                {
+                    stream.WriteLine("        <is>");
+                    foreach (var rt in instr.Values)
+                    {
+                        stream.WriteLine("        <r>");
+                        if (ExistsFontSetting(rt))
+                        {
+                            stream.WriteLine("          <rPr>");
+                            WriteFontAttribute(stream, 10, rt);
+                            stream.WriteLine("          </rPr>");
+                        }
+                        stream.WriteLine($"          <t>{SecurityElement.Escape(rt.Text)}</t>");
+                        stream.WriteLine("        </r>");
+                    }
+                    stream.WriteLine("        </is>");
+                    stream.WriteLine("      </c>");
+                }
+                else if (escaped_value != "" || cell.Value is CellValueFormula)
                 {
                     if (cell.Value is CellValueFormula formula) stream.WriteLine($"        <f>{formula.Value}</f>");
                     if (escaped_value != "") stream.WriteLine($"        <v>{escaped_value}</v>");
@@ -118,6 +136,7 @@ public static partial class SpreadsheetMLExport
         CellValueString x => (CellTypes.String, SecurityElement.Escape(x.Value)),
         CellValueNull => (CellTypes.String, ""),
         CellValueFormula => (CellTypes.String, ""),
+        CellValueInlineString => (CellTypes.InlineString, ""),
         _ => throw new ArgumentOutOfRangeException(nameof(value)),
     };
 }

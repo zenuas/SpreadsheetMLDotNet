@@ -2,8 +2,9 @@
 
 namespace SpreadsheetMLDotNet.Data.Styles;
 
-public struct Font() : IFont
+public class RichText : IFont
 {
+    public required string Text { get; set; }
     public string FontName { get; set; } = "";
     public CharacterSets? CharacterSet { get; set; }
     public FontFamilies? FontFamily { get; set; }
