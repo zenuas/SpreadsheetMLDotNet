@@ -39,7 +39,6 @@ SpreadsheetML.Export("Test.xlsx", book);
 ## Support
 
 次の機能はサポートしていない。上にあるものほど対応優先度は高い。
-* セル結合
 * セル内の書式
 * オートフィルタ
 * 行、列の非表示
