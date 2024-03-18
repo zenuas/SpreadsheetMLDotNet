@@ -17,11 +17,11 @@ public static partial class SpreadsheetMLImport
         var fonts = new List<Font>();
         var fills = new List<Fill>();
         var borders = new List<Border>();
-        Font font = default;
-        Fill fill = default;
-        Border border = default;
-        BorderPropertiesType borderpr = default;
-        CellStyle cellstyle = default;
+        Font? font = null;
+        Fill? fill = null;
+        Border? border = null;
+        BorderPropertiesType? borderpr = null;
+        CellStyle? cellstyle = null;
         bool hasAlignment = false;
 
         foreach (var (reader, hierarchy) in XmlReader.Create(styles)
@@ -38,43 +38,43 @@ public static partial class SpreadsheetMLImport
                     break;
 
                 case "styleSheet/fonts/font/:END":
-                    fonts.Add(font);
+                    fonts.Add(font!);
                     break;
 
-                case "styleSheet/fonts/font/name/:START": font.FontName = reader.GetAttribute("val")!; break;
-                case "styleSheet/fonts/font/charset/:START": font.CharacterSet = ToEnum<CharacterSets>(reader.GetAttribute("val")!); break;
-                case "styleSheet/fonts/font/family/:START": font.FontFamily = ToEnum<FontFamilies>(reader.GetAttribute("val")!); break;
-                case "styleSheet/fonts/font/b/:START": font.Bold = ToBool(reader.GetAttribute("val")!); break;
-                case "styleSheet/fonts/font/i/:START": font.Italic = ToBool(reader.GetAttribute("val")!); break;
-                case "styleSheet/fonts/font/strike/:START": font.StrikeThrough = ToBool(reader.GetAttribute("val")!); break;
-                case "styleSheet/fonts/font/outline/:START": font.Outline = ToBool(reader.GetAttribute("val")!); break;
-                case "styleSheet/fonts/font/shadow/:START": font.Shadow = ToBool(reader.GetAttribute("val")!); break;
-                case "styleSheet/fonts/font/condense/:START": font.Condense = ToBool(reader.GetAttribute("val")!); break;
-                case "styleSheet/fonts/font/extend/:START": font.Extend = ToBool(reader.GetAttribute("val")!); break;
-                case "styleSheet/fonts/font/color/:START": font.Color = ToColor(reader.GetAttribute("rgb")!); break;
-                case "styleSheet/fonts/font/sz/:START": font.FontSize = ToDouble(reader.GetAttribute("val")!); break;
-                case "styleSheet/fonts/font/u/:START": font.Underline = ToEnumAlias<UnderlineTypes>(reader.GetAttribute("val")!); break;
-                case "styleSheet/fonts/font/vertAlign/:START": font.VerticalAlignment = ToEnumAlias<VerticalPositioningLocations>(reader.GetAttribute("val")!); break;
-                case "styleSheet/fonts/font/scheme/:START": font.Scheme = ToEnumAlias<FontSchemeStyles>(reader.GetAttribute("val")!); break;
+                case "styleSheet/fonts/font/name/:START": font!.FontName = reader.GetAttribute("val")!; break;
+                case "styleSheet/fonts/font/charset/:START": font!.CharacterSet = ToEnum<CharacterSets>(reader.GetAttribute("val")!); break;
+                case "styleSheet/fonts/font/family/:START": font!.FontFamily = ToEnum<FontFamilies>(reader.GetAttribute("val")!); break;
+                case "styleSheet/fonts/font/b/:START": font!.Bold = ToBool(reader.GetAttribute("val")!); break;
+                case "styleSheet/fonts/font/i/:START": font!.Italic = ToBool(reader.GetAttribute("val")!); break;
+                case "styleSheet/fonts/font/strike/:START": font!.StrikeThrough = ToBool(reader.GetAttribute("val")!); break;
+                case "styleSheet/fonts/font/outline/:START": font!.Outline = ToBool(reader.GetAttribute("val")!); break;
+                case "styleSheet/fonts/font/shadow/:START": font!.Shadow = ToBool(reader.GetAttribute("val")!); break;
+                case "styleSheet/fonts/font/condense/:START": font!.Condense = ToBool(reader.GetAttribute("val")!); break;
+                case "styleSheet/fonts/font/extend/:START": font!.Extend = ToBool(reader.GetAttribute("val")!); break;
+                case "styleSheet/fonts/font/color/:START": font!.Color = ToColor(reader.GetAttribute("rgb")!); break;
+                case "styleSheet/fonts/font/sz/:START": font!.FontSize = ToDouble(reader.GetAttribute("val")!); break;
+                case "styleSheet/fonts/font/u/:START": font!.Underline = ToEnumAlias<UnderlineTypes>(reader.GetAttribute("val")!); break;
+                case "styleSheet/fonts/font/vertAlign/:START": font!.VerticalAlignment = ToEnumAlias<VerticalPositioningLocations>(reader.GetAttribute("val")!); break;
+                case "styleSheet/fonts/font/scheme/:START": font!.Scheme = ToEnumAlias<FontSchemeStyles>(reader.GetAttribute("val")!); break;
 
                 case "styleSheet/fills/fill/:START":
                     fill = new();
                     break;
 
                 case "styleSheet/fills/fill/:END":
-                    fills.Add(fill);
+                    fills.Add(fill!);
                     break;
 
-                case "styleSheet/fills/fill/patternFill/:START": fill.PatternType = ToEnumAlias<PatternTypes>(reader.GetAttribute("patternType")!)!.Value; break;
-                case "styleSheet/fills/fill/patternFill/fgColor/:START": fill.ForegroundColor = ToColor(reader.GetAttribute("rgb")!); break;
-                case "styleSheet/fills/fill/patternFill/bgColor/:START": fill.BackgroundColor = ToColor(reader.GetAttribute("rgb")!); break;
+                case "styleSheet/fills/fill/patternFill/:START": fill!.PatternType = ToEnumAlias<PatternTypes>(reader.GetAttribute("patternType")!)!.Value; break;
+                case "styleSheet/fills/fill/patternFill/fgColor/:START": fill!.ForegroundColor = ToColor(reader.GetAttribute("rgb")!); break;
+                case "styleSheet/fills/fill/patternFill/bgColor/:START": fill!.BackgroundColor = ToColor(reader.GetAttribute("rgb")!); break;
 
                 case "styleSheet/borders/border/:START":
                     border = new();
                     break;
 
                 case "styleSheet/borders/border/:END":
-                    borders.Add(border);
+                    borders.Add(border!);
                     break;
 
                 case "styleSheet/borders/border/start/:START":
@@ -94,16 +94,16 @@ public static partial class SpreadsheetMLImport
                 case "styleSheet/borders/border/diagonal/color/:START":
                 case "styleSheet/borders/border/vertical/color/:START":
                 case "styleSheet/borders/border/horizontal/color/:START":
-                    borderpr.Color = ToColor(reader.GetAttribute("rgb")!);
+                    borderpr!.Color = ToColor(reader.GetAttribute("rgb")!);
                     break;
 
-                case "styleSheet/borders/border/start/:END": border.Start = borderpr; break;
-                case "styleSheet/borders/border/end/:END": border.End = borderpr; break;
-                case "styleSheet/borders/border/top/:END": border.Top = borderpr; break;
-                case "styleSheet/borders/border/bottom/:END": border.Bottom = borderpr; break;
-                case "styleSheet/borders/border/diagonal/:END": border.Diagonal = borderpr; break;
-                case "styleSheet/borders/border/vertical/:END": border.Vertical = borderpr; break;
-                case "styleSheet/borders/border/horizontal/:END": border.Horizontal = borderpr; break;
+                case "styleSheet/borders/border/start/:END": border!.Start = borderpr; break;
+                case "styleSheet/borders/border/end/:END": border!.End = borderpr; break;
+                case "styleSheet/borders/border/top/:END": border!.Top = borderpr; break;
+                case "styleSheet/borders/border/bottom/:END": border!.Bottom = borderpr; break;
+                case "styleSheet/borders/border/diagonal/:END": border!.Diagonal = borderpr; break;
+                case "styleSheet/borders/border/vertical/:END": border!.Vertical = borderpr; break;
+                case "styleSheet/borders/border/horizontal/:END": border!.Horizontal = borderpr; break;
 
                 case "styleSheet/cellXfs/xf/:START":
                     cellstyle = new();
@@ -121,7 +121,7 @@ public static partial class SpreadsheetMLImport
                     break;
 
                 case "styleSheet/cellXfs/xf/:END":
-                    cellstyles.Add(cellstyle);
+                    cellstyles.Add(cellstyle!);
                     break;
 
                 case "styleSheet/cellXfs/xf/alignment/:START":
@@ -137,7 +137,7 @@ public static partial class SpreadsheetMLImport
                         if (reader.GetAttribute("textRotation") is { } textRotation) alignment.TextRotation = ToUInt(textRotation);
                         if (reader.GetAttribute("vertical") is { } vertical) alignment.VerticalAlignment = ToEnumAlias<VerticalAlignmentTypes>(vertical);
                         if (reader.GetAttribute("wrapText") is { } wrapText) alignment.WrapText = ToBool(wrapText);
-                        cellstyle.Alignment = alignment;
+                        cellstyle!.Alignment = alignment;
                     }
                     break;
             }

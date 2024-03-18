@@ -32,6 +32,7 @@ sheet.GetCell("A4").Fill = new() { ForegroundColor = IndexedColors.Indexed2.GetA
 sheet.GetCell("F2").Fill = new() { ForegroundColor = IndexedColors.Indexed2.GetAttributeOrDefault<ArgbAttribute>()!.Color, PatternType = PatternTypes.DarkUp };
 sheet.GetCell("C2").Border = new(Borders.Top | Borders.Bottom, BorderStyles.Thin, Color.Red);
 sheet.GetCell("C2").Font = new() { Color = Color.Blue, FontSize = 22, Underline = UnderlineTypes.DoubleUnderline };
+sheet.GetCell("C2").Font!.Bold = true;
 sheet.GetCell("C2").Alignment = new() { HorizontalAlignment = HorizontalAlignmentTypes.RightHorizontalAlignment };
 sheet.GetCell("B6").Border = new(Borders.End, BorderStyles.Thin, null);
 sheet.GetCell("A6").NumberFormat = new NumberFormatId { FormatId = NumberFormats.GeneralIntSeparate };

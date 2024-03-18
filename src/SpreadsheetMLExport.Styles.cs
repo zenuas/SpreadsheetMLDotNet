@@ -91,9 +91,9 @@ public static partial class SpreadsheetMLExport
         static void WriteBorderStyle(Stream stream, string tag, BorderPropertiesType? borderpr)
         {
             if (borderpr is null) return;
-            stream.WriteLine($"""      <{tag} style="{ToAttributeEnumAlias(borderpr.Value.Style)}"{(borderpr.Value.Color is null ? "/" : "")}>""");
-            if (borderpr.Value.Color is null) return;
-            TryWriteElement(stream, 8, "color", "rgb", borderpr.Value.Color);
+            stream.WriteLine($"""      <{tag} style="{ToAttributeEnumAlias(borderpr.Style)}"{(borderpr.Color is null ? "/" : "")}>""");
+            if (borderpr.Color is null) return;
+            TryWriteElement(stream, 8, "color", "rgb", borderpr.Color);
             stream.WriteLine($"      </{tag}>");
         }
         foreach (var border in borders)
