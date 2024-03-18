@@ -40,6 +40,7 @@ sheet.GetCell("A7").Alignment = new() { ShrinkToFit = true };
 sheet.GetCell("A8").NumberFormat = new NumberFormatCode { FormatCode = "yyyy/mm/dd" };
 sheet.GetCell("A8").Alignment = new() { ShrinkToFit = true };
 sheet.MergeCells("B10:C11");
+sheet.MergeColumns("N:O");
 SpreadsheetML.Export("New.Strict.xlsx", book, FormatNamespace.Strict);
 SpreadsheetML.Export("New.Transitional.xlsx", book, FormatNamespace.Transitional);
 

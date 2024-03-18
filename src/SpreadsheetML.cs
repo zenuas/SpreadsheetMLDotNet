@@ -27,6 +27,29 @@ public static class SpreadsheetML
 
     public static void Export(Stream stream, Workbook workbook, Dictionary<string, WorksheetCalculation> calc, bool leave_open = false, FormatNamespace format = FormatNamespace.Strict) => SpreadsheetMLExport.DoExport(stream, workbook, calc, leave_open, format);
 
+    public static IAddress ConvertAnyAddress(string cell)
+    {
+        if (!char.IsAsciiLetter(cell[0])) return new RowAddress { Row = int.Parse(cell) };
+
+        var split = cell.IndexOfAny(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']);
+        return split < 0
+            ? new ColumnAddress { Column = ConvertColumnNameToIndex(cell) }
+            : ConvertCellAddress(cell);
+    }
+
+    public static IAddressRange ConvertAnyRange(string range)
+    {
+        var split = range.IndexOf(':');
+        var from = ConvertAnyAddress(range[0..split]);
+        var to = ConvertAnyAddress(range[(split + 1)..]);
+        return from switch
+        {
+            RowAddress x => new RowAddressRange { From = x.Row, To = to.Cast<RowAddress>().Row },
+            ColumnAddress x => new ColumnAddressRange { From = x.Column, To = to.Cast<ColumnAddress>().Column },
+            CellAddress x => new CellAddressRange { From = x, To = to.Cast<CellAddress>() },
+            _ => throw new()
+        };
+    }
 
     public static CellAddress ConvertCellAddress(string cell)
     {

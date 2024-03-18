@@ -73,6 +73,10 @@ public static partial class SpreadsheetMLImport
                     cell = null;
                     column = 0;
                     break;
+
+                case "worksheet/mergeCells/mergeCell/:START":
+                    sheet.Merge(SpreadsheetML.ConvertAnyRange(reader.GetAttribute("ref")!));
+                    break;
             }
         }
         return sheet;
