@@ -1,9 +1,8 @@
-﻿using SpreadsheetMLDotNet.Data.Styles;
-using System.Collections.Generic;
+﻿using SpreadsheetMLDotNet.Data.SharedStringTable;
 
 namespace SpreadsheetMLDotNet.Data.Worksheets;
 
 public class CellValueInlineString : ICellValue
 {
-    public List<RichText> Values { get; init; } = [];
+    public RunProperties Values { get; init; } = [];
 }

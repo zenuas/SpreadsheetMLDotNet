@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using SpreadsheetMLDotNet.Data.SharedStringTable;
 using SpreadsheetMLDotNet.Data.Styles;
 using SpreadsheetMLDotNet.Data.Worksheets;
 using SpreadsheetMLDotNet.Extension;
@@ -11,13 +12,15 @@ namespace SpreadsheetMLDotNet;
 
 public static partial class SpreadsheetMLImport
 {
-    public static Worksheet ReadWorksheet(Stream worksheet, string sheet_name, Dictionary<int, string> shared_strings, CellStyle[] cellstyles)
+    public static Worksheet ReadWorksheet(Stream worksheet, string sheet_name, Dictionary<int, IStringItem> shared_strings, CellStyle[] cellstyles)
     {
         var sheet = new Worksheet { Name = sheet_name };
         Row? row = null;
         Cell? cell = null;
         CellTypes cell_type = CellTypes.Number;
         int column = 0;
+        RichText? rt = null;
+
         foreach (var (reader, hierarchy) in XmlReader.Create(worksheet)
             .UsingDefer(x => x.GetIteratorWithHierarchy()))
         {
@@ -64,6 +67,36 @@ public static partial class SpreadsheetMLImport
                         break;
                     }
 
+                case "worksheet/sheetData/row/c/is/:START":
+                    cell = new Cell() { Value = new CellValueInlineString() };
+                    cell_type = CellTypes.InlineString;
+                    break;
+
+                case "worksheet/sheetData/row/c/is/r/:START":
+                    cell!.Value.Cast<CellValueInlineString>().Values.Add(rt = new() { Text = "" });
+                    break;
+
+                case "worksheet/sheetData/row/c/is/r/:END":
+                    rt = null;
+                    break;
+
+                case "worksheet/sheetData/row/c/is/r/rPr/name/:START": rt!.FontName = reader.GetAttribute("val")!; break;
+                case "worksheet/sheetData/row/c/is/r/rPr/charset/:START": rt!.CharacterSet = ToEnum<CharacterSets>(reader.GetAttribute("val")!); break;
+                case "worksheet/sheetData/row/c/is/r/rPr/family/:START": rt!.FontFamily = ToEnum<FontFamilies>(reader.GetAttribute("val")!); break;
+                case "worksheet/sheetData/row/c/is/r/rPr/b/:START": rt!.Bold = ToBool(reader.GetAttribute("val")!); break;
+                case "worksheet/sheetData/row/c/is/r/rPr/i/:START": rt!.Italic = ToBool(reader.GetAttribute("val")!); break;
+                case "worksheet/sheetData/row/c/is/r/rPr/strike/:START": rt!.StrikeThrough = ToBool(reader.GetAttribute("val")!); break;
+                case "worksheet/sheetData/row/c/is/r/rPr/outline/:START": rt!.Outline = ToBool(reader.GetAttribute("val")!); break;
+                case "worksheet/sheetData/row/c/is/r/rPr/shadow/:START": rt!.Shadow = ToBool(reader.GetAttribute("val")!); break;
+                case "worksheet/sheetData/row/c/is/r/rPr/condense/:START": rt!.Condense = ToBool(reader.GetAttribute("val")!); break;
+                case "worksheet/sheetData/row/c/is/r/rPr/extend/:START": rt!.Extend = ToBool(reader.GetAttribute("val")!); break;
+                case "worksheet/sheetData/row/c/is/r/rPr/color/:START": rt!.Color = ToColor(reader.GetAttribute("rgb")!); break;
+                case "worksheet/sheetData/row/c/is/r/rPr/sz/:START": rt!.FontSize = ToDouble(reader.GetAttribute("val")!); break;
+                case "worksheet/sheetData/row/c/is/r/rPr/u/:START": rt!.Underline = ToEnumAlias<UnderlineTypes>(reader.GetAttribute("val")!); break;
+                case "worksheet/sheetData/row/c/is/r/rPr/vertAlign/:START": rt!.VerticalAlignment = ToEnumAlias<VerticalPositioningLocations>(reader.GetAttribute("val")!); break;
+                case "worksheet/sheetData/row/c/is/r/rPr/scheme/:START": rt!.Scheme = ToEnumAlias<FontSchemeStyles>(reader.GetAttribute("val")!); break;
+                case "worksheet/sheetData/row/c/is/r/t/:TEXT": rt!.Text = reader.Value; break;
+
                 case "worksheet/sheetData/row/c/v/:TEXT":
                     if (cell!.Value is not CellValueFormula) cell!.Value = ToCellValue(reader.Value, cell_type, shared_strings);
                     break;
@@ -82,15 +115,14 @@ public static partial class SpreadsheetMLImport
         return sheet;
     }
 
-    public static ICellValue ToCellValue(string value, CellTypes cell_type, Dictionary<int, string> shared_strings) => cell_type switch
+    public static ICellValue ToCellValue(string value, CellTypes cell_type, Dictionary<int, IStringItem> shared_strings) => cell_type switch
     {
         CellTypes.Boolean => new CellValueBoolean { Value = value == "1" },
         CellTypes.Date => new CellValueDate { Value = DateTime.Parse(value) },
         CellTypes.Error => CellValueError.GetValue(ToEnumAlias<ErrorValues>(value)!.Value),
-        CellTypes.InlineString => new CellValueString { Value = value },
         CellTypes.String => new CellValueString { Value = value },
         CellTypes.Number => new CellValueDouble { Value = double.Parse(value) },
-        CellTypes.SharedString => new CellValueString { Value = shared_strings[int.Parse(value)] },
+        CellTypes.SharedString => shared_strings[int.Parse(value)] is RunProperties rpr ? new CellValueInlineString { Values = rpr } : new CellValueString { Value = shared_strings[int.Parse(value)].ToString() },
         _ => throw new ArgumentException(null, nameof(cell_type)),
     };
 }

@@ -1,5 +1,7 @@
 ﻿using Mina.Extension;
 using SpreadsheetMLDotNet.Data;
+using SpreadsheetMLDotNet.Data.SharedStringTable;
+using SpreadsheetMLDotNet.Data.Styles;
 using SpreadsheetMLDotNet.Data.Worksheets;
 using SpreadsheetMLDotNet.Extension;
 using System;
@@ -102,13 +104,57 @@ public static class SpreadsheetMLReader
         )
         .ToArray();
 
-    public static Dictionary<int, string> ReadSharedStrings(Stream shared_strings) => XmlReader.Create(shared_strings)
-        .UsingDefer(x => x.GetIteratorWithHierarchy())
-        .Where(x => x.Hierarchy.Join("/") == "sst/si/t/:START")
-        .Select((x, i) => (Index: i, x.Reader.Value))
-        .ToDictionary(x => x.Index, x => x.Value);
+    public static Dictionary<int, IStringItem> ReadSharedStrings(Stream shared_strings)
+    {
+        var sst = new Dictionary<int, IStringItem>();
+        RunProperties? rpr = null;
+        RichText? rt = null;
 
-    public static IEnumerable<(string Cell, object Value)> ReadSheetReader(Stream worksheet, Dictionary<int, string> shared_strings)
+        foreach (var (reader, hierarchy) in XmlReader.Create(shared_strings)
+            .UsingDefer(x => x.GetIteratorWithHierarchy()))
+        {
+            switch (hierarchy.Join("/"))
+            {
+                case "sst/si/t/:TEXT":
+                    sst.Add(sst.Count, new Text { Value = reader.Value });
+                    break;
+
+                case "sst/si/r/:START":
+                    rpr ??= [];
+                    rpr.Add(rt = new() { Text = "" });
+                    break;
+
+                case "sst/si/r/:END":
+                    rt = null;
+                    break;
+
+                case "sst/si/r/rPr/name/:START": rt!.FontName = reader.GetAttribute("val")!; break;
+                case "sst/si/r/rPr/charset/:START": rt!.CharacterSet = SpreadsheetMLImport.ToEnum<CharacterSets>(reader.GetAttribute("val")!); break;
+                case "sst/si/r/rPr/family/:START": rt!.FontFamily = SpreadsheetMLImport.ToEnum<FontFamilies>(reader.GetAttribute("val")!); break;
+                case "sst/si/r/rPr/b/:START": rt!.Bold = SpreadsheetMLImport.ToBool(reader.GetAttribute("val")!); break;
+                case "sst/si/r/rPr/i/:START": rt!.Italic = SpreadsheetMLImport.ToBool(reader.GetAttribute("val")!); break;
+                case "sst/si/r/rPr/strike/:START": rt!.StrikeThrough = SpreadsheetMLImport.ToBool(reader.GetAttribute("val")!); break;
+                case "sst/si/r/rPr/outline/:START": rt!.Outline = SpreadsheetMLImport.ToBool(reader.GetAttribute("val")!); break;
+                case "sst/si/r/rPr/shadow/:START": rt!.Shadow = SpreadsheetMLImport.ToBool(reader.GetAttribute("val")!); break;
+                case "sst/si/r/rPr/condense/:START": rt!.Condense = SpreadsheetMLImport.ToBool(reader.GetAttribute("val")!); break;
+                case "sst/si/r/rPr/extend/:START": rt!.Extend = SpreadsheetMLImport.ToBool(reader.GetAttribute("val")!); break;
+                case "sst/si/r/rPr/color/:START": rt!.Color = SpreadsheetMLImport.ToColor(reader.GetAttribute("rgb")!); break;
+                case "sst/si/r/rPr/sz/:START": rt!.FontSize = SpreadsheetMLImport.ToDouble(reader.GetAttribute("val")!); break;
+                case "sst/si/r/rPr/u/:START": rt!.Underline = SpreadsheetMLImport.ToEnumAlias<UnderlineTypes>(reader.GetAttribute("val")!); break;
+                case "sst/si/r/rPr/vertAlign/:START": rt!.VerticalAlignment = SpreadsheetMLImport.ToEnumAlias<VerticalPositioningLocations>(reader.GetAttribute("val")!); break;
+                case "sst/si/r/rPr/scheme/:START": rt!.Scheme = SpreadsheetMLImport.ToEnumAlias<FontSchemeStyles>(reader.GetAttribute("val")!); break;
+                case "sst/si/r/t/:TEXT": rt!.Text = reader.Value; break;
+
+                case "sst/si/:END":
+                    if (rpr is { } x) sst.Add(sst.Count, x);
+                    rpr = null;
+                    break;
+            }
+        }
+        return sst;
+    }
+
+    public static IEnumerable<(string Cell, object Value)> ReadSheetReader(Stream worksheet, Dictionary<int, IStringItem> shared_strings)
     {
         var cell = "";
         var v = "";
@@ -141,7 +187,7 @@ public static class SpreadsheetMLReader
         }
     }
 
-    public static object GetCellValueFormat(string value, CellTypes cell_type, Dictionary<int, string> shared_strings) => cell_type switch
+    public static object GetCellValueFormat(string value, CellTypes cell_type, Dictionary<int, IStringItem> shared_strings) => cell_type switch
     {
         CellTypes.Boolean => value == "1",
         CellTypes.Date => DateTime.TryParse(value, out var date) ? date : "",
