@@ -62,10 +62,8 @@ public static partial class SpreadsheetMLImport
                     }
 
                 case "worksheet/sheetData/row/c/f/:TEXT":
-                    {
-                        cell!.Value = new CellValueFormula { Value = reader.Value };
-                        break;
-                    }
+                    cell!.Value = new CellValueFormula { Value = reader.Value };
+                    break;
 
                 case "worksheet/sheetData/row/c/is/:START":
                     cell = new Cell() { Value = new CellValueInlineString() };
