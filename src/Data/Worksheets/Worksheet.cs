@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using SpreadsheetMLDotNet.Data.Address;
+using SpreadsheetMLDotNet.Data.AutoFilterSettings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ public class Worksheet : IRelationshipable
     public IndexedList<Row> Rows { get; init; } = new() { New = () => new() };
     public IndexedList<Column> Columns { get; init; } = new() { New = () => new() };
     public List<IAddressRange> Merges { get; init; } = [];
+    public AutoFilter? AutoFilter { get; set; }
 
 
     public Row? GetRowOrDefault(int row) => Rows.GetOrDefault(row);

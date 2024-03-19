@@ -87,6 +87,10 @@ public static partial class SpreadsheetMLExport
             if (row.Cells.Count > 0) stream.WriteLine("    </row>");
         }
         if (worksheet.Rows.Count > 0) stream.WriteLine("  </sheetData>");
+        if (worksheet.AutoFilter is { } af)
+        {
+            stream.WriteLine($"""  <autoFilter ref="{af.Reference.ToAddressName()}"/>""");
+        }
         if (worksheet.Merges.Count > 0)
         {
             stream.WriteLine($"""  <mergeCells count="{worksheet.Merges.Count}">""");
