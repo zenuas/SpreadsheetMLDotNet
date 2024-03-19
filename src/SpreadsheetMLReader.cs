@@ -159,30 +159,27 @@ public static class SpreadsheetMLReader
         var cell = "";
         var v = "";
         var t = CellTypes.Number;
-        foreach (var (reader, hierarchy) in XmlReader.Create(worksheet)
-            .UsingDefer(x => x.GetIteratorWithHierarchy())
-            .Where(x => x.Hierarchy.Join("/").In(
-                "worksheet/sheetData/row/c/v/:TEXT",
-                "worksheet/sheetData/row/c/is/t/:TEXT",
-                "worksheet/sheetData/row/c/is/r/t/:TEXT",
-                "worksheet/sheetData/row/c/:START",
-                "worksheet/sheetData/row/c/:END"))
-            )
-        {
 
-            if (reader.NodeType == XmlNodeType.Element)
+        foreach (var (reader, hierarchy) in XmlReader.Create(worksheet)
+            .UsingDefer(x => x.GetIteratorWithHierarchy()))
+        {
+            switch (hierarchy.Join("/"))
             {
-                cell = reader.GetAttribute("r")!;
-                v = "";
-                t = reader.GetAttribute("t") is { } s ? Enums.ParseWithAlias<CellTypes>(s)!.Value : CellTypes.Number;
-            }
-            else if (reader.NodeType == XmlNodeType.EndElement)
-            {
-                yield return (cell, GetCellValueFormat(v, t, shared_strings));
-            }
-            else
-            {
-                v += reader.Value;
+                case "worksheet/sheetData/row/c/:START":
+                    cell = reader.GetAttribute("r")!;
+                    v = "";
+                    t = reader.GetAttribute("t") is { } s ? Enums.ParseWithAlias<CellTypes>(s)!.Value : CellTypes.Number;
+                    break;
+
+                case "worksheet/sheetData/row/c/v/:TEXT":
+                case "worksheet/sheetData/row/c/is/t/:TEXT":
+                case "worksheet/sheetData/row/c/is/r/t/:TEXT":
+                    v += reader.Value;
+                    break;
+
+                case "worksheet/sheetData/row/c/:END":
+                    yield return (cell, GetCellValueFormat(v, t, shared_strings));
+                    break;
             }
         }
     }
