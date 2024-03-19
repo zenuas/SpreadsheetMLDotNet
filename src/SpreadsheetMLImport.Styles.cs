@@ -84,7 +84,7 @@ public static partial class SpreadsheetMLImport
                 case "styleSheet/borders/border/diagonal/:START":
                 case "styleSheet/borders/border/vertical/:START":
                 case "styleSheet/borders/border/horizontal/:START":
-                    borderpr = new() { Style = ToEnumAlias<BorderStyles>(reader.GetAttribute("style")!)!.Value };
+                    if (reader.GetAttribute("style") is { } style) borderpr = new() { Style = ToEnumAlias<BorderStyles>(style)!.Value };
                     break;
 
                 case "styleSheet/borders/border/start/color/:START":

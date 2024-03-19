@@ -52,7 +52,7 @@ public static partial class SpreadsheetMLImport
 
     public static bool ToBool(string value) => value == "1";
 
-    public static Color ToColor(string value) => Colors.FromStringArgb(value);
+    public static Color? ToColor(string value) => string.IsNullOrEmpty(value) ? null : Colors.FromStringArgb(value);
 
     public static DateTime ToDateTime(string value) => DateTime.Parse(value);
 
