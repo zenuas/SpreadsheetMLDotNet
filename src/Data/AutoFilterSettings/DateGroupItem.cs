@@ -8,5 +8,5 @@ public class DateGroupItem : IFilter
     public uint Hour { get; set; }
     public uint Minute { get; set; }
     public uint Second { get; set; }
-    public DateTimeGroupings DateTimeGrouping { get; set; }
+    public required DateTimeGroupings DateTimeGrouping { get; set; }
 }
