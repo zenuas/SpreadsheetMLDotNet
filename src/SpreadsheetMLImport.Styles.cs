@@ -17,12 +17,8 @@ public static partial class SpreadsheetMLImport
         var fonts = new List<Font>();
         var fills = new List<Fill>();
         var borders = new List<Border>();
-        Font? font = null;
-        Fill? fill = null;
-        Border? border = null;
-        BorderPropertiesType? borderpr = null;
-        CellStyle? cellstyle = null;
         bool hasAlignment = false;
+        var attr = new Dictionary<string, object?>();
 
         foreach (var (reader, hierarchy) in XmlReader.Create(styles)
             .UsingDefer(x => x.GetIteratorWithHierarchy()))
@@ -34,47 +30,88 @@ public static partial class SpreadsheetMLImport
                     break;
 
                 case "styleSheet/fonts/font/:START":
-                    font = new();
+                    attr.Clear();
                     break;
 
                 case "styleSheet/fonts/font/:END":
-                    fonts.Add(font!);
+                    fonts.Add(new()
+                    {
+                        FontName = ToString(attr.GetOrNull("FontName")),
+                        CharacterSet = ToEnum<CharacterSets>(attr.GetOrNull("CharacterSet")),
+                        FontFamily = ToEnum<FontFamilies>(attr.GetOrNull("FontFamily")),
+                        Bold = ToBool(attr.GetOrNull("Bold")),
+                        Italic = ToBool(attr.GetOrNull("Italic")),
+                        StrikeThrough = ToBool(attr.GetOrNull("StrikeThrough")),
+                        Outline = ToBool(attr.GetOrNull("Outline")),
+                        Shadow = ToBool(attr.GetOrNull("Shadow")),
+                        Condense = ToBool(attr.GetOrNull("Condense")),
+                        Extend = ToBool(attr.GetOrNull("Extend")),
+                        Color = ToColor(attr.GetOrNull("Color")),
+                        FontSize = ToDouble(attr.GetOrNull("FontSize")),
+                        Underline = ToEnum<UnderlineTypes>(attr.GetOrNull("Underline")),
+                        VerticalAlignment = ToEnum<VerticalPositioningLocations>(attr.GetOrNull("VerticalAlignment")),
+                        Scheme = ToEnum<FontSchemeStyles>(attr.GetOrNull("Scheme")),
+                    });
                     break;
 
-                case "styleSheet/fonts/font/name/:START": font!.FontName = reader.GetAttribute("val")!; break;
-                case "styleSheet/fonts/font/charset/:START": font!.CharacterSet = ToEnum<CharacterSets>(reader.GetAttribute("val")!); break;
-                case "styleSheet/fonts/font/family/:START": font!.FontFamily = ToEnum<FontFamilies>(reader.GetAttribute("val")!); break;
-                case "styleSheet/fonts/font/b/:START": font!.Bold = ToBool(reader.GetAttribute("val")!); break;
-                case "styleSheet/fonts/font/i/:START": font!.Italic = ToBool(reader.GetAttribute("val")!); break;
-                case "styleSheet/fonts/font/strike/:START": font!.StrikeThrough = ToBool(reader.GetAttribute("val")!); break;
-                case "styleSheet/fonts/font/outline/:START": font!.Outline = ToBool(reader.GetAttribute("val")!); break;
-                case "styleSheet/fonts/font/shadow/:START": font!.Shadow = ToBool(reader.GetAttribute("val")!); break;
-                case "styleSheet/fonts/font/condense/:START": font!.Condense = ToBool(reader.GetAttribute("val")!); break;
-                case "styleSheet/fonts/font/extend/:START": font!.Extend = ToBool(reader.GetAttribute("val")!); break;
-                case "styleSheet/fonts/font/color/:START": font!.Color = ToColor(reader.GetAttribute("rgb")!); break;
-                case "styleSheet/fonts/font/sz/:START": font!.FontSize = ToDouble(reader.GetAttribute("val")!); break;
-                case "styleSheet/fonts/font/u/:START": font!.Underline = ToEnumAlias<UnderlineTypes>(reader.GetAttribute("val")!); break;
-                case "styleSheet/fonts/font/vertAlign/:START": font!.VerticalAlignment = ToEnumAlias<VerticalPositioningLocations>(reader.GetAttribute("val")!); break;
-                case "styleSheet/fonts/font/scheme/:START": font!.Scheme = ToEnumAlias<FontSchemeStyles>(reader.GetAttribute("val")!); break;
+                case "styleSheet/fonts/font/name/:START": attr["FontName"] = reader.GetAttribute("val")!; break;
+                case "styleSheet/fonts/font/charset/:START": attr["CharacterSet"] = ToEnum<CharacterSets>(reader.GetAttribute("val")!); break;
+                case "styleSheet/fonts/font/family/:START": attr["FontFamily"] = ToEnum<FontFamilies>(reader.GetAttribute("val")!); break;
+                case "styleSheet/fonts/font/b/:START": attr["Bold"] = ToBool(reader.GetAttribute("val")!); break;
+                case "styleSheet/fonts/font/i/:START": attr["Italic"] = ToBool(reader.GetAttribute("val")!); break;
+                case "styleSheet/fonts/font/strike/:START": attr["StrikeThrough"] = ToBool(reader.GetAttribute("val")!); break;
+                case "styleSheet/fonts/font/outline/:START": attr["Outline"] = ToBool(reader.GetAttribute("val")!); break;
+                case "styleSheet/fonts/font/shadow/:START": attr["Shadow"] = ToBool(reader.GetAttribute("val")!); break;
+                case "styleSheet/fonts/font/condense/:START": attr["Condense"] = ToBool(reader.GetAttribute("val")!); break;
+                case "styleSheet/fonts/font/extend/:START": attr["Extend"] = ToBool(reader.GetAttribute("val")!); break;
+                case "styleSheet/fonts/font/color/:START": attr["Color"] = ToColor(reader.GetAttribute("rgb")!); break;
+                case "styleSheet/fonts/font/sz/:START": attr["FontSize"] = ToDouble(reader.GetAttribute("val")!); break;
+                case "styleSheet/fonts/font/u/:START": attr["Underline"] = ToEnumAlias<UnderlineTypes>(reader.GetAttribute("val")!); break;
+                case "styleSheet/fonts/font/vertAlign/:START": attr["VerticalAlignment"] = ToEnumAlias<VerticalPositioningLocations>(reader.GetAttribute("val")!); break;
+                case "styleSheet/fonts/font/scheme/:START": attr["Scheme"] = ToEnumAlias<FontSchemeStyles>(reader.GetAttribute("val")!); break;
 
                 case "styleSheet/fills/fill/:START":
-                    fill = new();
+                    attr.Clear();
                     break;
 
                 case "styleSheet/fills/fill/:END":
-                    fills.Add(fill!);
+                    fills.Add(new()
+                    {
+                        PatternType = ToEnum<PatternTypes>(attr.GetOrNull("PatternType")),
+                        ForegroundColor = ToColor(attr.GetOrNull("ForegroundColor")),
+                        BackgroundColor = ToColor(attr.GetOrNull("BackgroundColor")),
+                    });
                     break;
 
-                case "styleSheet/fills/fill/patternFill/:START": fill!.PatternType = ToEnumAlias<PatternTypes>(reader.GetAttribute("patternType")!)!.Value; break;
-                case "styleSheet/fills/fill/patternFill/fgColor/:START": fill!.ForegroundColor = ToColor(reader.GetAttribute("rgb")!); break;
-                case "styleSheet/fills/fill/patternFill/bgColor/:START": fill!.BackgroundColor = ToColor(reader.GetAttribute("rgb")!); break;
+                case "styleSheet/fills/fill/patternFill/:START": attr["PatternType"] = ToEnumAlias<PatternTypes>(reader.GetAttribute("patternType")!); break;
+                case "styleSheet/fills/fill/patternFill/fgColor/:START": attr["ForegroundColor"] = ToColor(reader.GetAttribute("rgb")!); break;
+                case "styleSheet/fills/fill/patternFill/bgColor/:START": attr["BackgroundColor"] = ToColor(reader.GetAttribute("rgb")!); break;
 
                 case "styleSheet/borders/border/:START":
-                    border = new();
+                    attr.Clear();
                     break;
 
                 case "styleSheet/borders/border/:END":
-                    borders.Add(border!);
+                    BorderPropertiesType? GetBorderPropertiesTypeOrDefault(string name)
+                    {
+                        return !attr.ContainsKey($"{name}.Style") && !attr.ContainsKey($"{name}.Color")
+                            ? null
+                            : new()
+                            {
+                                Style = ToEnum<BorderStyles>(attr.GetOrNull($"{name}.Style")),
+                                Color = ToColor(attr.GetOrNull($"{name}.Color")),
+                            };
+                    }
+                    borders.Add(new()
+                    {
+                        Start = GetBorderPropertiesTypeOrDefault("start"),
+                        End = GetBorderPropertiesTypeOrDefault("end"),
+                        Top = GetBorderPropertiesTypeOrDefault("top"),
+                        Bottom = GetBorderPropertiesTypeOrDefault("bottom"),
+                        Diagonal = GetBorderPropertiesTypeOrDefault("diagonal"),
+                        Vertical = GetBorderPropertiesTypeOrDefault("vertical"),
+                        Horizontal = GetBorderPropertiesTypeOrDefault("horizontal"),
+                    });
                     break;
 
                 case "styleSheet/borders/border/start/:START":
@@ -84,7 +121,9 @@ public static partial class SpreadsheetMLImport
                 case "styleSheet/borders/border/diagonal/:START":
                 case "styleSheet/borders/border/vertical/:START":
                 case "styleSheet/borders/border/horizontal/:START":
-                    if (reader.GetAttribute("style") is { } style) borderpr = new() { Style = ToEnumAlias<BorderStyles>(style)!.Value };
+                    attr.Remove($"{hierarchy[3]}.Style");
+                    attr.Remove($"{hierarchy[3]}.Color");
+                    if (reader.GetAttribute("style") is { } style) attr[$"{hierarchy[3]}.Style"] = ToEnumAlias<BorderStyles>(style);
                     break;
 
                 case "styleSheet/borders/border/start/color/:START":
@@ -94,26 +133,18 @@ public static partial class SpreadsheetMLImport
                 case "styleSheet/borders/border/diagonal/color/:START":
                 case "styleSheet/borders/border/vertical/color/:START":
                 case "styleSheet/borders/border/horizontal/color/:START":
-                    borderpr!.Color = ToColor(reader.GetAttribute("rgb")!);
+                    attr[$"{hierarchy[3]}.Color"] = ToColor(reader.GetAttribute("rgb")!);
                     break;
 
-                case "styleSheet/borders/border/start/:END": border!.Start = borderpr; break;
-                case "styleSheet/borders/border/end/:END": border!.End = borderpr; break;
-                case "styleSheet/borders/border/top/:END": border!.Top = borderpr; break;
-                case "styleSheet/borders/border/bottom/:END": border!.Bottom = borderpr; break;
-                case "styleSheet/borders/border/diagonal/:END": border!.Diagonal = borderpr; break;
-                case "styleSheet/borders/border/vertical/:END": border!.Vertical = borderpr; break;
-                case "styleSheet/borders/border/horizontal/:END": border!.Horizontal = borderpr; break;
-
                 case "styleSheet/cellXfs/xf/:START":
-                    cellstyle = new();
-                    if (reader.GetAttribute("applyFont") is { } applyFont && ToBool(applyFont)) cellstyle.Font = fonts[ToInt(reader.GetAttribute("fontId")!)];
-                    if (reader.GetAttribute("applyFill") is { } applyFill && ToBool(applyFill)) cellstyle.Fill = fills[ToInt(reader.GetAttribute("fillId")!)];
-                    if (reader.GetAttribute("applyBorder") is { } applyBorder && ToBool(applyBorder)) cellstyle.Border = borders[ToInt(reader.GetAttribute("borderId")!)];
+                    attr.Clear();
+                    if (reader.GetAttribute("applyFont") is { } applyFont && ToBool(applyFont)) attr["Font"] = fonts[ToInt(reader.GetAttribute("fontId")!)];
+                    if (reader.GetAttribute("applyFill") is { } applyFill && ToBool(applyFill)) attr["Fill"] = fills[ToInt(reader.GetAttribute("fillId")!)];
+                    if (reader.GetAttribute("applyBorder") is { } applyBorder && ToBool(applyBorder)) attr["Border"] = borders[ToInt(reader.GetAttribute("borderId")!)];
                     if (reader.GetAttribute("applyNumberFormat") is { } applyNumberFormat && ToBool(applyNumberFormat))
                     {
                         var numFmtId = ToInt(reader.GetAttribute("numFmtId")!);
-                        cellstyle.NumberFormat = formats.TryGetValue(numFmtId, out var value)
+                        attr["NumberFormat"] = formats.TryGetValue(numFmtId, out var value)
                             ? value
                             : new NumberFormatId { FormatId = ToEnum<NumberFormats>(numFmtId) };
                     }
@@ -121,23 +152,41 @@ public static partial class SpreadsheetMLImport
                     break;
 
                 case "styleSheet/cellXfs/xf/:END":
-                    cellstyles.Add(cellstyle!);
+                    cellstyles.Add(new()
+                    {
+                        Font = ToStruct<Font>(attr.GetOrNull("Font")),
+                        Fill = ToStruct<Fill>(attr.GetOrNull("Fill")),
+                        Border = ToStruct<Border>(attr.GetOrNull("Border")),
+                        NumberFormat = ToObject<INumberFormat>(attr.GetOrNull("NumberFormat")),
+                        Alignment = ToStruct<Alignment>(attr.GetOrNull("Alignment")),
+                    });
                     break;
 
                 case "styleSheet/cellXfs/xf/alignment/:START":
                     if (hasAlignment)
                     {
-                        Alignment alignment = new();
-                        if (reader.GetAttribute("horizontal") is { } horizontal) alignment.HorizontalAlignment = ToEnumAlias<HorizontalAlignmentTypes>(horizontal);
-                        if (reader.GetAttribute("indent") is { } indent) alignment.Indent = ToUInt(indent);
-                        if (reader.GetAttribute("justifyLastLine") is { } justifyLastLine) alignment.JustifyLastLine = ToBool(justifyLastLine);
-                        if (reader.GetAttribute("readingOrder") is { } readingOrder) alignment.ReadingOrder = ToEnum<ReadingOrders>(readingOrder);
-                        if (reader.GetAttribute("relativeIndent") is { } relativeIndent) alignment.RelativeIndent = ToInt(relativeIndent);
-                        if (reader.GetAttribute("shrinkToFit") is { } shrinkToFit) alignment.ShrinkToFit = ToBool(shrinkToFit);
-                        if (reader.GetAttribute("textRotation") is { } textRotation) alignment.TextRotation = ToUInt(textRotation);
-                        if (reader.GetAttribute("vertical") is { } vertical) alignment.VerticalAlignment = ToEnumAlias<VerticalAlignmentTypes>(vertical);
-                        if (reader.GetAttribute("wrapText") is { } wrapText) alignment.WrapText = ToBool(wrapText);
-                        cellstyle!.Alignment = alignment;
+                        var alignment = new Dictionary<string, object?>();
+                        if (reader.GetAttribute("horizontal") is { } horizontal) alignment["HorizontalAlignment"] = ToEnumAlias<HorizontalAlignmentTypes>(horizontal);
+                        if (reader.GetAttribute("indent") is { } indent) alignment["Indent"] = ToUInt(indent);
+                        if (reader.GetAttribute("justifyLastLine") is { } justifyLastLine) alignment["JustifyLastLine"] = ToBool(justifyLastLine);
+                        if (reader.GetAttribute("readingOrder") is { } readingOrder) alignment["ReadingOrder"] = ToEnum<ReadingOrders>(readingOrder);
+                        if (reader.GetAttribute("relativeIndent") is { } relativeIndent) alignment["RelativeIndent"] = ToInt(relativeIndent);
+                        if (reader.GetAttribute("shrinkToFit") is { } shrinkToFit) alignment["ShrinkToFit"] = ToBool(shrinkToFit);
+                        if (reader.GetAttribute("textRotation") is { } textRotation) alignment["TextRotation"] = ToUInt(textRotation);
+                        if (reader.GetAttribute("vertical") is { } vertical) alignment["VerticalAlignment"] = ToEnumAlias<VerticalAlignmentTypes>(vertical);
+                        if (reader.GetAttribute("wrapText") is { } wrapText) alignment["WrapText"] = ToBool(wrapText);
+                        attr["Alignment"] = new Alignment()
+                        {
+                            HorizontalAlignment = ToEnum<HorizontalAlignmentTypes>(alignment.GetOrNull("HorizontalAlignment")),
+                            Indent = ToUInt(alignment.GetOrNull("Indent")),
+                            JustifyLastLine = ToBool(alignment.GetOrNull("JustifyLastLine")),
+                            ReadingOrder = ToEnum<ReadingOrders>(alignment.GetOrNull("ReadingOrder")),
+                            RelativeIndent = ToInt(alignment.GetOrNull("RelativeIndent")),
+                            ShrinkToFit = ToBool(alignment.GetOrNull("ShrinkToFit")),
+                            TextRotation = ToUInt(alignment.GetOrNull("TextRotation")),
+                            VerticalAlignment = ToEnum<VerticalAlignmentTypes>(alignment.GetOrNull("VerticalAlignment")),
+                            WrapText = ToBool(alignment.GetOrNull("WrapText")),
+                        };
                     }
                     break;
             }

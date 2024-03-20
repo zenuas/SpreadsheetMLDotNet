@@ -19,7 +19,7 @@ public static partial class SpreadsheetMLImport
         Cell? cell = null;
         CellTypes cell_type = CellTypes.Number;
         int column = 0;
-        RichText? rt = null;
+        var attr = new Dictionary<string, object?>();
 
         foreach (var (reader, hierarchy) in XmlReader.Create(worksheet)
             .UsingDefer(x => x.GetIteratorWithHierarchy()))
@@ -71,29 +71,47 @@ public static partial class SpreadsheetMLImport
                     break;
 
                 case "worksheet/sheetData/row/c/is/r/:START":
-                    cell!.Value.Cast<CellValueInlineString>().Values.Add(rt = new() { Text = "" });
+                    attr.Clear();
                     break;
 
                 case "worksheet/sheetData/row/c/is/r/:END":
-                    rt = null;
+                    cell!.Value.Cast<CellValueInlineString>().Values.Add(new()
+                    {
+                        Text = ToString(attr.GetOrNull("Text")),
+                        FontName = ToString(attr.GetOrNull("FontName")),
+                        CharacterSet = ToEnum<CharacterSets>(attr.GetOrNull("CharacterSet")),
+                        FontFamily = ToEnum<FontFamilies>(attr.GetOrNull("FontFamily")),
+                        Bold = ToBool(attr.GetOrNull("Bold")),
+                        Italic = ToBool(attr.GetOrNull("Italic")),
+                        StrikeThrough = ToBool(attr.GetOrNull("StrikeThrough")),
+                        Outline = ToBool(attr.GetOrNull("Outline")),
+                        Shadow = ToBool(attr.GetOrNull("Shadow")),
+                        Condense = ToBool(attr.GetOrNull("Condense")),
+                        Extend = ToBool(attr.GetOrNull("Extend")),
+                        Color = ToColor(attr.GetOrNull("Color")),
+                        FontSize = ToDouble(attr.GetOrNull("FontSize")),
+                        Underline = ToEnum<UnderlineTypes>(attr.GetOrNull("Underline")),
+                        VerticalAlignment = ToEnum<VerticalPositioningLocations>(attr.GetOrNull("VerticalAlignment")),
+                        Scheme = ToEnum<FontSchemeStyles>(attr.GetOrNull("Scheme")),
+                    });
                     break;
 
-                case "worksheet/sheetData/row/c/is/r/rPr/name/:START": rt!.FontName = reader.GetAttribute("val")!; break;
-                case "worksheet/sheetData/row/c/is/r/rPr/charset/:START": rt!.CharacterSet = ToEnum<CharacterSets>(reader.GetAttribute("val")!); break;
-                case "worksheet/sheetData/row/c/is/r/rPr/family/:START": rt!.FontFamily = ToEnum<FontFamilies>(reader.GetAttribute("val")!); break;
-                case "worksheet/sheetData/row/c/is/r/rPr/b/:START": rt!.Bold = ToBool(reader.GetAttribute("val")!); break;
-                case "worksheet/sheetData/row/c/is/r/rPr/i/:START": rt!.Italic = ToBool(reader.GetAttribute("val")!); break;
-                case "worksheet/sheetData/row/c/is/r/rPr/strike/:START": rt!.StrikeThrough = ToBool(reader.GetAttribute("val")!); break;
-                case "worksheet/sheetData/row/c/is/r/rPr/outline/:START": rt!.Outline = ToBool(reader.GetAttribute("val")!); break;
-                case "worksheet/sheetData/row/c/is/r/rPr/shadow/:START": rt!.Shadow = ToBool(reader.GetAttribute("val")!); break;
-                case "worksheet/sheetData/row/c/is/r/rPr/condense/:START": rt!.Condense = ToBool(reader.GetAttribute("val")!); break;
-                case "worksheet/sheetData/row/c/is/r/rPr/extend/:START": rt!.Extend = ToBool(reader.GetAttribute("val")!); break;
-                case "worksheet/sheetData/row/c/is/r/rPr/color/:START": rt!.Color = ToColor(reader.GetAttribute("rgb")!); break;
-                case "worksheet/sheetData/row/c/is/r/rPr/sz/:START": rt!.FontSize = ToDouble(reader.GetAttribute("val")!); break;
-                case "worksheet/sheetData/row/c/is/r/rPr/u/:START": rt!.Underline = ToEnumAlias<UnderlineTypes>(reader.GetAttribute("val")!); break;
-                case "worksheet/sheetData/row/c/is/r/rPr/vertAlign/:START": rt!.VerticalAlignment = ToEnumAlias<VerticalPositioningLocations>(reader.GetAttribute("val")!); break;
-                case "worksheet/sheetData/row/c/is/r/rPr/scheme/:START": rt!.Scheme = ToEnumAlias<FontSchemeStyles>(reader.GetAttribute("val")!); break;
-                case "worksheet/sheetData/row/c/is/r/t/:TEXT": rt!.Text = reader.Value; break;
+                case "worksheet/sheetData/row/c/is/r/rPr/name/:START": attr["FontName"] = reader.GetAttribute("val")!; break;
+                case "worksheet/sheetData/row/c/is/r/rPr/charset/:START": attr["CharacterSet"] = ToEnum<CharacterSets>(reader.GetAttribute("val")!); break;
+                case "worksheet/sheetData/row/c/is/r/rPr/family/:START": attr["FontFamily"] = ToEnum<FontFamilies>(reader.GetAttribute("val")!); break;
+                case "worksheet/sheetData/row/c/is/r/rPr/b/:START": attr["Bold"] = ToBool(reader.GetAttribute("val")!); break;
+                case "worksheet/sheetData/row/c/is/r/rPr/i/:START": attr["Italic"] = ToBool(reader.GetAttribute("val")!); break;
+                case "worksheet/sheetData/row/c/is/r/rPr/strike/:START": attr["StrikeThrough"] = ToBool(reader.GetAttribute("val")!); break;
+                case "worksheet/sheetData/row/c/is/r/rPr/outline/:START": attr["Outline"] = ToBool(reader.GetAttribute("val")!); break;
+                case "worksheet/sheetData/row/c/is/r/rPr/shadow/:START": attr["Shadow"] = ToBool(reader.GetAttribute("val")!); break;
+                case "worksheet/sheetData/row/c/is/r/rPr/condense/:START": attr["Condense"] = ToBool(reader.GetAttribute("val")!); break;
+                case "worksheet/sheetData/row/c/is/r/rPr/extend/:START": attr["Extend"] = ToBool(reader.GetAttribute("val")!); break;
+                case "worksheet/sheetData/row/c/is/r/rPr/color/:START": attr["Color"] = ToColor(reader.GetAttribute("rgb")!); break;
+                case "worksheet/sheetData/row/c/is/r/rPr/sz/:START": attr["FontSize"] = ToDouble(reader.GetAttribute("val")!); break;
+                case "worksheet/sheetData/row/c/is/r/rPr/u/:START": attr["Underline"] = ToEnumAlias<UnderlineTypes>(reader.GetAttribute("val")!); break;
+                case "worksheet/sheetData/row/c/is/r/rPr/vertAlign/:START": attr["VerticalAlignment"] = ToEnumAlias<VerticalPositioningLocations>(reader.GetAttribute("val")!); break;
+                case "worksheet/sheetData/row/c/is/r/rPr/scheme/:START": attr["Scheme"] = ToEnumAlias<FontSchemeStyles>(reader.GetAttribute("val")!); break;
+                case "worksheet/sheetData/row/c/is/r/t/:TEXT": attr["Text"] = reader.Value; break;
 
                 case "worksheet/sheetData/row/c/v/:TEXT":
                     if (cell!.Value is not CellValueFormula) cell!.Value = ToCellValue(reader.Value, cell_type, shared_strings);

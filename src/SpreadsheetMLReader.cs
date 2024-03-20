@@ -108,7 +108,7 @@ public static class SpreadsheetMLReader
     {
         var sst = new Dictionary<int, IStringItem>();
         RunProperties? rpr = null;
-        RichText? rt = null;
+        var attr = new Dictionary<string, object?>();
 
         foreach (var (reader, hierarchy) in XmlReader.Create(shared_strings)
             .UsingDefer(x => x.GetIteratorWithHierarchy()))
@@ -121,29 +121,47 @@ public static class SpreadsheetMLReader
 
                 case "sst/si/r/:START":
                     rpr ??= [];
-                    rpr.Add(rt = new() { Text = "" });
+                    attr.Clear();
                     break;
 
                 case "sst/si/r/:END":
-                    rt = null;
+                    rpr!.Add(new()
+                    {
+                        Text = SpreadsheetMLImport.ToString(attr.GetOrNull("Text")),
+                        FontName = SpreadsheetMLImport.ToString(attr.GetOrNull("FontName")),
+                        CharacterSet = SpreadsheetMLImport.ToEnum<CharacterSets>(attr.GetOrNull("CharacterSet")),
+                        FontFamily = SpreadsheetMLImport.ToEnum<FontFamilies>(attr.GetOrNull("FontFamily")),
+                        Bold = SpreadsheetMLImport.ToBool(attr.GetOrNull("Bold")),
+                        Italic = SpreadsheetMLImport.ToBool(attr.GetOrNull("Italic")),
+                        StrikeThrough = SpreadsheetMLImport.ToBool(attr.GetOrNull("StrikeThrough")),
+                        Outline = SpreadsheetMLImport.ToBool(attr.GetOrNull("Outline")),
+                        Shadow = SpreadsheetMLImport.ToBool(attr.GetOrNull("Shadow")),
+                        Condense = SpreadsheetMLImport.ToBool(attr.GetOrNull("Condense")),
+                        Extend = SpreadsheetMLImport.ToBool(attr.GetOrNull("Extend")),
+                        Color = SpreadsheetMLImport.ToColor(attr.GetOrNull("Color")),
+                        FontSize = SpreadsheetMLImport.ToDouble(attr.GetOrNull("FontSize")),
+                        Underline = SpreadsheetMLImport.ToEnum<UnderlineTypes>(attr.GetOrNull("Underline")),
+                        VerticalAlignment = SpreadsheetMLImport.ToEnum<VerticalPositioningLocations>(attr.GetOrNull("VerticalAlignment")),
+                        Scheme = SpreadsheetMLImport.ToEnum<FontSchemeStyles>(attr.GetOrNull("Scheme")),
+                    });
                     break;
 
-                case "sst/si/r/rPr/name/:START": rt!.FontName = reader.GetAttribute("val")!; break;
-                case "sst/si/r/rPr/charset/:START": rt!.CharacterSet = SpreadsheetMLImport.ToEnum<CharacterSets>(reader.GetAttribute("val")!); break;
-                case "sst/si/r/rPr/family/:START": rt!.FontFamily = SpreadsheetMLImport.ToEnum<FontFamilies>(reader.GetAttribute("val")!); break;
-                case "sst/si/r/rPr/b/:START": rt!.Bold = SpreadsheetMLImport.ToBool(reader.GetAttribute("val")!); break;
-                case "sst/si/r/rPr/i/:START": rt!.Italic = SpreadsheetMLImport.ToBool(reader.GetAttribute("val")!); break;
-                case "sst/si/r/rPr/strike/:START": rt!.StrikeThrough = SpreadsheetMLImport.ToBool(reader.GetAttribute("val")!); break;
-                case "sst/si/r/rPr/outline/:START": rt!.Outline = SpreadsheetMLImport.ToBool(reader.GetAttribute("val")!); break;
-                case "sst/si/r/rPr/shadow/:START": rt!.Shadow = SpreadsheetMLImport.ToBool(reader.GetAttribute("val")!); break;
-                case "sst/si/r/rPr/condense/:START": rt!.Condense = SpreadsheetMLImport.ToBool(reader.GetAttribute("val")!); break;
-                case "sst/si/r/rPr/extend/:START": rt!.Extend = SpreadsheetMLImport.ToBool(reader.GetAttribute("val")!); break;
-                case "sst/si/r/rPr/color/:START": rt!.Color = SpreadsheetMLImport.ToColor(reader.GetAttribute("rgb")!); break;
-                case "sst/si/r/rPr/sz/:START": rt!.FontSize = SpreadsheetMLImport.ToDouble(reader.GetAttribute("val")!); break;
-                case "sst/si/r/rPr/u/:START": rt!.Underline = SpreadsheetMLImport.ToEnumAlias<UnderlineTypes>(reader.GetAttribute("val")!); break;
-                case "sst/si/r/rPr/vertAlign/:START": rt!.VerticalAlignment = SpreadsheetMLImport.ToEnumAlias<VerticalPositioningLocations>(reader.GetAttribute("val")!); break;
-                case "sst/si/r/rPr/scheme/:START": rt!.Scheme = SpreadsheetMLImport.ToEnumAlias<FontSchemeStyles>(reader.GetAttribute("val")!); break;
-                case "sst/si/r/t/:TEXT": rt!.Text = reader.Value; break;
+                case "sst/si/r/rPr/name/:START": attr["FontName"] = reader.GetAttribute("val")!; break;
+                case "sst/si/r/rPr/charset/:START": attr["CharacterSet"] = SpreadsheetMLImport.ToEnum<CharacterSets>(reader.GetAttribute("val")!); break;
+                case "sst/si/r/rPr/family/:START": attr["FontFamily"] = SpreadsheetMLImport.ToEnum<FontFamilies>(reader.GetAttribute("val")!); break;
+                case "sst/si/r/rPr/b/:START": attr["Bold"] = SpreadsheetMLImport.ToBool(reader.GetAttribute("val")!); break;
+                case "sst/si/r/rPr/i/:START": attr["Italic"] = SpreadsheetMLImport.ToBool(reader.GetAttribute("val")!); break;
+                case "sst/si/r/rPr/strike/:START": attr["StrikeThrough"] = SpreadsheetMLImport.ToBool(reader.GetAttribute("val")!); break;
+                case "sst/si/r/rPr/outline/:START": attr["Outline"] = SpreadsheetMLImport.ToBool(reader.GetAttribute("val")!); break;
+                case "sst/si/r/rPr/shadow/:START": attr["Shadow"] = SpreadsheetMLImport.ToBool(reader.GetAttribute("val")!); break;
+                case "sst/si/r/rPr/condense/:START": attr["Condense"] = SpreadsheetMLImport.ToBool(reader.GetAttribute("val")!); break;
+                case "sst/si/r/rPr/extend/:START": attr["Extend"] = SpreadsheetMLImport.ToBool(reader.GetAttribute("val")!); break;
+                case "sst/si/r/rPr/color/:START": attr["Color"] = SpreadsheetMLImport.ToColor(reader.GetAttribute("rgb")!); break;
+                case "sst/si/r/rPr/sz/:START": attr["FontSize"] = SpreadsheetMLImport.ToDouble(reader.GetAttribute("val")!); break;
+                case "sst/si/r/rPr/u/:START": attr["Underline"] = SpreadsheetMLImport.ToEnumAlias<UnderlineTypes>(reader.GetAttribute("val")!); break;
+                case "sst/si/r/rPr/vertAlign/:START": attr["VerticalAlignment"] = SpreadsheetMLImport.ToEnumAlias<VerticalPositioningLocations>(reader.GetAttribute("val")!); break;
+                case "sst/si/r/rPr/scheme/:START": attr["Scheme"] = SpreadsheetMLImport.ToEnumAlias<FontSchemeStyles>(reader.GetAttribute("val")!); break;
+                case "sst/si/r/t/:TEXT": attr["Text"] = reader.Value; break;
 
                 case "sst/si/:END":
                     if (rpr is { } x) sst.Add(sst.Count, x);

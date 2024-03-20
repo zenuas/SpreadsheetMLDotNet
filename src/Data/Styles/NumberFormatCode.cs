@@ -1,6 +1,6 @@
 ﻿namespace SpreadsheetMLDotNet.Data.Styles;
 
-public struct NumberFormatCode : INumberFormat
+public readonly struct NumberFormatCode : INumberFormat
 {
-    public required string FormatCode { get; set; }
+    public required string FormatCode { get; init; }
 }

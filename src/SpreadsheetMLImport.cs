@@ -61,4 +61,25 @@ public static partial class SpreadsheetMLImport
     public static T ToEnum<T>(string value) where T : struct => Enum.Parse<T>(value);
 
     public static T? ToEnumAlias<T>(string value) where T : struct, Enum => Enums.ParseWithAlias<T>(value);
+
+
+    public static string ToString(object? value) => value is string x ? x : "";
+
+    public static int? ToInt(object? value) => value is int x ? x : null;
+
+    public static uint? ToUInt(object? value) => value is uint x ? x : null;
+
+    public static double? ToDouble(object? value) => value is double x ? x : null;
+
+    public static bool? ToBool(object? value) => value is bool x ? x : null;
+
+    public static Color? ToColor(object? value) => value is Color x ? x : null;
+
+    public static DateTime? ToDateTime(object? value) => value is DateTime x ? x : null;
+
+    public static T? ToEnum<T>(object? value) where T : struct => ToStruct<T>(value);
+
+    public static T? ToStruct<T>(object? value) where T : struct => value is T x ? x : null;
+
+    public static T? ToObject<T>(object? value) where T : class => value is T x ? x : null;
 }

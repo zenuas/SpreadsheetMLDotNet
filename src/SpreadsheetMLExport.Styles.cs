@@ -77,7 +77,7 @@ public static partial class SpreadsheetMLExport
             else
             {
                 stream.WriteLine("    <fill>");
-                stream.WriteLine($"""      <patternFill patternType="{ToAttributeEnumAlias(fill.PatternType)}">""");
+                stream.WriteLine($"""      <patternFill{(fill.PatternType is { } p ? $" patternType=\"{ToAttributeEnumAlias(p)}\"" : "")}>""");
                 TryWriteElement(stream, 8, "fgColor", "rgb", fill.ForegroundColor);
                 TryWriteElement(stream, 8, "bgColor", "rgb", fill.BackgroundColor);
                 stream.WriteLine("      </patternFill>");
@@ -91,9 +91,9 @@ public static partial class SpreadsheetMLExport
         static void WriteBorderStyle(Stream stream, string tag, BorderPropertiesType? borderpr)
         {
             if (borderpr is null) return;
-            stream.WriteLine($"""      <{tag} style="{ToAttributeEnumAlias(borderpr.Style)}"{(borderpr.Color is null ? "/" : "")}>""");
-            if (borderpr.Color is null) return;
-            TryWriteElement(stream, 8, "color", "rgb", borderpr.Color);
+            stream.WriteLine($"""      <{tag}{(borderpr.Value.Style is { } p ? $" style=\"{ToAttributeEnumAlias(p)}\"" : "")}{(borderpr.Value.Color is null ? "/" : "")}>""");
+            if (borderpr.Value.Color is null) return;
+            TryWriteElement(stream, 8, "color", "rgb", borderpr.Value.Color);
             stream.WriteLine($"      </{tag}>");
         }
         foreach (var border in borders)
