@@ -29,6 +29,10 @@ public static partial class SpreadsheetMLImport
                 case "worksheet/cols/col/:START":
                     {
                         var col = new Column();
+                        if (reader.GetAttribute("hidden") is { } hidden) col.Hidden = ToBool(hidden);
+                        if (reader.GetAttribute("outlineLevel") is { } outlineLevel) col.OutlineLevel = ToUInt(outlineLevel);
+                        if (reader.GetAttribute("collapsed") is { } collapsed) col.Collapsed = ToBool(collapsed);
+                        if (reader.GetAttribute("phonetic") is { } phonetic) col.ShowPhonetic = ToBool(phonetic);
                         if (reader.GetAttribute("customWidth") is { } customWidth && ToBool(customWidth))
                         {
                             if (reader.GetAttribute("width") is { } width) col.Width = ToDouble(width);
@@ -42,6 +46,12 @@ public static partial class SpreadsheetMLImport
                 case "worksheet/sheetData/row/:START":
                     {
                         row = new Row();
+                        if (reader.GetAttribute("hidden") is { } hidden) row.Hidden = ToBool(hidden);
+                        if (reader.GetAttribute("outlineLevel") is { } outlineLevel) row.OutlineLevel = ToUInt(outlineLevel);
+                        if (reader.GetAttribute("collapsed") is { } collapsed) row.Collapsed = ToBool(collapsed);
+                        if (reader.GetAttribute("thickTop") is { } thickTop) row.ThickTop = ToBool(thickTop);
+                        if (reader.GetAttribute("thickBot") is { } thickBot) row.ThickBottom = ToBool(thickBot);
+                        if (reader.GetAttribute("ph") is { } ph) row.ShowPhonetic = ToBool(ph);
                         if (reader.GetAttribute("customHeight") is { } customHeight && ToBool(customHeight)) row.Height = ToDouble(reader.GetAttribute("ht")!);
                         if (reader.GetAttribute("customFormat") is { } customFormat && ToBool(customFormat)) SetStyle(row, cellstyles[ToInt(reader.GetAttribute("s")!)]);
                         sheet.Rows.SetValue(ToInt(reader.GetAttribute("r")!), row);

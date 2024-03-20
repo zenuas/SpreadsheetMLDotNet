@@ -26,6 +26,10 @@ public static partial class SpreadsheetMLExport
             foreach (var (x, col) in EnumerableColumns(worksheet))
             {
                 var col_attr = new Dictionary<string, string>();
+                TryAddAttribute(col_attr, "hidden", col.Hidden);
+                TryAddAttribute(col_attr, "outlineLevel", col.OutlineLevel);
+                TryAddAttribute(col_attr, "collapsed", col.Collapsed);
+                TryAddAttribute(col_attr, "phonetic", col.ShowPhonetic);
                 if (TryAddAttribute(col_attr, "width", col.Width)) col_attr["customWidth"] = "1";
                 if (TryAddAttribute(col_attr, "bestFit", col.BestFitColumnWidth)) col_attr["customWidth"] = "1";
                 if (TryAddStyleIndex(col, cellstyles, out var col_styleindex)) col_attr["style"] = col_styleindex.ToString();
@@ -41,6 +45,12 @@ public static partial class SpreadsheetMLExport
         foreach (var (y, row) in EnumerableRows(worksheet))
         {
             var row_attr = new Dictionary<string, string>();
+            TryAddAttribute(row_attr, "hidden", row.Hidden);
+            TryAddAttribute(row_attr, "outlineLevel", row.OutlineLevel);
+            TryAddAttribute(row_attr, "collapsed", row.Collapsed);
+            TryAddAttribute(row_attr, "thickTop", row.ThickTop);
+            TryAddAttribute(row_attr, "thickBot", row.ThickBottom);
+            TryAddAttribute(row_attr, "ph", row.ShowPhonetic);
             if (TryAddAttribute(row_attr, "ht", row.Height)) row_attr["customHeight"] = "1";
             if (TryAddStyleIndex(row, cellstyles, out var row_styleindex)) { row_attr["s"] = row_styleindex.ToString(); row_attr["customFormat"] = "1"; }
             if (row.Cells.Count == 0 && row_attr.Count == 0) continue;
