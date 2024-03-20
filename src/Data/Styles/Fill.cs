@@ -6,7 +6,7 @@ namespace SpreadsheetMLDotNet.Data.Styles;
 
 public class Fill : IEquatable<Fill>
 {
-    public PatternTypes PatternType { get; set; } = PatternTypes.Solid;
+    public PatternTypes? PatternType { get; set; }
     public Color? ForegroundColor { get; set; }
     public Color? BackgroundColor { get; set; }
 
