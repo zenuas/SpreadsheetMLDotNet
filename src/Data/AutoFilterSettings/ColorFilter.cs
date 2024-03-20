@@ -2,6 +2,6 @@
 
 public class ColorFilter : IFilterColumns
 {
-    public string DifferentialFormatRecordId { get; set; } = "";
-    public bool? FilterByCellColor { get; set; }
+    public string DifferentialFormatRecordId { get; init; } = "";
+    public bool? FilterByCellColor { get; init; }
 }

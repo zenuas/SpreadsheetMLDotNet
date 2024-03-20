@@ -2,6 +2,6 @@
 
 public class CustomFilter
 {
-    public FilterOperators? Operator { get; set; }
-    public string Value { get; set; } = "";
+    public FilterOperators? Operator { get; init; }
+    public string Value { get; init; } = "";
 }

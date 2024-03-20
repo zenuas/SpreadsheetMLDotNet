@@ -2,8 +2,8 @@
 
 public class FilterColumn
 {
-    public uint FilterColumnData { get; set; }
-    public bool HiddenAutoFilterButton { get; set; }
-    public bool ShowFilterButton { get; set; }
-    public IFilterColumns? Filters { get; set; }
+    public uint FilterColumnData { get; init; }
+    public bool HiddenAutoFilterButton { get; init; }
+    public bool ShowFilterButton { get; init; }
+    public IFilterColumns? Filters { get; init; }
 }

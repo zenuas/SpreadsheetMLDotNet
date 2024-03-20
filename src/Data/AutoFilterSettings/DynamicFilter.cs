@@ -4,8 +4,8 @@ namespace SpreadsheetMLDotNet.Data.AutoFilterSettings;
 
 public class DynamicFilter : IFilterColumns
 {
-    public DynamicFilterTypes DynamicFilterType { get; set; }
-    public double? Value { get; set; }
-    public DateTime? ISOValue { get; set; }
-    public DateTime? MaxISOValue { get; set; }
+    public DynamicFilterTypes DynamicFilterType { get; init; }
+    public double? Value { get; init; }
+    public DateTime? ISOValue { get; init; }
+    public DateTime? MaxISOValue { get; init; }
 }

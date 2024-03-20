@@ -2,5 +2,5 @@
 
 public class Filter : IFilter
 {
-    public required string FilterValue { get; set; }
+    public required string FilterValue { get; init; }
 }

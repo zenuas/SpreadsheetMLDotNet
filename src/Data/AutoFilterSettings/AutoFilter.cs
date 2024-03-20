@@ -5,6 +5,6 @@ namespace SpreadsheetMLDotNet.Data.AutoFilterSettings;
 
 public class AutoFilter
 {
-    public required IAddressRange Reference { get; set; }
+    public required IAddressRange Reference { get; init; }
     public List<FilterColumn> FilterColumns { get; init; } = [];
 }

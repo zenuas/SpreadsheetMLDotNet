@@ -4,5 +4,5 @@ namespace SpreadsheetMLDotNet.Data.AutoFilterSettings;
 
 public class CustomFilters : List<CustomFilter>, IFilterColumns
 {
-    public bool? And { get; set; }
+    public bool? And { get; init; }
 }
