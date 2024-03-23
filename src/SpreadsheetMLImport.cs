@@ -2,11 +2,9 @@
 using SpreadsheetMLDotNet.Data.Workbook;
 using SpreadsheetMLDotNet.Extension;
 using System;
-using System.Data;
 using System.Drawing;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 
 namespace SpreadsheetMLDotNet;
 
@@ -33,15 +31,17 @@ public static partial class SpreadsheetMLImport
             ? entries[shared_strings_path].Open().Using(SpreadsheetMLReader.ReadSharedStrings)
             : [];
 
-        var name_ids = entries[workbook_path].Open().Using(SpreadsheetMLReader.ReadSheetNameToId);
-
-        return new Workbook
-        {
-            Worksheets = name_ids.Select(nameid => entries[id_to_sheetpath[nameid.Id]]
-                .Open()
-                .Using(x => ReadWorksheet(x, nameid.Name, shared_strings, cellstyles)))
-                .ToList()
-        };
+        var (book, name_id_states) = entries[workbook_path].Open().Using(ReadWorkbook);
+        name_id_states.Each(nameidstate => entries[id_to_sheetpath[nameidstate.Id]]
+            .Open()
+            .Using(x =>
+            {
+                var sheet = ReadWorksheet(x, shared_strings, cellstyles);
+                sheet.Name = nameidstate.Name;
+                sheet.SheetState = nameidstate.SheetState;
+                book.Worksheets.Add(sheet);
+            }));
+        return book;
     }
 
     public static int ToInt(string value) => int.Parse(value);

@@ -12,9 +12,9 @@ namespace SpreadsheetMLDotNet;
 
 public static partial class SpreadsheetMLImport
 {
-    public static Worksheet ReadWorksheet(Stream worksheet, string sheet_name, Dictionary<int, IStringItem> shared_strings, CellStyle[] cellstyles)
+    public static Worksheet ReadWorksheet(Stream worksheet, Dictionary<int, IStringItem> shared_strings, CellStyle[] cellstyles)
     {
-        var sheet = new Worksheet { Name = sheet_name };
+        var sheet = new Worksheet() { Name = "" };
         Row? row = null;
         Cell? cell = null;
         CellTypes cell_type = CellTypes.Number;

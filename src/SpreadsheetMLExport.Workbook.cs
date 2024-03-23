@@ -51,7 +51,17 @@ public static partial class SpreadsheetMLExport
 <workbook xmlns="{FormatNamespaces.SpreadsheetMLMains[(int)format]}" xmlns:r="{FormatNamespaces.Relationships[(int)format]}">
   <sheets>
 """);
-        workbook.Worksheets.Each((x, i) => stream.WriteLine($"""    <sheet name="{x.Name}" sheetId="{i + 1}" r:id="{AddRelationship(reletionship_to_id, x)}"/>"""));
+        workbook.Worksheets.Each((sheet, i) =>
+        {
+            var attr = new Dictionary<string, string>
+            {
+                ["name"] = sheet.Name,
+                ["sheetId"] = (i + 1).ToString(),
+                ["r:id"] = AddRelationship(reletionship_to_id, sheet),
+            };
+            TryAddAttributeEnumAlias(attr, "state", sheet.SheetState);
+            stream.WriteLine($"    <sheet {AttributesToString(attr)}/>");
+        });
         stream.WriteLine("""
   </sheets>
 </workbook>

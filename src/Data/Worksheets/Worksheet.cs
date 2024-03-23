@@ -14,6 +14,7 @@ public class Worksheet : IRelationshipable
     public IndexedList<Column> Columns { get; init; } = new() { New = () => new() };
     public List<IAddressRange> Merges { get; init; } = [];
     public AutoFilter? AutoFilter { get; set; }
+    public SheetStates? SheetState { get; set; }
 
 
     public Row? GetRowOrDefault(int row) => Rows.GetOrDefault(row);

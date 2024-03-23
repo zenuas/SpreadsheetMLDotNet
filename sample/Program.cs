@@ -26,6 +26,9 @@ for (var col = 1; col < 10; col++)
 sheet.SetCell("A102", Cell.FromFormula("SUM(A2:A101)"));
 sheet.GetCell("A102").Fill = new() { PatternType = SpreadsheetMLDotNet.Data.Styles.PatternTypes.Solid, ForegroundColor = Color.Yellow };
 sheet.AutoFilter = new() { Reference = SpreadsheetML.ConvertColumnRange("C:F") };
+var sheet2 = new Worksheet { Name = "Sheet2", SheetState = SheetStates.Hidden };
+sheet2.SetCell("A1", "yA1");
+book.Worksheets.Add(sheet2);
 SpreadsheetML.Export("New.Strict.xlsx", book, FormatNamespace.Strict);
 SpreadsheetML.Export("New.Transitional.xlsx", book, FormatNamespace.Transitional);
 
