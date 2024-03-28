@@ -73,7 +73,11 @@ public static class SpreadsheetMLParser
         }
         else
         {
-            return (ParsePrimitive(values[0].Type, values[0].Value), 1);
+            return values[0].Type == TokenTypes.String
+                ? (ParsePrimitive(values[0].Type, values[0].Value), 1)
+                : values.Length >= 3 && values[1].Type == TokenTypes.Range && values[0].Type == values[2].Type
+                ? (new Calculation.Range { From = SpreadsheetML.ConvertAnyAddress(values[0].Value), To = SpreadsheetML.ConvertAnyAddress(values[2].Value) }, 3)
+                : (ParsePrimitive(values[0].Type, values[0].Value), 1);
         }
     }
 

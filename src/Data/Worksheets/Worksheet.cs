@@ -21,13 +21,13 @@ public class Worksheet : IRelationshipable
 
     public Row GetRow(int row) => Rows.GetOrNewAdd(row);
 
-    public IEnumerable<Row> GetRowsExists(string range) => SpreadsheetML.ConvertRowRange(range).To(x => GetRowsExists(x.From, x.To));
+    public IEnumerable<(int Index, Row Row)> GetRowsExists(string range) => SpreadsheetML.ConvertRowRange(range).To(x => GetRowsExists(x.From, x.To));
 
-    public IEnumerable<Row> GetRowsExists(int from, int to) => Lists.RangeTo(Math.Min(from, to), Math.Max(from, to)).Where(x => x >= Rows.StartIndex && x < Rows.StartIndex + Rows.Count).Select(x => Rows[x - Rows.StartIndex]);
+    public IEnumerable<(int Index, Row Row)> GetRowsExists(int from, int to) => Lists.RangeTo(Math.Min(from, to), Math.Max(from, to)).Where(x => x >= Rows.StartIndex && x < Rows.StartIndex + Rows.Count).Select(x => (x, Rows[x - Rows.StartIndex]));
 
-    public IEnumerable<Row> GetRows(string range) => SpreadsheetML.ConvertRowRange(range).To(x => GetRows(x.From, x.To));
+    public IEnumerable<(int Index, Row Row)> GetRows(string range) => SpreadsheetML.ConvertRowRange(range).To(x => GetRows(x.From, x.To));
 
-    public IEnumerable<Row> GetRows(int from, int to) => Lists.RangeTo(Math.Min(from, to), Math.Max(from, to)).Select(Rows.GetOrNewAdd);
+    public IEnumerable<(int Index, Row Row)> GetRows(int from, int to) => Lists.RangeTo(Math.Min(from, to), Math.Max(from, to)).Select(x => (x, Rows.GetOrNewAdd(x)));
 
     public Column? GetColumnOrDefault(string column) => GetColumnOrDefault(SpreadsheetML.ConvertColumnNameToIndex(column));
 
@@ -37,13 +37,13 @@ public class Worksheet : IRelationshipable
 
     public Column GetColumn(int column) => Columns.GetOrNewAdd(column);
 
-    public IEnumerable<Column> GetColumnsExists(string range) => SpreadsheetML.ConvertColumnRange(range).To(x => GetColumnsExists(x.From, x.To));
+    public IEnumerable<(int Index, Column Column)> GetColumnsExists(string range) => SpreadsheetML.ConvertColumnRange(range).To(x => GetColumnsExists(x.From, x.To));
 
-    public IEnumerable<Column> GetColumnsExists(int from, int to) => Lists.RangeTo(Math.Min(from, to), Math.Max(from, to)).Where(x => x >= Columns.StartIndex && x < Columns.StartIndex + Columns.Count).Select(x => Columns[x - Columns.StartIndex]);
+    public IEnumerable<(int Index, Column Column)> GetColumnsExists(int from, int to) => Lists.RangeTo(Math.Min(from, to), Math.Max(from, to)).Where(x => x >= Columns.StartIndex && x < Columns.StartIndex + Columns.Count).Select(x => (x, Columns[x - Columns.StartIndex]));
 
-    public IEnumerable<Column> GetColumns(string range) => SpreadsheetML.ConvertColumnRange(range).To(x => GetColumns(x.From, x.To));
+    public IEnumerable<(int Index, Column Column)> GetColumns(string range) => SpreadsheetML.ConvertColumnRange(range).To(x => GetColumns(x.From, x.To));
 
-    public IEnumerable<Column> GetColumns(int from, int to) => Lists.RangeTo(Math.Min(from, to), Math.Max(from, to)).Select(Columns.GetOrNewAdd);
+    public IEnumerable<(int Index, Column Column)> GetColumns(int from, int to) => Lists.RangeTo(Math.Min(from, to), Math.Max(from, to)).Select(x => (x, Columns.GetOrNewAdd(x)));
 
     public Cell? GetCellOrDefault(string address) => SpreadsheetML.ConvertCellAddress(address).To(x => GetCellOrDefault(x.Row, x.Column));
 
