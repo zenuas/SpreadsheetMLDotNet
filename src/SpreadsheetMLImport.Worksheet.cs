@@ -14,7 +14,7 @@ public static partial class SpreadsheetMLImport
 {
     public static Worksheet ReadWorksheet(Stream worksheet, Dictionary<int, IStringItem> shared_strings, CellStyle[] cellstyles)
     {
-        var sheet = new Worksheet() { Name = "" };
+        var sheet = new Worksheet { Name = "" };
         Row? row = null;
         Cell? cell = null;
         CellTypes cell_type = CellTypes.Number;
@@ -64,7 +64,7 @@ public static partial class SpreadsheetMLImport
 
                 case "worksheet/sheetData/row/c/:START":
                     {
-                        cell = new Cell() { Value = CellValueNull.Instance };
+                        cell = new Cell { Value = CellValueNull.Instance };
                         column = SpreadsheetML.ConvertCellAddress(reader.GetAttribute("r")!).Column;
                         cell_type = reader.GetAttribute("t") is { } t ? ToEnumAlias<CellTypes>(t)!.Value : CellTypes.Number;
                         if (reader.GetAttribute("s") is { } s) SetStyle(cell, cellstyles[ToInt(s)]);
@@ -76,7 +76,7 @@ public static partial class SpreadsheetMLImport
                     break;
 
                 case "worksheet/sheetData/row/c/is/:START":
-                    cell = new Cell() { Value = new CellValueInlineString() };
+                    cell = new Cell { Value = new CellValueInlineString() };
                     cell_type = CellTypes.InlineString;
                     break;
 
